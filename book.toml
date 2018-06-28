@@ -1,0 +1,7 @@
+[book]
+title = "Rust and WebAssembly RFCs"
+author = "The Rust and WebAssembly Developers"
+description = "A collection of the accepted RFCs for Rust and WebAssembly"
+
+[output.html]
+no-section-label = true
