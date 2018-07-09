@@ -13,6 +13,15 @@ One paragraph explanation of the proposal.
 Why are we doing this? What use cases does it support? What problems does it
 solve? What is the expected outcome?
 
+# Stakeholders
+[stakeholders]: #stakeholders
+
+* Who is affected by this RFC?
+
+* How are we soliciting feedback on this RFC from these stakeholders? Note that
+  they may not be watching the RFCs repository or even aren't directly active in
+  the Rust and WebAssembly working group.
+
 # Detailed Explanation
 [detailed-explanation]: #detailed-explanation
 
