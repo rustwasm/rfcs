@@ -49,7 +49,7 @@ requests:
 >   in the project.
 
 This policy categorizes pull requests as either "larger, more nuanced ..."
-changes or not (I will use "substantial" from now on). When a change is not
+changes or not (we will use "substantial" from now on). When a change is not
 substantial, it requires only a single team member approve of it. When a change
 is larger and more substantial, then the relevant team comes to consensus on how
 to proceed.
@@ -189,14 +189,14 @@ The main differences from the Rust RFC process are:
   painstaking detail as Rust RFCs sometimes do (perhaps excluding *this* RFC).
 
 The phases of RFC development and post-RFC implementation are largely the same
-as the Rust RFC process. I found that the motivations for nearly every phase of
-Rust's RFC process are equally motivating for the Rust and WebAssembly domain. I
-expected to simplify phases a lot, for example, I initially considered removing
-FCP and going straight to voting on accepting an RFC or not. However, FCP exists
-as a way to (1) allow stakeholders to voice any final concerns that hadn't been
-brought up yet, and (2) help enforce the "no new rationale" rule. Both points
-apply equally well to the Rust and WebAssembly domain working group and
-ecosystem as they apply to Rust itself.
+as the Rust RFC process. We found that the motivations for nearly every phase of
+Rust's RFC process are equally motivating for the Rust and WebAssembly
+domain. We expected to simplify phases a lot, for example, we initially
+considered removing FCP and going straight to signing off on accepting an RFC or
+not. However, FCP exists as a way to (1) allow stakeholders to voice any final
+concerns that hadn't been brought up yet, and (2) help enforce the "no new
+rationale" rule. Both points apply equally well to the Rust and WebAssembly
+domain working group and ecosystem as they apply to Rust itself.
 
 We can also avoid adopting an RFC process, and move more quickly by allowing
 each repository's team or owner to be dictators of their corner of the
@@ -206,8 +206,8 @@ not getting voiced, and narrow decisions being made.
 # Unresolved Questions
 [unresolved]: #unresolved-questions
 
-- Will we use [`@rfcbot`][rfcbot]? I expect that if we can, we should, but this
-  can be decided separately from whether to accept this RFC.
+- Will we use [`@rfcbot`][rfcbot]? If we can, we probably should, but this can
+  be decided separately from whether to accept this RFC.
 
 - How to best advertise new RFCs and FCP? Should we make "This Week in Rust and
   WebAssembly" actually be weekly rather than every other week? The interaction
