@@ -175,6 +175,15 @@ impl InstanceOf for Whatever {
 }
 ```
 
+`wasm-bindgen` will emit this JavaScript definition of
+`__wbindgen_instanceof_Whatever` that simply wraps the JS `instanceof` operator:
+
+```js
+const __wbindgen_instanceof_Whatever = function (idx) {
+  return getObject(idx) instanceof Whatever;
+};
+```
+
 ## Upcasting Implementation
 
 For every `extends = MyBase` on a type imported with `extern type MyDerived`,
