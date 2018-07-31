@@ -73,8 +73,8 @@ interface MyDerived : MyBase {}
 
 ### Example Upcasting
 
-We can upcast into a `MyBase` from a `MyDerived` type using the normal `From`
-and `Into` conversions:
+We can upcast into a `MyBase` from a `MyDerived` type using the normal `From`,
+`AsRef`, `AsMut`, and `Into` conversions:
 
 ```rust
 let derived: MyDerived = get_derived_from_somewhere();
@@ -83,11 +83,13 @@ let base: MyBase = derived.into();
 
 ### Example Dynamically-Checked Casting
 
-We can do dynamically-checked downcasts from a `MyBase` into a `MyDerived`:
+We can do dynamically-checked (checked with JavaScript's `instanceof` operator)
+downcasts from a `MyBase` into a `MyDerived` using the `dyn_{into,ref,mut}`
+methods:
 
 ```
 let base: MyBase = get_base_from_somewhere();
-match base.try_into::<MyDerived>() {
+match base.dyn_into::<MyDerived>() {
     Ok(derived) => {
         // It was an instance of `MyDerived`!
     }
@@ -114,163 +116,131 @@ let derived: MyDerived = base.unchecked_into();
 Unchecked casting serves as an escape hatch for developers, and while it can
 lead to JavaScript exceptions, it cannot create memory unsafety.
 
-## Foundation: The `InstanceOf` Trait
+## The `JsCast` Trait
 
-For dynamically-checked and arbitrary unchecked casting, we introduce the
-`InstanceOf` trait. It provides a boolean predicate that whose implementations
-consult JavaScript's `isntanceof` operator, as well as unchecked conversions
-from JavaScript values.
+For dynamically-checked and unchecked casting between arbitrary JavaScript
+types, we introduce the `JsCast` trait. It requires implementations provide a
+boolean predicate that consults JavaScript's `instanceof` operator, as well as
+unchecked conversions from JavaScript values:
 
 ```rust
-pub trait InstanceOf {
+pub trait JsCast {
     fn instanceof(val: &JsValue) -> bool;
 
     fn unchecked_from_js(val: JsValue) -> Self;
     fn unchecked_from_js_ref(val: &JsValue) -> &Self;
     fn unchecked_from_js_mut(val: &mut JsValue) -> &mut Self;
+
+    // ... provided methods elided ...
 }
 ```
 
-`InstanceOf` is not intended to be used to directly, but instead as a bound on
-type parameters for generic methods on `JsValue` and imported types. Users of
-`wasm-bindgen` will be able to ignore `InstanceOf` for the most part.
+`JsCast`'s required trait methods are not intended to be used to directly, but
+instead are leveraged by its provided methods. Users of `wasm-bindgen` will be
+able to ignore `JsCast`'s required trait methods for the most part, since the
+implementations will be mechanically generated, and they will only be using the
+required trait methods indirectly through the more ergonomic provided methods.
 
-For every `extern type Whatever` imported with `wasm-bindgen`, we emit an
-implementation of `InstanceOf` similar to this:
+For every `extern { type Illmatic; }` imported with `wasm-bindgen`, we emit an
+implementation of `JsCast` similar to this:
 
 ```rust
-impl InstanceOf for Whatever {
+impl JsCast for Illmatic {
     fn instanceof(val: &JsValue) -> bool {
         #[cfg(all(target_arch = "wasm32", not(target_os = "emscripten")))]
         #[wasm_import_module = "__wbindgen_placeholder__"]
         extern {
-            fn __wbindgen_instanceof_Whatever(idx: u32) -> u32;
+            fn __wbindgen_instanceof_Illmatic(idx: u32) -> u32;
         }
 
         #[cfg(not(all(target_arch = "wasm32", not(target_os = "emscripten"))))]
-        unsafe extern fn __wbindgen_instanceof_Whatever(_: u32) -> u32 {
+        unsafe extern fn __wbindgen_instanceof_Illmatic(_: u32) -> u32 {
             panic!("function not implemented on non-wasm32 targets")
         }
 
         __wbindgen_instance_of_MyDerived(val.idx) == 1
     }
 
-    fn unchecked_from_js(val: JsValue) -> Whatever {
-        Whatever {
+    fn unchecked_from_js(val: JsValue) -> Illmatic {
+        Illmatic {
             obj: val,
         }
     }
 
-    fn unchecked_from_js_ref(val: &JsValue) -> &Whatever {
+    fn unchecked_from_js_ref(val: &JsValue) -> &Illmatic {
         unsafe {
-            &*(val as *const JsValue as *const Whatever)
+            &*(val as *const JsValue as *const Illmatic)
         }
     }
 
-    fn unchecked_from_js_mut(val: &mut JsValue) -> &mut Whatever {
+    fn unchecked_from_js_mut(val: &mut JsValue) -> &mut Illmatic {
         unsafe {
-            &mut *(val as *mut JsValue as *mut Whatever)
+            &mut *(val as *mut JsValue as *mut Illmatic)
         }
     }
 }
 ```
 
-`wasm-bindgen` will emit this JavaScript definition of
-`__wbindgen_instanceof_Whatever` that simply wraps the JS `instanceof` operator:
+Additionally, `wasm-bindgen` will emit this JavaScript definition of
+`__wbindgen_instanceof_Illmatic` that simply wraps the JS `instanceof` operator:
 
 ```js
-const __wbindgen_instanceof_Whatever = function (idx) {
-  return getObject(idx) instanceof Whatever;
+const __wbindgen_instanceof_Illmatic = function (idx) {
+  return getObject(idx) instanceof Illmatic;
 };
 ```
 
-## Upcasting Implementation
+### `JsCast`'s Provided Trait Methods
 
-For every `extends = MyBase` on a type imported with `extern type MyDerived`,
-and for every base and derived interface in a WebIDL interface inheritance
-chain, `wasm-bindgen` will emit these trait implementations that wrap unchecked
-conversions methods from `InstanceOf` that we know are valid due to the
-inheritance relationship:
-
-1. A `From` implementation for `self`-consuming conversions:
-
-   ```rust
-   impl From<MyDerived> for MyBase {
-       fn from(my_derived: MyDerived) -> MyBase {
-           let val: JsValue = my_derived.into();
-           <MyDerived as InstanceOf>::unchecked_from_js(val)
-       }
-   }
-   ```
-
-2. An `AsRef` implementation for shared reference conversions:
-
-   ```rust
-   impl AsRef<MyBase> for MyDerived {
-       fn as_ref(&self) -> &MyDerived {
-           let val: &JsValue = self.as_ref();
-           <MyDerived as InstanceOf>::uncheck_from_js_ref(val)
-       }
-   }
-   ```
-
-3. An `AsMut` implementation for exclusive reference conversions:
-
-   ```rust
-   impl AsMut<MyBase> for MyDerived {
-       fn as_mut(&mut self) -> &mut MyDerived {
-           let val: &mut JsValue = self.as_mut();
-           <MyDerived as InstanceOf>::uncheck_from_js_mut(val)
-       }
-   }
-   ```
-
-## The `JsCast` Trait
-
-The `JsCast` trait wraps the `InstanceOf` trait to provide unchecked arbitrary
-casting and dynamically-checked, fallible casting for `JsValue` and imported JS
-classes.
+The `JsCast` trait's provided methods wrap the unergonomic required static trait
+methods and provide ergonomic, chainable versions that operate on `self` and
+*another* `T: JsCast`. For example, the `JsCast::is_instance_of` method asks if
+`&self` is an instance of some *other* `T` that also implements `JsCast`.
 
 ```rust
 pub trait JsCast
 where
     Self: AsRef<JsValue> + AsMut<JsValue> + Into<JsValue>,
 {
-    // Unchecked conversions.
+    // ... required trait methods elided ...
+
+    // Unchecked conversions from `Self` into some other `T: JsCast`.
 
     fn unchecked_into<T>(self) -> T
     where
-        T: InstanceOf,
+        T: JsCast,
     {
         T::unchecked_from_js(self.into())
     }
+
     fn unchecked_ref<T>(&self) -> &T
     where
-        T: InstanceOf,
+        T: JsCast,
     {
         T::unchecked_from_js_ref(self.as_ref())
     }
+
     fn unchecked_mut<T>(&mut self) -> &mut T
     where
-        T: InstanceOf,
+        T: JsCast,
     {
         T::unchecked_from_js_mut(self.as_mut())
     }
 
-    // Dynamic instanceof check.
+    // Predicate method to check whether `self` is an instance of `T` or not.
 
     fn is_instance_of<T>(&self) -> bool
     where
-        T: InstanceOf,
+        T: JsCast,
     {
         T::instanceof(self.as_ref())
     }
 
-    // Dynamically-checked conversions.
+    // Dynamically-checked conversions from `Self` into some other `T: JsCast`.
 
-    fn try_into<T>(self) -> Result<T, Self>
+    fn dyn_into<T>(self) -> Result<T, Self>
     where
-        T: InstanceOf,
+        T: JsCast,
     {
         if self.is_instance_of::<T>() {
             Ok(self.unchecked_into())
@@ -279,9 +249,9 @@ where
         }
     }
 
-    fn try_ref<T>(&self) -> Option<&T>
+    fn dyn_ref<T>(&self) -> Option<&T>
     where
-        T: InstanceOf,
+        T: JsCast,
     {
         if self.is_instance_of::<T>() {
             Some(self.unchecked_ref())
@@ -290,9 +260,9 @@ where
         }
     }
 
-    fn try_mut<T>(&mut self) -> Option<&mut T>
+    fn dyn_mut<T>(&mut self) -> Option<&mut T>
     where
-        T: InstanceOf,
+        T: JsCast,
     {
         if self.is_instance_of::<T>() {
             Some(self.unchecked_mut())
@@ -303,33 +273,26 @@ where
 }
 ```
 
-Using these methods provides better turbo-fishing syntax than using `InstanceOf`
-trait methods directly.
+Using these methods provides better turbo-fishing syntax than using `JsCast`'s
+required trait methods directly.
 
 ```rust
 fn get_it() -> JsValue { ... }
 
-// Wack
+// Tired -_-
 SomeJsThing::unchecked_from_js(get_it()).method();
 
-// Wow! Much chain, very ergo!
+// Wired ^_^
 get_it()
     .unchecked_into::<SomeJsThing>()
     .method();
 ```
 
-### `JsCast` Blanket Implementation
+### `JsCast` Implementation for `JsValue`
 
-We provide a blanket implementation of `JsCast` for anything that is `JsValue`-y
-in that it and its references can be converted into `JsValue`s. This covers all
-`wasm-bindgen`-imported JS classes.
-
-```rust
-impl<T> JsCast for T where T: AsRef<JsValue> + AsMut<JsValue> + Into<JsValue> {}
-```
-
-We also add `AsRef<JsValue>` and `AsMut<JsValue>` implementations for `JsValue`
-itself, so that the blanket implementation applies to `JsValue`:
+We also trivially implement `JsCast` for `JsValue` with no-ops, and add
+`AsRef<JsValue>` and `AsMut<JsValue>` implementations for `JsValue` itself, so
+that the `JsCast` super trait bounds are satisfied:
 
 ```rust
 impl AsRef<JsValue> for JsValue {
@@ -343,7 +306,66 @@ impl AsMut<JsValue> for JsValue {
         self
     }
 }
+
+impl JsCast for JsValue {
+    fn instanceof(_: &JsValue) -> bool {
+        true
+    }
+
+    fn unchecked_from_js(val: JsValue) -> Self {
+        val
+    }
+
+    fn unchecked_from_js_ref(val: &JsValue) -> &Self {
+        val
+    }
+
+    fn unchecked_from_js_mut(val: &mut JsValue) -> &mut Self {
+        val
+    }
+}
 ```
+
+## Upcasting Implementation
+
+For every `extends = MyBase` on a type imported with `extern type MyDerived`,
+and for every base and derived interface in a WebIDL interface inheritance
+chain, `wasm-bindgen` will emit these trait implementations that wrap unchecked
+conversions methods from `JsCast` that we know are valid due to the inheritance
+relationship:
+
+1. A `From` implementation for `self`-consuming conversions:
+
+   ```rust
+   impl From<MyDerived> for MyBase {
+       fn from(my_derived: MyDerived) -> MyBase {
+           let val: JsValue = my_derived.into();
+           <MyDerived as JsCast>::unchecked_from_js(val)
+       }
+   }
+   ```
+
+2. An `AsRef` implementation for shared reference conversions:
+
+   ```rust
+   impl AsRef<MyBase> for MyDerived {
+       fn as_ref(&self) -> &MyDerived {
+           let val: &JsValue = self.as_ref();
+           <MyDerived as JsCast>::uncheck_from_js_ref(val)
+       }
+   }
+   ```
+
+3. An `AsMut` implementation for exclusive reference conversions:
+
+   ```rust
+   impl AsMut<MyBase> for MyDerived {
+       fn as_mut(&mut self) -> &mut MyDerived {
+           let val: &mut JsValue = self.as_mut();
+           <MyDerived as JsCast>::uncheck_from_js_mut(val)
+       }
+   }
+   ```
 
 ## Deep Inheritance Chains Example
 
@@ -402,8 +424,30 @@ let base: MyBase = dub_derived.into();
   to understand vs pretty much every Rust programmer's familiarity with the
   `std` traits.
 
-* We could use `TryFrom` for dynamically-checked casts instead of `JsCast`. This
-  would introduce a new nightly feature requirement when using `wasm-bindgen`.
+* Upcasting using the `From` and `As{Ref,Mut}` traits does not provide
+  chainable, turbofishing methods on `self` that one could use when type
+  inference needs a helping hand. Instead, one must create a local variable with
+  an explicit type.
+
+  ```rust
+  // Can't do this with upcasting.
+  get_some_js_type()
+    .into::<AnotherJsType>()
+    .method();
+
+  // Have to do this:
+  let another: AnotherJsType = get_some_js_type().into();
+  another.method();
+  ```
+
+  If we used a custom `Upcast` trait, we could provide turbofishable methods on
+  `self`, at the cost of using non-standard traits.
+
+* We could use `TryFrom` for dynamically-checked casts instead of
+  `JsCast::dyn_into` et al. This would introduce a new nightly feature
+  requirement when using `wasm-bindgen`. We leave the possibility open for when
+  `TryFrom` is stabilized by not naming our dynamically-checked cast methods
+  `JsCast::try_into` to be future compatible.
 
 * Explicit upcasting still does not provide very good ergonomics. There are a
   couple things we could do here:
@@ -435,6 +479,12 @@ let base: MyBase = dub_derived.into();
   2. We could redundantly implement all its methods on `JsValue` and imported JS
      classes directly.
 
+* Unchecked casting could be marked `unsafe` to reflect that correctness relies
+  on the programmer in these cases. However, misusing unchecked JS casts cannot
+  introduce memory unsafety in the Rust sense, so this would be using `unsafe`
+  as a general-purpose "you probably shouldn't use this" warning, which is not
+  `unsafe`'s intended purpose.
+
 * We could only implement unchecked casts for everything all the time. This
   would encourage a loose, shoot-from-the-hip programming style. We would prefer
   leveraging types when possible. We realize that escape hatches are still
@@ -445,10 +495,9 @@ let base: MyBase = dub_derived.into();
 # Unresolved Questions
 [unresolved]: #unresolved-questions
 
-* Should the `JsCast` trait be re-exported in `wasm_bindgen::prelude`? It seems
-  pretty clear that `InstanceOf` should not be, since it isn't intended to be
-  used often. `JsCast` seems like it might be used often enough that it should
-  be in the prelude. Either way, we can initially ship without re-exporting it
-  in prelude and see what it feels like.
+* Should the `JsCast` trait be re-exported in `wasm_bindgen::prelude`? We do not
+  specify that it should be in this RFC, and we can initially ship without
+  re-exporting it in prelude and see what it feels like. Based on experience, we
+  may decide in the future to add it to the prelude.
 
 [webidl-inheritance]: https://heycam.github.io/webidl/#dfn-inherit
