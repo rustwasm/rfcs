@@ -1,6 +1,6 @@
 - Start Date: 2018-07-10
-- RFC PR: (leave this empty)
-- Tracking Issue: (leave this empty)
+- RFC PR: https://github.com/rustwasm/rfcs/pull/2
+- Tracking Issue: https://github.com/rustwasm/wasm-bindgen/pull/640
 
 # Summary
 [summary]: #summary
