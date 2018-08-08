@@ -273,6 +273,7 @@ This drawback can be minimized by having a `traits` module which re-exports all
 of the traits. So that way the user can just put this at the top of their module:
 
 ```rust
+// Now all of the methods work!
 use web_sys::traits::*;
 ```
 
@@ -321,16 +322,16 @@ extern {
 
     // Methods from Node
     #[wasm_bindgen(method, getter = nodeName)]
-    fn node_name(this: &JsValue) -> JsString;
+    fn node_name(this: &Node) -> JsString;
 
     #[wasm_bindgen(method, getter = textContent)]
-    fn text_content(this: &JsValue) -> JsString;
+    fn text_content(this: &Node) -> JsString;
 
     #[wasm_bindgen(method, js_name = appendChild)]
-    fn append_child(this: &JsValue, child: Node) -> Node;
+    fn append_child(this: &Node, child: Node) -> Node;
 
     #[wasm_bindgen(method, js_name = removeChild)]
-    fn remove_child(this: &JsValue, child: Node) -> Node;
+    fn remove_child(this: &Node, child: Node) -> Node;
 }
 ```
 
