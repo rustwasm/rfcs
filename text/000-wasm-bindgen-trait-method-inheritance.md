@@ -175,7 +175,7 @@ impl INode for Node {}
 
 Essentially, it does this:
 
-1. It adds private methods to the types (e.g. `EventTarget` and `Node`)
+1. It adds concrete private methods to the types (e.g. `EventTarget` and `Node`)
 
 2. It creates a new trait which has the same name as the type, but prefixed with `I` (e.g. `IEventTarget` and `INode`)
 
@@ -183,7 +183,7 @@ Essentially, it does this:
 
 4. If the WebIDL interface extends from another interface, then that is also added as a constraint (e.g. `INode` inherits from `IEventTarget`)
 
-5. The trait has `#[inline]` default methods which calls `self.as_ref()` and then calls the concrete methods (forwarding any arguments along as-is)
+5. The trait has `#[inline]` default methods which calls `self.as_ref()` and then calls the concrete private methods (forwarding any arguments along as-is)
 
 6. Lastly it uses `impl Trait for Type {}` to implement the trait for the types. It needs to implement the entire trait hierarchy for each type:
 
@@ -235,7 +235,7 @@ Because the methods are on traits, it is necessary for the Rust
 user to import the trait before they can use the methods:
 
 ```rust
-let x: HtmlElement = ...;
+let x: HTMLElement = ...;
 
 // Error, because the INode trait isn't imported
 x.append_child(y);
