@@ -24,13 +24,35 @@ Given how prelevant this pattern is in JavaScript, it would be very useful to
 have a convenient and ergonomic way to make use of this inheritance while
 maintaining optimal code reuse in Rust.
 
+It is currently possible to use method inheritance, but it is very awkward, because
+it requires type annotations with `.into()`:
+
+```rust
+let x: Node = some_html_element.into();
+x.append_child(some_node);
+```
+
 The end goal is that it should be possible to write generic code which can
 work with all sub-classes in the inheritance graph.
 
 As an example, it should be possible to use the
 [`appendChild`](https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild)
 method with all of the classes which inherit from `Node` (e.g. `HTMLElement`,
-`HTMLDivElement`, `SVGElement`, and many more).
+`HTMLDivElement`, `SVGElement`, and many more). This should be possible without any
+casting operations (such as `into` or `dyn_into`):
+
+```rust
+some_html_element.append_child(some_node);
+```
+
+As a side effect, this also makes it possible to write generic code like this:
+
+```rust
+fn foo<A: INode>(node: A) { ... }
+```
+
+However, due to the potential for code bloat, this sort of pattern is *not* encouraged
+by this RFC.
 
 # Stakeholders
 [stakeholders]: #stakeholders
@@ -49,137 +71,61 @@ suffice in soliciting feedback.
 Let's consider adding in methods for the [`EventTarget`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget)
 and [`Node`](https://developer.mozilla.org/en-US/docs/Web/API/Node) classes.
 
-There are different ways to accomplish this, but this RFC proposes the
-following syntax:
+In WebIDL, they are specified like this:
 
-```rust
-#[wasm_bindgen]
-pub trait IEventTarget {
-    #[wasm_bindgen(js_name = addEventListener)]
-    fn add_event_listener(&self, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool);
-
-    #[wasm_bindgen(js_name = removeEventListener)]
-    fn remove_event_listener(&self, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool);
-
-    #[wasm_bindgen(js_name = dispatchEvent)]
-    fn dispatch_event(&self, event: Event);
-}
+```
+[Constructor,
+ Exposed=(Window,Worker,AudioWorklet)]
+interface EventTarget {
+  void addEventListener(DOMString type, EventListener? callback, optional (AddEventListenerOptions or boolean) options);
+  void removeEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);
+  boolean dispatchEvent(Event event);
+};
 ```
 
-```rust
-#[wasm_bindgen]
-pub trait INode: IEventTarget {
-    #[wasm_bindgen(getter = nodeName)]
-    fn node_name(&self) -> JsString;
+```
+[Exposed=Window]
+interface Node : EventTarget {
+  [CEReactions] attribute DOMString? nodeValue;
+  [CEReactions] attribute DOMString? textContent;
 
-    #[wasm_bindgen(getter = textContent)]
-    fn text_content(&self) -> JsString;
+  [CEReactions] Node appendChild(Node node);
+  [CEReactions] Node removeChild(Node child);
 
-    #[wasm_bindgen(js_name = appendChild)]
-    fn append_child<A: INode>(&self, child: A) -> A;
-
-    #[wasm_bindgen(js_name = removeChild)]
-    fn remove_child<A: INode>(&self, child: A) -> A;
-
-    // And a bunch more methods...
-}
+  ... other attributes and methods ommitted ...
+};
 ```
 
-When the `wasm-bindgen` attribute is used on a trait, it will do two things:
-
-1. It adds an `AsRef<JsValue>` constraint, so `trait Foo` becomes `trait Foo: AsRef<JsValue>`
-
-2. It generates externs for each method, and rewrites the methods so that they have default implementations which call the externs.
-
-The end result is that the above two traits become translated into this:
+Based upon that WebIDL spec, the WebIDL generator will generate this Rust code:
 
 ```rust
 #[wasm_bindgen]
 extern {
-    #[wasm_bindgen(method, structural, js_name = addEventListener)]
-    fn add_event_listener(this: &JsValue, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool);
+    #[wasm_bindgen(method, js_name = addEventListener)]
+    fn add_event_listener(this: &EventTarget, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
 
-    #[wasm_bindgen(method, structural, js_name = removeEventListener)]
-    fn remove_event_listener(this: &JsValue, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool);
+    #[wasm_bindgen(method, js_name = removeEventListener)]
+    fn remove_event_listener(this: &EventTarget, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
 
-    #[wasm_bindgen(method, structural, js_name = dispatchEvent)]
-    fn dispatch_event(this: &JsValue, event: Event);
+    #[wasm_bindgen(method, js_name = dispatchEvent)]
+    fn dispatch_event(this: &EventTarget, event: Event);
 }
 
-pub trait IEventTarget: AsRef<JsValue> {
+pub trait IEventTarget: AsRef<EventTarget> {
     #[inline]
-    fn add_event_listener(&self, name: &str, listener, &Closure<FnMut(Event)>, use_capture: bool) {
-        add_event_listener(self.as_ref(), name, listener, use_capture)
+    fn add_event_listener(&self, type: &str, callback: &Closure<FnMut(Event)>, options: bool) {
+        EventTarget::add_event_listener(self.as_ref(), type, callback, options)
     }
 
     #[inline]
-    fn remove_event_listener(&self, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool) {
-        remove_event_listener(self.as_ref(), name, listener, use_capture)
+    fn remove_event_listener(&self, type: &str, callback: &Closure<FnMut(Event)>, options: bool) {
+        EventTarget::remove_event_listener(self.as_ref(), type, callback, options)
     }
 
     #[inline]
     fn dispatch_event(&self, event: Event) {
-        dispatch_event(self.as_ref(), event)
+        EventTarget::dispatch_event(self.as_ref(), event)
     }
-}
-```
-
-```rust
-#[wasm_bindgen]
-extern {
-    #[wasm_bindgen(method, structural, getter = nodeName)]
-    fn node_name(this: &JsValue) -> JsString;
-
-    #[wasm_bindgen(method, structural, getter = textContent)]
-    fn text_content(this: &JsValue) -> JsString;
-
-    #[wasm_bindgen(method, structural, js_name = appendChild)]
-    fn append_child<A: INode>(this: &JsValue, child: A) -> A;
-
-    #[wasm_bindgen(method, structural, js_name = removeChild)]
-    fn remove_child<A: INode>(this: &JsValue, child: A) -> A;
-}
-
-pub trait INode: IEventTarget {
-    #[inline]
-    fn node_name(&self) -> JsString {
-        node_name(self.as_ref())
-    }
-
-    #[inline]
-    fn text_content(&self) -> JsString {
-        text_content(self.as_ref())
-    }
-
-    #[inline]
-    fn append_child<A: INode>(&self, child: A) -> A {
-        append_child(self.as_ref(), child)
-    }
-
-    #[inline]
-    fn remove_child<A: INode>(&self, child: A) -> A {
-        remove_child(self.as_ref(), child)
-    }
-
-    // And a bunch more methods...
-}
-```
-
-As you can see, it moves the trait methods into an `extern` (which has a `wasm-bindgen` attribute).
-
-Each method that takes `&self` or `&mut self` gets translated into a `method, structural` extern.
-
-Everything else is moved as-is from the trait to the extern.
-
-Then the trait methods are rewritten so that they call the extern functions (using `as_ref()` to convert `&self` to a `&JsValue`),
-and they are marked as `#[inline]`.
-
-Now that we have defined the desired traits and methods, we can add the methods to a type like this:
-
-```rust
-#[wasm_bindgen]
-extern {
-    type EventTarget;
 }
 
 impl IEventTarget for EventTarget {}
@@ -188,78 +134,104 @@ impl IEventTarget for EventTarget {}
 ```rust
 #[wasm_bindgen]
 extern {
-    type Node;
+    #[wasm_bindgen(method, getter = nodeName)]
+    fn node_value(this: &Node) -> JsString;
+
+    #[wasm_bindgen(method, getter = textContent)]
+    fn text_content(this: &Node) -> JsString;
+
+    #[wasm_bindgen(method, js_name = appendChild)]
+    fn append_child(this: &Node, node: Node) -> Node;
+
+    #[wasm_bindgen(method, js_name = removeChild)]
+    fn remove_child(this: &Node, child: Node) -> Node;
+}
+
+pub trait INode: IEventTarget + AsRef<Node> {
+    #[inline]
+    fn node_value(&self) -> JsString {
+        Node::node_value(self.as_ref())
+    }
+
+    #[inline]
+    fn text_content(&self) -> JsString {
+        Node::text_content(self.as_ref())
+    }
+
+    #[inline]
+    fn append_child(&self, node: Node) -> Node {
+        Node::append_child(self.as_ref(), node)
+    }
+
+    #[inline]
+    fn remove_child(&self, child: Node) -> Node {
+        Node::remove_child(self.as_ref(), child)
+    }
 }
 
 impl IEventTarget for Node {}
 impl INode for Node {}
 ```
 
-Because the traits contain default implementations, this is all that is needed to make it work.
+Essentially, it does this:
+
+1. It adds private methods to the types (e.g. `EventTarget` and `Node`)
+
+2. It creates a new trait which has the same name as the type, but prefixed with `I` (e.g. `IEventTarget` and `INode`)
+
+3. This trait has an `AsRef<Type>` constraint
+
+4. If the WebIDL interface extends from another interface, then that is also added as a constraint (e.g. `INode` inherits from `IEventTarget`)
+
+5. The trait has `#[inline]` default methods which calls `self.as_ref()` and then calls the concrete methods (forwarding any arguments along as-is)
+
+6. Lastly it uses `impl Trait for Type {}` to implement the trait for the types. It needs to implement the entire trait hierarchy for each type:
+
+   ```rust
+   impl IEventTarget for EventTarget {}
+
+   impl IEventTarget for Node {}
+   impl INode for Node {}
+
+   impl IEventTarget for Element {}
+   impl INode for Element {}
+   impl IElement for Element {}
+
+   impl IEventTarget for HTMLElement {}
+   impl INode for HTMLElement {}
+   impl IElement for HTMLElement {}
+   impl IHTMLElement for HTMLElement {}
+   ```
+
+For the sake of ergonomics, the WebIDL generator should also create a `traits` module which re-exports all of the traits:
+
+```rust
+pub mod traits {
+    pub use super::{IEventTarget, INode, IElement, IHTMLElement};
+}
+```
+
+This allows users to add `use web_sys::traits::*` to import all of the traits.
+
+The end result is that the user can now use the various methods without any casting:
+
+```rust
+use web_sys::traits::*;
+
+let x: HTMLElement = ...;
+
+x.append_child(some_node);
+x.add_event_listener("foo", some_listener, true);
+```
 
 ## Mixins
 
-The above technique works great for class-based inheritance, but it can also be used to support mixins.
-
-As an example, the [`HTMLElement`](https://html.spec.whatwg.org/multipage/dom.html#htmlelement) class in
-WebIDL extends from `Element`, but *in addition* it includes various mixins, such as
-[`GlobalEventHandlers`](https://html.spec.whatwg.org/multipage/webappapis.html#globaleventhandlers) and
-[`HTMLOrSVGElement`](https://html.spec.whatwg.org/multipage/dom.html#htmlorsvgelement).
-
-This is essentially a form of multiple-inheritance, but thankfully Rust traits support multiple inheritance!
-
-```rust
-#[wasm_bindgen]
-pub trait IGlobalEventHandlers {
-    #[wasm_bindgen(setter)]
-    fn onabort(&self, listener: &Closure<FnMut(Event)>);
-
-    // And a bunch more methods...
-}
-
-#[wasm_bindgen]
-pub trait IHtmlOrSvgElement {
-    #[wasm_bindgen(getter)]
-    fn nonce(&self) -> JsString;
-
-    // And a bunch more methods...
-}
-
-#[wasm_bindgen]
-pub trait IHtmlElement: IElement + IGlobalEventHandlers + IHtmlOrSvgElement {
-    #[wasm_bindgen(getter = title)]
-    fn title(&self) -> JsString;
-
-    // And a bunch more methods...
-}
-```
-
-As you can see, the `IHtmlElement` trait inherits from `IElement`, `IGlobalEventHandlers`, and `IHtmlOrSvgElements`,
-thus achieving the multiple inheritance we need.
-
-And now we can implement the above traits on a type:
-
-```rust
-#[wasm_bindgen]
-extern {
-    type HtmlElement;
-}
-
-impl IGlobalEventHandlers for HtmlElement {}
-impl IHtmlOrSvgElement for HtmlElement {}
-impl IEventTarget for HtmlElement {}
-impl INode for HtmlElement {}
-impl IElement for HtmlElement {}
-impl IHtmlElement for HtmlElement {}
-```
+The WebIDL generator already handles mixins, so they will automatically work correctly with this proposal.
 
 # Drawbacks
 [drawbacks]: #drawbacks
 
-The `wasm_bindgen` attribute needs to be extended so it can be used on `trait`,
-this is a ***lot*** of extra complexity.
-
-In addition, because the methods are on traits, it is necessary for the Rust
+Because the methods are on traits, it is necessary for the Rust
 user to import the trait before they can use the methods:
 
 ```rust
@@ -269,8 +241,9 @@ let x: HtmlElement = ...;
 x.append_child(y);
 ```
 
-This drawback can be minimized by having a `traits` module which re-exports all
-of the traits. So that way the user can just put this at the top of their module:
+As explained above, this drawback can be minimized by having a `traits` module which
+re-exports all of the traits. So that way the user can just put this at the top of
+their module:
 
 ```rust
 // Now all of the methods work!
@@ -282,9 +255,9 @@ use web_sys::traits::*;
 
 There is essentially only one other alternative design: inherit impl.
 
-Rather than using traits, you can instead use inherit impls on every type in the class inheritance hierarchy.
+Rather than using traits, it can instead use inherit impls on every type in the class inheritance hierarchy.
 
-As an example, the WebIDL generator could generate this code for the `Node` and `EventTarget` types:
+As an example, the WebIDL generator could generate this code for the `EventTarget` and `Node` types:
 
 ```rust
 #[wasm_bindgen]
@@ -293,13 +266,13 @@ extern {
 
     // Methods from EventTarget
     #[wasm_bindgen(method, js_name = addEventListener)]
-    fn add_event_listener(this: &EventTarget, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool);
+    pub fn add_event_listener(this: &EventTarget, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
 
     #[wasm_bindgen(method, js_name = removeEventListener)]
-    fn remove_event_listener(this: &EventTarget, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool);
+    pub fn remove_event_listener(this: &EventTarget, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
 
     #[wasm_bindgen(method, js_name = dispatchEvent)]
-    fn dispatch_event(this: &EventTarget, event: Event);
+    pub fn dispatch_event(this: &EventTarget, event: Event);
 }
 ```
 
@@ -311,27 +284,27 @@ extern {
 
     // Methods from EventTarget
     #[wasm_bindgen(method, js_name = addEventListener)]
-    fn add_event_listener(this: &Node, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool);
+    pub fn add_event_listener(this: &Node, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
 
     #[wasm_bindgen(method, js_name = removeEventListener)]
-    fn remove_event_listener(this: &Node, name: &str, listener: &Closure<FnMut(Event)>, use_capture: bool);
+    pub fn remove_event_listener(this: &Node, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
 
     #[wasm_bindgen(method, js_name = dispatchEvent)]
-    fn dispatch_event(this: &Node, event: Event);
+    pub fn dispatch_event(this: &Node, event: Event);
 
 
     // Methods from Node
     #[wasm_bindgen(method, getter = nodeName)]
-    fn node_name(this: &Node) -> JsString;
+    pub fn node_value(this: &Node) -> JsString;
 
     #[wasm_bindgen(method, getter = textContent)]
-    fn text_content(this: &Node) -> JsString;
+    pub fn text_content(this: &Node) -> JsString;
 
     #[wasm_bindgen(method, js_name = appendChild)]
-    fn append_child(this: &Node, child: Node) -> Node;
+    pub fn append_child(this: &Node, node: Node) -> Node;
 
     #[wasm_bindgen(method, js_name = removeChild)]
-    fn remove_child(this: &Node, child: Node) -> Node;
+    pub fn remove_child(this: &Node, child: Node) -> Node;
 }
 ```
 
@@ -339,7 +312,7 @@ As you can see, it duplicates the `add_event_listener`, `remove_event_listener`,
 methods on `Node`.
 
 Similarly, it would have to duplicate all of the `EventTarget` and `Node` methods on `Element`. And it
-would have to duplicate all of the `EventTarget`, `Node`, and `Element` methods on `HtmlElement`, etc.
+would have to duplicate all of the `EventTarget`, `Node`, and `Element` methods on `HTMLElement`, etc.
 
 This is an incredible amount of duplication, so it's only really feasible for a tool which automatically
 generates the methods (such as the WebIDL generator). Trying to do this duplication by hand is unmaintainable.
@@ -347,23 +320,8 @@ generates the methods (such as the WebIDL generator). Trying to do this duplicat
 That means that if you're using inherit impls, it will be very painful to use method inheritance with anything
 other than WebIDL, because of the maintenance burden.
 
-However, it has the advantage that it works *right now*, without any changes to `wasm-bindgen`.
-It also doesn't require the user to import the traits (because there are no traits).
-
-On the other hand, it makes generic code impossible. For example, with traits, the `append_child` method is
-generic over all `INode`, so you can call it with multiple different types:
-
-```rust
-foo.append_child(some_node)
-foo.append_child(some_element)
-foo.append_child(some_html_element)
-```
-
-But with inherit impls the `append_child` method accepts a `Node` (and *only* a `Node`), thus casting is necessary:
-
-```rust
-foo.append_child(bar.into())
-```
+And because class-based inheritance is used outside of WebIDL, we want to be able to support non-WebIDL use
+cases.
 
 # Unresolved Questions
 [unresolved]: #unresolved-questions
@@ -372,8 +330,8 @@ In the above examples I used the `I` prefix for the traits (e.g. `IHtmlElement`,
 
 This is because JavaScript ties classes and methods together, but Rust keeps them separate.
 
-As an example, in Rust we have an `HtmlElement` type (which corresponds to `HTMLElement` in JavaScript),
-but methods are split into a separate trait, and we cannot re-use the `HtmlElement` name for the
+As an example, in Rust we have an `HTMLElement` type (which corresponds to `HTMLElement` in JavaScript),
+but methods are split into a separate trait, and we cannot re-use the `HTMLElement` name for the
 trait, so we essentially need two namespaces: one for types and one for traits.
 
 And so, as a convention, I added the `I` prefix to the traits, which essentially put them into a
@@ -383,19 +341,44 @@ There are other conventions, and I'm not sure about the best way to solve this p
 
 ----
 
-The `INode` trait has this method:
+This proposal requires a lot of boilerplate (to define the inherit and trait methods). This is acceptable
+for WebIDL which automatically generates the code, but it is awkward for non-WebIDL use cases.
+
+As a possible future extension, we could extend the `wasm_bindgen` attribute
+so that it works on traits:
 
 ```rust
-#[wasm_bindgen(js_name = appendChild)]
-fn append_child<A: INode>(&self, child: A) -> A;
+#[wasm_bindgen(type = EventTarget)]
+pub trait IEventTarget {
+    #[wasm_bindgen(js_name = addEventListener)]
+    fn add_event_listener(&self, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
+
+    #[wasm_bindgen(js_name = removeEventListener)]
+    fn remove_event_listener(&self, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
+
+    #[wasm_bindgen(js_name = dispatchEvent)]
+    fn dispatch_event(&self, event: Event);
+}
 ```
 
-Note that it takes a generic `A: INode` parameter. This is excellent for ergonomics
-(it means you can call `append_child` with many different types), but I'm not sure if
-the implementation of `wasm-bindgen` can accomodate that.
+```rust
+#[wasm_bindgen(type = Node)]
+pub trait INode: IEventTarget {
+    #[wasm_bindgen(getter = nodeName)]
+    fn node_value(&self) -> JsString;
 
-----
+    #[wasm_bindgen(getter = textContent)]
+    fn text_content(&self) -> JsString;
 
-Is it necessary to use `structural` for the extern functions?
+    #[wasm_bindgen(js_name = appendChild)]
+    fn append_child(&self, node: Node) -> Node;
 
-If not, then it would be better to not use `structural` (unless it was explicitly specified in the trait method).
+    #[wasm_bindgen(js_name = removeChild)]
+    fn remove_child(&self, child: Node) -> Node;
+}
+```
+
+This makes it dramatically easier to define trait methods.
+
+However, this RFC is forwards-compatible with using `wasm_bindgen` on traits, and it is not necessary
+right now, so it is deferred for a future RFC.
