@@ -599,6 +599,20 @@ However there are some downsides too:
    my_fn(&bar);
    ```
 
+7. `Deref` *requires* all functions/methods/etc. to accept a reference:
+
+   ```rust
+   fn my_fn(foo: &Foo) { ... }
+   ```
+
+   However, this is rather restrictive: there might be situations where you want to accept a super-class by value.
+
+   With this trait RFC it is possible to do that (at the cost of potential monomorphization bloat):
+
+   ```rust
+   fn my_fn<A: IFoo>(foo: A) { ... }
+   ```
+
 It's also possible to *combine* this trait RFC with `Deref`, combining the benefits of both. But this has the additional downside of confusing users: when should they use traits and when should they use `Deref`?
 
 ----
