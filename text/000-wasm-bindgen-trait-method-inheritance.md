@@ -54,6 +54,12 @@ fn foo<A: INode>(node: A) { ... }
 However, due to the potential for code bloat, this sort of pattern is *not* encouraged
 by this RFC.
 
+Instead, users should use the specific type that they need:
+
+```rust
+fn foo(node: &Node) { ... }
+```
+
 # Stakeholders
 [stakeholders]: #stakeholders
 
@@ -77,9 +83,9 @@ In WebIDL, they are specified like this:
 [Constructor,
  Exposed=(Window,Worker,AudioWorklet)]
 interface EventTarget {
-  void addEventListener(DOMString type, EventListener? callback, optional (AddEventListenerOptions or boolean) options);
-  void removeEventListener(DOMString type, EventListener? callback, optional (EventListenerOptions or boolean) options);
   boolean dispatchEvent(Event event);
+
+  ... other attributes and methods ommitted ...
 };
 ```
 
@@ -101,29 +107,15 @@ Based upon that WebIDL spec, the WebIDL generator will generate this Rust code:
 ```rust
 #[wasm_bindgen]
 extern {
-    #[wasm_bindgen(method, js_name = addEventListener)]
-    fn add_event_listener(this: &EventTarget, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
-
-    #[wasm_bindgen(method, js_name = removeEventListener)]
-    fn remove_event_listener(this: &EventTarget, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
+    pub type EventTarget;
 
     #[wasm_bindgen(method, js_name = dispatchEvent)]
-    fn dispatch_event(this: &EventTarget, event: Event);
+    fn dispatch_event(this: &EventTarget, event: Event) -> bool;
 }
 
 pub trait IEventTarget: AsRef<EventTarget> {
     #[inline]
-    fn add_event_listener(&self, type: &str, callback: &Closure<FnMut(Event)>, options: bool) {
-        EventTarget::add_event_listener(self.as_ref(), type, callback, options)
-    }
-
-    #[inline]
-    fn remove_event_listener(&self, type: &str, callback: &Closure<FnMut(Event)>, options: bool) {
-        EventTarget::remove_event_listener(self.as_ref(), type, callback, options)
-    }
-
-    #[inline]
-    fn dispatch_event(&self, event: Event) {
+    fn dispatch_event(&self, event: Event) -> bool {
         EventTarget::dispatch_event(self.as_ref(), event)
     }
 }
@@ -134,6 +126,8 @@ impl IEventTarget for EventTarget {}
 ```rust
 #[wasm_bindgen]
 extern {
+    pub type Node;
+
     #[wasm_bindgen(method, getter = nodeName)]
     fn node_value(this: &Node) -> JsString;
 
@@ -173,6 +167,8 @@ impl IEventTarget for Node {}
 impl INode for Node {}
 ```
 
+(It doesn't *literally* generate the above code, instead it generates something *equivalent* to the above code.)
+
 Essentially, it does this:
 
 1. It adds concrete private methods to the types (e.g. `EventTarget` and `Node`)
@@ -182,6 +178,16 @@ Essentially, it does this:
 3. This trait has an `AsRef<Type>` constraint
 
 4. If the WebIDL interface extends from another interface, then that is also added as a constraint (e.g. `INode` inherits from `IEventTarget`)
+
+   It only adds the *immediate* parent as a constraint. For example, `Element` extends from `Node`, so this will be generated:
+
+   ```rust
+   pub trait IElement: INode + AsRef<Element> {
+       ...
+   }
+   ```
+
+   Because `INode` inherits from `IEventTarget`, that means that `IElement` also indirectly inherits from `IEventTarget`.
 
 5. The trait has `#[inline]` default methods which calls `self.as_ref()` and then calls the concrete private methods (forwarding any arguments along as-is)
 
@@ -221,7 +227,7 @@ use web_sys::traits::*;
 let x: HTMLElement = ...;
 
 x.append_child(some_node);
-x.add_event_listener("foo", some_listener, true);
+x.dispatch_event(some_event);
 ```
 
 ## Mixins
@@ -241,6 +247,8 @@ let x: HTMLElement = ...;
 x.append_child(y);
 ```
 
+This is a breaking change (because `web-sys` currently doesn't use traits).
+
 As explained above, this drawback can be minimized by having a `traits` module which
 re-exports all of the traits. So that way the user can just put this at the top of
 their module:
@@ -250,47 +258,39 @@ their module:
 use web_sys::traits::*;
 ```
 
+Another downside is that the documentation is less discoverable: with inherent impls
+the user can see all of the methods available for the type, but with traits they have
+to look at the trait documentation in order to see the methods.
+
 # Rationale and Alternatives
 [alternatives]: #rationale-and-alternatives
 
-There is essentially only one other alternative design: inherit impl.
+There are two possible alternatives: inherent impl and `Deref`.
 
-Rather than using traits, it can instead use inherit impls on every type in the class inheritance hierarchy.
+First, let's discuss inherent impls. Rather than using traits, it can instead use inherent impls on every type in the class inheritance hierarchy.
 
 As an example, the WebIDL generator could generate this code for the `EventTarget` and `Node` types:
 
 ```rust
 #[wasm_bindgen]
 extern {
-    type EventTarget;
+    pub type EventTarget;
 
     // Methods from EventTarget
-    #[wasm_bindgen(method, js_name = addEventListener)]
-    pub fn add_event_listener(this: &EventTarget, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
-
-    #[wasm_bindgen(method, js_name = removeEventListener)]
-    pub fn remove_event_listener(this: &EventTarget, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
-
     #[wasm_bindgen(method, js_name = dispatchEvent)]
-    pub fn dispatch_event(this: &EventTarget, event: Event);
+    pub fn dispatch_event(this: &EventTarget, event: Event) -> bool;
 }
 ```
 
 ```rust
 #[wasm_bindgen]
 extern {
-    type Node;
+    pub type Node;
 
 
     // Methods from EventTarget
-    #[wasm_bindgen(method, js_name = addEventListener)]
-    pub fn add_event_listener(this: &Node, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
-
-    #[wasm_bindgen(method, js_name = removeEventListener)]
-    pub fn remove_event_listener(this: &Node, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
-
     #[wasm_bindgen(method, js_name = dispatchEvent)]
-    pub fn dispatch_event(this: &Node, event: Event);
+    pub fn dispatch_event(this: &Node, event: Event) -> bool;
 
 
     // Methods from Node
@@ -308,8 +308,7 @@ extern {
 }
 ```
 
-As you can see, it duplicates the `add_event_listener`, `remove_event_listener`, and `dispatch_event`
-methods on `Node`.
+As you can see, it duplicates the `dispatch_event` method on `Node`.
 
 Similarly, it would have to duplicate all of the `EventTarget` and `Node` methods on `Element`. And it
 would have to duplicate all of the `EventTarget`, `Node`, and `Element` methods on `HTMLElement`, etc.
@@ -317,31 +316,256 @@ would have to duplicate all of the `EventTarget`, `Node`, and `Element` methods 
 This is an incredible amount of duplication, so it's only really feasible for a tool which automatically
 generates the methods (such as the WebIDL generator). Trying to do this duplication by hand is unmaintainable.
 
-That means that if you're using inherit impls, it will be very painful to use method inheritance with anything
+That means that if you're using inherent impls, it will be very painful to use method inheritance with anything
 other than WebIDL, because of the maintenance burden.
 
 And because class-based inheritance is used outside of WebIDL, we want to be able to support non-WebIDL use
 cases.
 
-# Unresolved Questions
-[unresolved]: #unresolved-questions
-
-In the above examples I used the `I` prefix for the traits (e.g. `IHtmlElement`, `IElement`, etc.)
-
-This is because JavaScript ties classes and methods together, but Rust keeps them separate.
-
-As an example, in Rust we have an `HTMLElement` type (which corresponds to `HTMLElement` in JavaScript),
-but methods are split into a separate trait, and we cannot re-use the `HTMLElement` name for the
-trait, so we essentially need two namespaces: one for types and one for traits.
-
-And so, as a convention, I added the `I` prefix to the traits, which essentially put them into a
-separate namespace from the types.
-
-There are other conventions, and I'm not sure about the best way to solve this problem.
-
 ----
 
-This proposal requires a lot of boilerplate (to define the inherit and trait methods). This is acceptable
+The other alternative is `Deref`. Let's look back at the example WebIDL:
+
+```
+[Constructor,
+ Exposed=(Window,Worker,AudioWorklet)]
+interface EventTarget {
+  boolean dispatchEvent(Event event);
+
+  ... other attributes and methods ommitted ...
+};
+```
+
+```
+[Exposed=Window]
+interface Node : EventTarget {
+  [CEReactions] attribute DOMString? nodeValue;
+  [CEReactions] attribute DOMString? textContent;
+
+  [CEReactions] Node appendChild(Node node);
+  [CEReactions] Node removeChild(Node child);
+
+  ... other attributes and methods ommitted ...
+};
+```
+
+The WebIDL generator would generate this Rust code:
+
+```rust
+#[wasm_bindgen]
+extern {
+    pub type EventTarget;
+
+    #[wasm_bindgen(method, js_name = dispatchEvent)]
+    pub fn dispatch_event(this: &EventTarget, event: Event) -> bool;
+}
+```
+
+```rust
+#[wasm_bindgen]
+extern {
+    pub type Node;
+
+    #[wasm_bindgen(method, getter = nodeName)]
+    pub fn node_value(this: &Node) -> JsString;
+
+    #[wasm_bindgen(method, getter = textContent)]
+    pub fn text_content(this: &Node) -> JsString;
+
+    #[wasm_bindgen(method, js_name = appendChild)]
+    pub fn append_child(this: &Node, node: Node) -> Node;
+
+    #[wasm_bindgen(method, js_name = removeChild)]
+    pub fn remove_child(this: &Node, child: Node) -> Node;
+}
+
+impl Deref for Node {
+    type Target = EventTarget;
+
+    #[inline]
+    fn deref(&self) -> Self::Target {
+        JsCast::unchecked_from_js_ref(self.as_ref())
+    }
+}
+```
+
+(It doesn't *literally* generate the above code, instead it generates something *equivalent* to the above code.)
+
+Essentially, it does this:
+
+1. It adds concrete **public** methods to the types (e.g. `EventTarget` and `Node`).
+
+2. It creates a `Deref` implementation for `Node` which derefs to `EventTarget` (by using `unchecked_from_js_ref`).
+
+   For deeper hierarchies (e.g. `Element`) it only needs to implement a `Deref` to the immediate parent:
+
+   ```rust
+   impl Deref for Element {
+       type Target = Node;
+
+       #[inline]
+       fn deref(&self) -> Self::Target {
+           JsCast::unchecked_from_js_ref(self.as_ref())
+       }
+   }
+   ```
+
+There are quite a lot of advantages to this:
+
+1. It is possible to use methods on the parent class without any casts:
+
+   ```rust
+   let x: HTMLElement = ...;
+
+   x.append_child(some_node);
+   x.dispatch_event(some_event);
+   ```
+
+2. It is possible to very efficiently and easily cast into a parent class:
+
+   ```rust
+   let x: HTMLElement = ...;
+   let y: &Node = &x;
+   ```
+
+3. It is possible to pass a sub-class as an argument to a function/method which expects a super-class:
+
+   ```rust
+   fn foo(node: &Node) { ... }
+
+   let x: HTMLElement = ...;
+
+   // This works!
+   foo(&x);
+   ```
+
+   (This behavior is similar to sub-typing, but it's implemented completely differently from sub-typing.)
+
+4. We can start out without `Deref` and then add it in the future in a backwards-compatible way.
+
+5. All of the methods for the super-classes show up in the documentation for the class.
+
+However there are some downsides too:
+
+1. This pattern is **not** the intended usage of `Deref`, thus there is the chance it will cause confusion for users.
+
+2. If you have a variable `x: HTMLElement`, it is surprising that `*x` is an `Element`, `**x` is a `Node`, and `***x` is an `EventTarget`
+
+3. Because the type conversion is implicit and is based upon the *expected* type, this can cause surprising behavior:
+
+   ```rust
+   let a: HTMLElement = ...;
+   let b: &Element = &a;
+   let c: &Node = &a;
+   let d: &EventTarget = &a;
+
+   fn foo(x: &EventTarget) { ... }
+
+   foo(&a);
+   ```
+
+   As you can see, the same expression (`&a`) has completely different meanings depending on what the expected type is.
+
+   When type annotations are omitted, this can make it difficult to determine what type it is being silently and implicitly converted into.
+
+4. Traits are not inherited with `Deref` (if a trait is implemented on `EventTarget` it will not show up on `Node`). However this is also true with the `IEventTarget` / `INode` trait idea.
+
+5. It's not possible to write generic code (e.g. a function, method, or struct which can work with multiple types that implement `INode`).
+
+   As an example, I created a [`DomBuilder` struct](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L327) which can work with a wide variety of types (with correct static typing):
+
+   [`IEventTarget`](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L460)
+   [`INode`](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L472)
+   [`IElement`](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L498)
+   [`IHtmlElement`](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L640)
+
+   This sort of thing isn't possible with `Deref`.
+
+6. If a sub-class overrides a method on a super-class, this can lead to very surprising behavior.
+
+   Consider this hypothetical WebIDL:
+
+   ```
+   [Constructor]
+   interface Foo {
+      boolean some_method();
+   };
+
+   [Constructor]
+   interface Bar : Foo {
+      boolean some_method();
+   };
+   ```
+
+   As you can see, the `Bar` class is overriding the `some_method` method from the `Foo` class.
+
+   The WebIDL generator will create this Rust code based upon that WebIDL:
+
+   ```rust
+   #[wasm_bindgen]
+   extern {
+       pub type Foo;
+
+       #[wasm_bindgen(method)]
+       pub fn some_method(this: &Foo) -> bool;
+   }
+   ```
+
+   ```rust
+   #[wasm_bindgen]
+   extern {
+       pub type Bar;
+
+       #[wasm_bindgen(method)]
+       pub fn some_method(this: &Bar) -> bool;
+   }
+
+   impl Deref for Bar {
+       type Target = Foo;
+
+       #[inline]
+       fn deref(&self) -> Self::Target {
+           JsCast::unchecked_from_js_ref(self.as_ref())
+       }
+   }
+   ```
+
+   At first, everything seems okay:
+
+   ```rust
+   let x: Foo = ...;
+   let y: Bar = ...;
+
+   // Calls Foo::some_method
+   x.some_method();
+
+   // Calls Bar::some_method
+   y.some_method();
+   ```
+
+   The problem happens when you have a function or method which accepts a `Foo`:
+
+   ```rust
+   fn my_fn(foo: &Foo) -> bool { foo.some_method() }
+   ```
+
+   ```rust
+   let x: Foo = ...;
+   let y: Bar = ...;
+
+   // Calls Foo::some_method
+   my_fn(&x);
+
+   // Also calls Foo::some_method
+   my_fn(&y);
+   ```
+
+   As you can see, even though we passed in a `Bar`, it still ended up calling `Foo::some_method`!
+
+# Future Extensions
+[future]: #future-extensions
+
+This proposal requires a lot of boilerplate (to define the inherent and trait methods). This is acceptable
 for WebIDL which automatically generates the code, but it is awkward for non-WebIDL use cases.
 
 As a possible future extension, we could extend the `wasm_bindgen` attribute
@@ -350,14 +574,8 @@ so that it works on traits:
 ```rust
 #[wasm_bindgen(type = EventTarget)]
 pub trait IEventTarget {
-    #[wasm_bindgen(js_name = addEventListener)]
-    fn add_event_listener(&self, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
-
-    #[wasm_bindgen(js_name = removeEventListener)]
-    fn remove_event_listener(&self, type: &str, callback: &Closure<FnMut(Event)>, options: bool);
-
     #[wasm_bindgen(js_name = dispatchEvent)]
-    fn dispatch_event(&self, event: Event);
+    fn dispatch_event(&self, event: Event) -> bool;
 }
 ```
 
@@ -382,3 +600,20 @@ This makes it dramatically easier to define trait methods.
 
 However, this RFC is forwards-compatible with using `wasm_bindgen` on traits, and it is not necessary
 right now, so it is deferred for a future RFC.
+
+
+# Unresolved Questions
+[unresolved]: #unresolved-questions
+
+In the above examples I used the `I` prefix for the traits (e.g. `IHtmlElement`, `IElement`, etc.)
+
+This is because JavaScript ties classes and methods together, but Rust keeps them separate.
+
+As an example, in Rust we have an `HTMLElement` type (which corresponds to `HTMLElement` in JavaScript),
+but methods are split into a separate trait, and we cannot re-use the `HTMLElement` name for the
+trait, so we essentially need two namespaces: one for types and one for traits.
+
+And so, as a convention, I added the `I` prefix to the traits, which essentially put them into a
+separate namespace from the types.
+
+There are other conventions, and I'm not sure about the best way to solve this problem.
