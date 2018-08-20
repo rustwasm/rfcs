@@ -262,6 +262,12 @@ Another downside is that the documentation is less discoverable: with inherent i
 the user can see all of the methods available for the type, but with traits they have
 to look at the trait documentation in order to see the methods.
 
+Lastly, because traits are monomorphized in Rust, if users aren't careful they can
+create a lot of bloat from monomorphized functions/methods.
+
+However, this is true with *all* Rust code (traits are *extremely* common in Rust!),
+and there are many ways to avoid the cost of monomorphization.
+
 # Rationale and Alternatives
 [alternatives]: #rationale-and-alternatives
 
