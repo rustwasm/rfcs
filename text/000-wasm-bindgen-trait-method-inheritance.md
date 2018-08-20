@@ -171,13 +171,13 @@ impl INode for Node {}
 
 Essentially, it does this:
 
-1. It adds concrete private methods to the types (e.g. `EventTarget` and `Node`)
+1. It adds concrete private methods to the types (e.g. `EventTarget` and `Node`).
 
-2. It creates a new trait which has the same name as the type, but prefixed with `I` (e.g. `IEventTarget` and `INode`)
+2. It creates a new trait which has the same name as the type, but prefixed with `I` (e.g. `IEventTarget` and `INode`).
 
-3. This trait has an `AsRef<Type>` constraint
+3. This trait has an `AsRef<Type>` constraint.
 
-4. If the WebIDL interface extends from another interface, then that is also added as a constraint (e.g. `INode` inherits from `IEventTarget`)
+4. If the WebIDL interface extends from another interface, then that is also added as a constraint (e.g. `INode` inherits from `IEventTarget`).
 
    It only adds the *immediate* parent as a constraint. For example, `Element` extends from `Node`, so this will be generated:
 
@@ -189,7 +189,7 @@ Essentially, it does this:
 
    Because `INode` inherits from `IEventTarget`, that means that `IElement` also indirectly inherits from `IEventTarget`.
 
-5. The trait has `#[inline]` default methods which calls `self.as_ref()` and then calls the concrete private methods (forwarding any arguments along as-is)
+5. The trait has `#[inline]` default methods which calls `self.as_ref()` and then calls the concrete private methods (forwarding any arguments along as-is).
 
 6. Lastly it uses `impl Trait for Type {}` to implement the trait for the types. It needs to implement the entire trait hierarchy for each type:
 
@@ -267,7 +267,7 @@ to look at the trait documentation in order to see the methods.
 
 There are two possible alternatives: inherent impl and `Deref`.
 
-First, let's discuss inherent impls. Rather than using traits, it can instead use inherent impls on every type in the class inheritance hierarchy.
+First, let's discuss inherent impls. Rather than using traits, it can instead generate inherent impls on every type in the class inheritance hierarchy.
 
 As an example, the WebIDL generator could generate this code for the `EventTarget` and `Node` types:
 
@@ -421,17 +421,17 @@ There are quite a lot of advantages to this:
    x.dispatch_event(some_event);
    ```
 
-2. It is possible to very efficiently and easily cast into a parent class:
+2. It is possible to very efficiently and easily cast into a parent class anywhere in the class hierarchy:
 
    ```rust
    let x: HTMLElement = ...;
-   let y: &Node = &x;
+   let y: &EventTarget = &x;
    ```
 
 3. It is possible to pass a sub-class as an argument to a function/method which expects a super-class:
 
    ```rust
-   fn foo(node: &Node) { ... }
+   fn foo(node: &EventTarget) { ... }
 
    let x: HTMLElement = ...;
 
@@ -443,13 +443,13 @@ There are quite a lot of advantages to this:
 
 4. We can start out without `Deref` and then add it in the future in a backwards-compatible way.
 
-5. All of the methods for the super-classes show up in the documentation for the class.
+5. All of the methods for the super-classes show up in the documentation for the sub-classes.
 
 However there are some downsides too:
 
 1. This pattern is **not** the intended usage of `Deref`, thus there is the chance it will cause confusion for users.
 
-2. If you have a variable `x: HTMLElement`, it is surprising that `*x` is an `Element`, `**x` is a `Node`, and `***x` is an `EventTarget`
+2. If you have a variable `x: HTMLElement`, it is surprising that `*x` is an `Element`, `**x` is a `Node`, and `***x` is an `EventTarget`.
 
 3. Because the type conversion is implicit and is based upon the *expected* type, this can cause surprising behavior:
 
@@ -468,7 +468,9 @@ However there are some downsides too:
 
    When type annotations are omitted, this can make it difficult to determine what type it is being silently and implicitly converted into.
 
-4. Traits are not inherited with `Deref` (if a trait is implemented on `EventTarget` it will not show up on `Node`). However this is also true with the `IEventTarget` / `INode` trait idea.
+4. Traits are not inherited with `Deref` (if a trait is implemented on `EventTarget` it will not show up on `Node`).
+
+   That is *also* true with this trait RFC, but there is a difference in expectations: users might expect `Deref` to forward along traits, but users don't expect traits to forward along traits.
 
 5. It's not possible to write generic code (e.g. a function, method, or struct which can work with multiple types that implement `INode`).
 
@@ -481,7 +483,7 @@ However there are some downsides too:
 
    This sort of thing isn't possible with `Deref`.
 
-6. If a sub-class overrides a method on a super-class, this can lead to very surprising behavior.
+6. If a sub-class overrides a method on a super-class, this can lead to *very* surprising behavior!
 
    Consider this hypothetical WebIDL:
 
@@ -533,14 +535,14 @@ However there are some downsides too:
    At first, everything seems okay:
 
    ```rust
-   let x: Foo = ...;
-   let y: Bar = ...;
+   let foo: Foo = ...;
+   let bar: Bar = ...;
 
    // Calls Foo::some_method
-   x.some_method();
+   foo.some_method();
 
    // Calls Bar::some_method
-   y.some_method();
+   bar.some_method();
    ```
 
    The problem happens when you have a function or method which accepts a `Foo`:
@@ -550,17 +552,27 @@ However there are some downsides too:
    ```
 
    ```rust
-   let x: Foo = ...;
-   let y: Bar = ...;
+   let foo: Foo = ...;
+   let bar: Bar = ...;
 
    // Calls Foo::some_method
-   my_fn(&x);
+   my_fn(&foo);
 
    // Also calls Foo::some_method
-   my_fn(&y);
+   my_fn(&bar);
    ```
 
    As you can see, even though we passed in a `Bar`, it still ended up calling `Foo::some_method`!
+
+   This is not at all how sub-classes in JavaScript behave, so it is extremely surprising.
+
+It's also possible to *combine* this trait RFC with `Deref`, combining the benefits of both. But this has the additional downside of confusing users: when should they use traits and when should they use `Deref`?
+
+----
+
+As an implicit third possibility, we can simply do nothing and continue to require `.into()` calls for upcasting.
+
+This has the benefit that it requires no work, however it is quite clunky for users, and if we decide to add in traits later then that is a breaking change, so it's better to make breaking changes now rather than later.
 
 # Future Extensions
 [future]: #future-extensions
