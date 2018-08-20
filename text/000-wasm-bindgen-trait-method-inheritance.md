@@ -566,6 +566,44 @@ However there are some downsides too:
 
    This is not at all how sub-classes in JavaScript behave, so it is extremely surprising.
 
+   This situation can also happen even without overridden methods: if two different types implement the same trait, the same situation happens:
+
+   ```rust
+   impl SomeTrait for Foo {
+       fn some_trait(&self) -> bool {
+           ...
+       }
+   }
+
+   impl SomeTrait for Bar {
+       fn some_trait(&self) -> bool {
+           ...
+       }
+   }
+   ```
+
+   ```rust
+   fn my_fn(foo: &Foo) -> bool { foo.some_method() && foo.some_trait() }
+
+   // Calls Foo::some_trait
+   my_fn(&foo);
+
+   // Also calls Foo::some_trait
+   my_fn(&bar);
+   ```
+
+   That situation can be avoided with this trait RFC (at the cost of potential monomorphization bloat if the user isn't careful):
+
+   ```rust
+   fn my_fn<A: IFoo + SomeTrait>(foo: &A) -> bool { foo.some_method() && foo.some_trait() }
+
+   // Calls Foo::some_trait
+   my_fn(&foo);
+
+   // Calls Bar::some_trait
+   my_fn(&bar);
+   ```
+
 It's also possible to *combine* this trait RFC with `Deref`, combining the benefits of both. But this has the additional downside of confusing users: when should they use traits and when should they use `Deref`?
 
 ----
