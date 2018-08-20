@@ -439,7 +439,7 @@ There are quite a lot of advantages to this:
    foo(&x);
    ```
 
-   (This behavior is similar to sub-typing, but it's implemented completely differently from sub-typing.)
+   (This behavior is similar to sub-typing, but it is implemented completely differently from sub-typing.)
 
 4. We can start out without `Deref` and then add it in the future in a backwards-compatible way.
 
@@ -548,12 +548,7 @@ However there are some downsides too:
    The problem happens when you have a function or method which accepts a `Foo`:
 
    ```rust
-   fn my_fn(foo: &Foo) -> bool { foo.some_method() }
-   ```
-
-   ```rust
-   let foo: Foo = ...;
-   let bar: Bar = ...;
+   fn my_fn(x: &Foo) -> bool { x.some_method() }
 
    // Calls Foo::some_method
    my_fn(&foo);
@@ -583,7 +578,7 @@ However there are some downsides too:
    ```
 
    ```rust
-   fn my_fn(foo: &Foo) -> bool { foo.some_method() && foo.some_trait() }
+   fn my_fn(x: &Foo) -> bool { x.some_method() && x.some_trait() }
 
    // Calls Foo::some_trait
    my_fn(&foo);
@@ -595,7 +590,7 @@ However there are some downsides too:
    That situation can be avoided with this trait RFC (at the cost of potential monomorphization bloat if the user isn't careful):
 
    ```rust
-   fn my_fn<A: IFoo + SomeTrait>(foo: &A) -> bool { foo.some_method() && foo.some_trait() }
+   fn my_fn<A: IFoo + SomeTrait>(x: &A) -> bool { x.some_method() && x.some_trait() }
 
    // Calls Foo::some_trait
    my_fn(&foo);
