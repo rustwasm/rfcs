@@ -478,18 +478,7 @@ However there are some downsides too:
 
    That is *also* true with this trait RFC, but there is a difference in expectations: users might expect `Deref` to forward along traits, but users don't expect traits to forward along traits.
 
-5. It's not possible to write generic code (e.g. a function, method, or struct which can work with multiple types that implement `INode`).
-
-   As an example, I created a [`DomBuilder` struct](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L327) which can work with a wide variety of types (with correct static typing):
-
-   [`IEventTarget`](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L460)
-   [`INode`](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L472)
-   [`IElement`](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L498)
-   [`IHtmlElement`](https://github.com/Pauan/rust-dominator/blob/bde76d90a440ed5922cf56b2e2320361c9fa0319/src/dom.rs#L640)
-
-   This sort of thing isn't possible with `Deref`.
-
-6. If a sub-class overrides a method on a super-class, this can lead to *very* surprising behavior!
+5. If a sub-class overrides a method on a super-class, this can lead to *very* surprising behavior!
 
    Consider this hypothetical WebIDL:
 
@@ -567,59 +556,15 @@ However there are some downsides too:
 
    This is not at all how sub-classes in JavaScript behave, so it is extremely surprising.
 
-   This situation can also happen even without overridden methods: if two different types implement the same trait, the same situation happens:
-
-   ```rust
-   impl SomeTrait for Foo {
-       fn some_trait(&self) -> bool {
-           ...
-       }
-   }
-
-   impl SomeTrait for Bar {
-       fn some_trait(&self) -> bool {
-           ...
-       }
-   }
-   ```
-
-   ```rust
-   fn my_fn(x: &Foo) -> bool { x.some_method() && x.some_trait() }
-
-   // Calls Foo::some_trait
-   my_fn(&foo);
-
-   // Also calls Foo::some_trait
-   my_fn(&bar);
-   ```
-
-   That situation can be avoided with this trait RFC (at the cost of potential monomorphization bloat if the user isn't careful):
-
-   ```rust
-   fn my_fn<A: IFoo + SomeTrait>(x: &A) -> bool { x.some_method() && x.some_trait() }
-
-   // Calls Foo::some_trait
-   my_fn(&foo);
-
-   // Calls Bar::some_trait
-   my_fn(&bar);
-   ```
-
-7. `Deref` *requires* all functions/methods/etc. to accept a reference:
-
-   ```rust
-   fn my_fn(foo: &Foo) { ... }
-   ```
-
-   However, this is rather restrictive: there might be situations where you want to accept a super-class by value.
-
-   With this trait RFC it is possible to do that (at the cost of potential monomorphization bloat):
-
-   ```rust
-   fn my_fn<A: IFoo>(foo: A) { ... }
-   ```
-
 It's also possible to *combine* this trait RFC with `Deref`, combining the benefits of both. But this has the additional downside of confusing users: when should they use traits and when should they use `Deref`?
+
+It's also important to note that many of the benefits of this trait RFC can be obtained by using `AsRef<Type>`:
+
+```rust
+fn my_fn<A: AsRef<Foo>>(foo: A) { ... }
+```
+
+So the biggest downside of `Deref` is the very poor handling of overridden methods.
 
 ----
 
