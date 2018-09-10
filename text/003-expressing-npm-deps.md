@@ -39,6 +39,8 @@ extern {
 }
 ```
 
+This syntax is already supported by `wasm-bindgen` for other types of JavaScript imports.
+
 ## Indexing the npm packages
 
 This question of how to index, or even if, to index, the npm packages is a large one with
@@ -51,7 +53,7 @@ several considerations. The below options were all considered. We believe that t
 
 Create a file called `package.json` in the root of your Rust library. Fill out dependencies as per specification: https://docs.npmjs.com/files/package.json#dependencies. You can use `npm install` to add dependencies: Although npm will warn that your `package.json` is missing metadata, it will add the dependency entry.
 
-Note: All meta-data in this file will be ignored during `wasm-pack build` in favor of metadata in the `Cargo.toml`. The potential duplication of metadata is a downside to this solution.
+Note: All meta-data in this file override any duplicate fields that may be expressed in the `Cargo.toml` during the  `wasm-pack build` step. This allows the library author the flexibility to change the value of fields that may be present in the metadata in the `Cargo.toml`. For example, this would allow the user to provide a different name for the npm package (since the naming rules are slightly different). The confusion that may arise from the interaction of the potential duplication of metadata is a downside to this solution.
 
 Note: semver expression in `package.json` are based on npm rules. This is counter to the implicit `^` in a `Cargo.toml`. This confusion is also a downside to this solution, but is difficult to avoid in any potential solution to this problem.
 
@@ -109,7 +111,7 @@ git = { version: "http://asdf.com/asdf.tar.gz" }
 ```
 
 ### New Manifest File Format
-*We rejected this outright based on inherent complexity, community exhaustion, and it’s lack of interoperability with JavaScript tooling.*
+*We rejected this outright based on inherent complexity, community exhaustion, and its lack of interoperability with JavaScript tooling.*
 
 ### Inline Annotations
 *This was the original solution that was implemented. It was good because it worked equally well with Rust and other languages such as C or C++. It was not good because it added high management complexity and lacked operability with JavaScript tooling.*
