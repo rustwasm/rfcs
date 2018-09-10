@@ -49,7 +49,7 @@ several considerations. The below options were all considered. We believe that t
 
 ### `package.json`
 
-*This is likely the best choice. Although it requires that Rust developers use a* `*package.json*` *file, it allows the best interoperability with existing JavaScript tooling and is agnostic to target language (Rust, C, C++).*
+*This is likely the best choice. Although it requires that Rust developers use a* `*package.json*` *file, it allows the best interoperability with existing JavaScript tooling and is agnostic to source language (Rust, C, C++).*
 
 Create a file called `package.json` in the root of your Rust library. Fill out dependencies as per specification: https://docs.npmjs.com/files/package.json#dependencies. You can use `npm install` to add dependencies: Although npm will warn that your `package.json` is missing metadata, it will add the dependency entry.
 
@@ -116,4 +116,14 @@ git = { version: "http://asdf.com/asdf.tar.gz" }
 ### Inline Annotations
 *This was the original solution that was implemented. It was good because it worked equally well with Rust and other languages such as C or C++. It was not good because it added high management complexity and lacked operability with JavaScript tooling.*
 
+This would look like this, and have no external manifest file:
 
+```rust
+#[wasm_bindgen(module = "moment", version = "2.0.0")]
+extern {
+    type Moment;
+    fn moment() -> Moment;
+    #[wasm_bindgen(method)]
+    fn format(this: &Moment) -> String;
+}
+```
