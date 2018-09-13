@@ -556,6 +556,28 @@ However there are some downsides too:
 
    This is not at all how sub-classes in JavaScript behave, so it is extremely surprising.
 
+   That situation can be avoided with this trait RFC (at the cost of potential monomorphization bloat if the user isn't careful):
+
+   ```rust
+   fn my_fn<A: IFoo>(x: &A) -> bool { x.some_method() }
+
+   // Calls Foo::some_method
+   my_fn(&foo);
+
+   // Calls Bar::some_method
+   my_fn(&bar);
+   ```
+
+   This works because `Bar` can impl `IFoo` (and thus override `some_method`):
+
+   ```rust
+   impl IFoo for Bar {
+       fn some_method(&self) -> bool {
+           ...
+       }
+   }
+   ```
+
 It's also possible to *combine* this trait RFC with `Deref`, combining the benefits of both. But this has the additional downside of confusing users: when should they use traits and when should they use `Deref`?
 
 It's also important to note that many of the benefits of this trait RFC can be obtained by using `AsRef<Type>`:
