@@ -556,7 +556,7 @@ However there are some downsides too:
 
    This is not at all how sub-classes in JavaScript behave, so it is extremely surprising.
 
-   That situation can be avoided with this trait RFC (at the cost of potential monomorphization bloat if the user isn't careful):
+   On the other hand, traits work correctly even with overridden methods (at the cost of potential monomorphization bloat if the user isn't careful):
 
    ```rust
    fn my_fn<A: IFoo>(x: &A) -> bool { x.some_method() }
