@@ -96,6 +96,8 @@ rules:
   `Deref<Target=JsValue>`.
 * Otherwise, the *first* `extends` attribute is used to implement
   `Deref<Target=ListedType>`.
+* (long term, currently require a breaking change) reject multiple `extends`
+  attributes, requiring there's only one.
 
 This means that `web-sys` may need to be updated to ensure that the immediate
 superclass is listed first in `extends`. Manual bindings will continue to work
@@ -236,9 +238,9 @@ classes are passed child classes which override methods**.
 
 An easy solution to this problem is to simply use `structural` everywhere, so...
 let's propose that! Consequently, this RFC proposes changing `#[wasm_bindgen]`
-to act as if all bindings are labeled as `structural`. This will not be a
-breaking change because the generated bindings will still have the same behavior
-as before, they'll just handle subclassing correctly!
+to act as if all bindings are labeled as `structural`. While technically a
+breaking change it's believed that we don't have any usage which would actually
+run into the breakage here.
 
 ### Adding `#[wasm_bindgen(final)]`
 
@@ -276,7 +278,7 @@ As an example, today for `#[wasm_bindgen(method)] fn parent(this: &Parent);` we
 generate JS that looks like:
 
 ```rust
-#[wasm_bindgen(method, structural)]
+#[wasm_bindgen(method)]
 fn method(this: &Parent);
 ```
 
@@ -309,8 +311,8 @@ first parameter as `this`, meaning we can transform this to:
 export const __wasm_bindgen_Parent_method = Parent.prototype.method;
 ```
 
-and *voila*, no JS shims necessary! With `structural` we'll still need a shim in
-this future world:
+and *voila*, no JS function shims necessary! With `structural` we'll still need
+a function shim in this future world:
 
 ```js
 export const __wasm_bindgen_Parent_method = function() { this.method(); };
@@ -318,8 +320,8 @@ export const __wasm_bindgen_Parent_method = function() { this.method(); };
 
 Alright, with some of those basics out of the way, let's get back to
 why-`final`-by-default. The promise of [host bindings] is that by eliminating
-all these JS shims necessary we can be faster than we would otherwise be,
-providing a feeling that `final` is faster than `structural`. This future,
+all these JS function shims necessary we can be faster than we would otherwise
+be, providing a feeling that `final` is faster than `structural`. This future,
 however, relies on a number of unimplemented features in wasm engines today.
 Let's consequently get an idea of what the performance looks like today!
 
