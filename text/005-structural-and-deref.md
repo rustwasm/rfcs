@@ -1,5 +1,5 @@
 - Start Date: 2018-10-05
-- RFC PR: (leave this empty)
+- RFC PR: https://github.com/rustwasm/rfcs/pull/5
 - Tracking Issue: (leave this empty)
 
 # Summary
