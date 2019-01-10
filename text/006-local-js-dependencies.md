@@ -136,46 +136,59 @@ will import all the emitted JS files with relative imports.
 
 ### Updating `wasm-bindgen` output modes
 
-The `wasm-bindgen` has a few modes of output generation today. This PR
-proposes repurposing the existing `--browser` flag, deprecating the
-`--no-modules` flag, and canonicalizing the output in three modes. All
-modes will operate as follows:
+The `wasm-bindgen` has a few modes of output generation today. These output
+modes are largely centered around modules vs no modules and how modules are
+defined. This RFC proposes that we move away from this moreso towards
+*environments*, such as node.js-compatible vs browser-compatible code (which
+involves more than only module format). This means that in cases where an
+environment supports multiple module systems, or the module system is optional
+(browsers support es modules and also no modules) `wasm-bindgen` will choose
+what module system it thinks is best as long as it is compatible with that
+environment.
+
+The current output modes of `wasm-bindgen` are:
 
 * **Default** - by default `wasm-bindgen` emits output that assumes the wasm
   module itself is an ES module. This will naturally work with custom JS
   snippets that are themselves ES modules, as they'll just be more modules in
-  the graph all found in the local output directory.
+  the graph all found in the local output directory. This output mode is
+  currently only consumable by bundlers like Webpack, the default output cannot
+  be loaded in either a web browser or Node.js.
 
 * **`--no-modules`** - the `--no-modules` flag to `wasm-bindgen` is incompatible
   with ES modules because it's intended to be included via a `<script>` tag
   which is not a module. This mode, like today, will fail to work if upstream
-  crates contain local JS snippets. As a result, the `--no-modules` flag will
-  essentially be deprecated as a result of this change.
+  crates contain local JS snippets.
 
 * **`--nodejs`** - this flag to `wasm-bindgen` indicates that the output should
-  be tailored for Node.js, notably using CommonJS module conventions. This mode
-  will, in the immediate term, fail if the crate graph includes any local JS
-  snippets. This failure mode is intended to be a temporary measure. Eventually
-  it should be relatively trivial with a JS parser in Rust to rewrite ES syntax
-  of locally imported JS modules into CommonJS syntax.
+  be tailored for Node.js, notably using CommonJS module conventions. In this
+  mode `wasm-bindgen` will eventually use a JS parser in Rust to rewrite ES
+  syntax of locally imported JS modules into CommonJS syntax.
 
 * **`--browser`** - currently this flag is the same as the default output mode
   except that the output is tailored slightly for a browser environment (such as
-  assuming that `TextEncoder` is ambiently available). This RFC proposes
+  assuming that `TextEncoder` is ambiently available).
+
+  This RFC proposes
   repurposing this flag (breaking it) to instead generate an ES module natively
   loadable inside the web browser, but otherwise having a similar interface to
   `--no-modules` today, detailed below.
 
-In summary, the three modes of output for `wasm-bindgen` will be:
+This RFC proposes rethinking these output modes as follows:
 
-* Bundler-oriented (no flags passed) intended for consumption by bundlers like
-  Webpack which consider the wasm module a full-fledged ES module.
+| Target Environment      | CLI Flag    | Module Format | User Experience                          | How are Local JS Snippets Loaded?                                                            |
+|-------------------------|-------------|---------------|------------------------------------------|----------------------------------------------------------------------------------------------|
+| Node.js without bundler | `--nodejs`  | Common.js     | `require()` the main JS glue file        | Main JS glue file `require()`s crates' local JS snippets.                                    |
+| Web without bundler     | `--browser` | ES Modules    | `<script>` pointing to main JS glue file, using `type=module` | `import` statements cause additional network requests for crates' local snippets.            |
+| Web with bundler        | none        | ES Modules    | `<script>` pointing to main JS glue file | Bundler links crates' local snippets into main JS glue file. No additional network requests except for the `wasm` module itself. |
 
-* Node.js-oriented (`--nodejs`) intended for consumption only in Node.js itself.
-
-* Browser-oriented without a bundler (`--browser`) intended for consumption in
-  any web browser supporting JS ES modules that also supports wasm. This mode is
-  explicitly not intended to be usable with bundlers like webpack.
+It is notable that browser with and without bundler is almost the same as far
+as `wasm-bindgen` is concerned: the only difference is that if we assume a
+bundler, we can rely on the bundler polyfilling wasm-as-ES-module for us.
+Note the `--browser` here is relatively radically different today and as such
+would be a breaking change. It's thought that the usage of `--browser` is small
+enough that we can get away with this, but feedback is always welcome on this
+point!
 
 The `--no-modules` flag doesn't really fit any more as the `--browser` use case
 is intended to subsume that. Note that the this RFC proposes only having the
@@ -186,12 +199,11 @@ manner as Node.js is (once we're parsing the JS file and rewriting the exports),
 but it's proposed here to generally move away from `--no-modules` towards
 `--browser`.
 
-For some more detail about the `--browser` output, it's intended to look from
-the outside like `--no-modules` does today. When using `--browser` a single
-`wasm_bindgen` function will be exported from the module. This function takes
-either a path to the wasm file or the `WebAssembly.Module` itself, and then it
-returns a promise which resolves to a JS object that has the full wasm-bindgen
-interface on it.
+
+The `--browser` output is currently considered to export an initialization
+function which, after called and the returned promise is resolved (like
+`--no-modules` today) will cause all exports to work when called. Before the
+promise resolves all exports will throw an error when called.
 
 ### JS files depending on other JS files
 
