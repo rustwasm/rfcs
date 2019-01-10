@@ -221,6 +221,45 @@ package support in `wasm-pack` and `wasm-bindgen` (a future goal) we could
 automatically add entries to `package.json` (or validate they're already
 present) based on the imports found.
 
+### Accessing wasm Memory/Table
+
+JS snippets interacting with the wasm module may commonly need to work with the
+`WebAssembly.Memory` and `WebAssembly.Table` instances associated with the wasm
+module. This RFC proposes using the wasm itself to pass along these objects,
+like so:
+
+```rust
+// lib.rs
+
+#[wasm_bindgen(file = "local-snippet.js")]
+extern {
+    fn take_u8_slice(memory: &JsValue, ptr: u32, len: u32);
+}
+
+#[wasm_bindgen]
+pub fn call_local_snippet() {
+    let vec = vec![0,1,2,3,4];
+    let mem = wasm_bindgen::memory();
+    take_u8_slice(&mem, vec.as_ptr() as usize as u32, vec.len() as u32);
+}
+```
+
+```js
+// local-snippet.js
+
+export function take_u8_slice(memory, ptr, len) {
+    let slice = new UInt8Array(memory.arrayBuffer, ptr, len);
+    // ...
+}
+```
+
+Here the `wasm_bindgen::memory()` existing intrinsic is used to pass along the
+memory object to the imported JS snippet. To mirror this we'll add
+`wasm_bindgen::function_table()` as well to access the function table.
+
+Eventually we may want a more explicit way to import the memory/table, but for
+now this should be sufficient for expressiveness.
+
 # Drawbacks
 [drawbacks]: #drawbacks
 
@@ -269,6 +308,17 @@ WebAssembly itself. While `#[wasm_bindgen]` may one day have a `js!`-like macro
 built-in, it's hoped that we can start out with a purely library-based solution
 like `stdweb`, iterate on it, and consider this question later.
 
+One alternative for ES modules is to simply concatenate all JS together. This
+way we wouldn't have to parse anything but we'd instead just throw everything
+into one file. The downside of this approach, however, is that it can easily
+lead to namespacing conflicts and it also forces everyone to agree on module
+formats and runs the risk of forcing the module format of the final product.
+
+Another alternative to emitting small files at wasm-bindgen time is to instead
+unpack all files at *runtime* by leaving them in custom sections of the wasm
+executable. This in turn, however, may violate some CSP settings (particularly
+strict ones).
+
 # Unresolved Questions
 [unresolved]: #unresolved-questions
 
@@ -278,3 +328,6 @@ like `stdweb`, iterate on it, and consider this question later.
 
 - Are there known parsers of JS ES modules today? Are we forced to include a
   full JS parser or can we have a minimal one which only deals with ES syntax?
+
+- How would we handle other assets like CSS, HTML, or images that want to be
+  referenced by the final wasm file?
