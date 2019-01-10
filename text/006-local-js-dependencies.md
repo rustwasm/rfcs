@@ -273,7 +273,9 @@ now this should be sufficient for expressiveness.
   preprocessors like TypeScript can't be used. It's unclear how such
   preprocessed JS would be imported. It's hoped that JS snippets are small
   enough that this isn't too much of a problem. Larger JS snippets can always be
-  extracted to an NPM package and postprocessed there.
+  extracted to an NPM package and postprocessed there. Note that it's always
+  possible for authors to manually run the TypeScript compiler by hand for these
+  use cases, though.
 
 * The relatively popular `--no-modules` flag is proposed to be deprecated in
   favor of a `--browser` flag, which itself will have a breaking change relative
