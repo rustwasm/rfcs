@@ -8,10 +8,10 @@
 Add the ability for `#[wasm_bindgen]` to process, load, and handle dependencies
 on local JS files.
 
-* A new attribute for this will be added:
+* The `module` attribute can now be used to import files explicitly:
 
   ```rust
-  #[wasm_bindgen(file = "foo.js")]
+  #[wasm_bindgen(file = "/js/foo.js")]
   extern "C" {
       // ...
   }
@@ -70,24 +70,33 @@ here.
 
 ### New Syntactical Features
 
-The most user-facing change proposed here is the addition of a new attribute
-inside of `#[wasm_bindgen]`, the `file` attribute. This configured like so:
+The most user-facing change proposed here is the reinterpretation of the
+`module` attribute inside of `#[wasm_bindgen]`. It can now be used to import
+local files like so:
 
 ```rust
-#[wasm_bindgen(file = "foo.js")]
+#[wasm_bindgen(module = "/js/foo.js")]
 extern "C" {
     // ... definitions
 }
 ```
 
 This declaration says that the block of functions and types and such are all
-imported from the `foo.js` file. The `foo.js` file is resolved relative to the
-crate root (where this is relative to is also discussed in the drawbacks section
-below). For example a procedural macro will simply `File::open` (morally)
-with the path provided to the attribute.
+imported from the `/js/foo.js` file, relative to the current file and rooted at
+the crate root. The following rules are proposed for interpreting a `module`
+attribute.
 
-The `file` attribute is mutually exclusive with the `module` attribute. Only one
-can be specified.
+* If the string starts with `/`, `./`, or `../` then it's considered a path to a
+  local file. If not, then it's passed through verbatim as the ES module import.
+
+* All paths are resolved relative to the current file, like Rust's own
+  `#[path]`, `include_str!`, etc. At this time, however, it's unknown how we'd
+  actually do this for relative files. As a result all paths will be required to
+  start with `/`. When `proc_macro` has a stable API (or we otherwise figure
+  out how) we can start allowing `./` and `../`-prefixed paths.
+
+This will hopefully roughly match what programmers expect as well as preexisting
+conventions in browsers and bundlers.
 
 ### Format of imported JS
 
@@ -230,8 +239,7 @@ included files. For example in the file above we'd include `./bar.js` into the
 wasm custom section. In this future world we'd just rewrite `./bar.js` (if
 necessary) when the final output artifact is emitted. Additionally with NPM
 package support in `wasm-pack` and `wasm-bindgen` (a future goal) we could
-automatically add entries to `package.json` (or validate they're already
-present) based on the imports found.
+validate entries in `package.json` are present for imports found.
 
 ### Accessing wasm Memory/Table
 
@@ -295,32 +303,24 @@ now this should be sufficient for expressiveness.
   safe to break, and it's also thought that we'll want to avoid breaking
   `--no-modules` as-is today.
 
-* JS files are imported relative to the crate root rather than the file doing
-  the importing, unlike `mod` statements in Rust. It's thought that we can't get
-  file-relative imports working with stable `proc_macro` APIs today, but if the
-  implementation can manage to finesse it this RFC would propose instead making
-  file imports relative to the current file instead of crate root.
-
 * Local JS snippets are required to be written in ES module syntax. This may be
   a somewhat opinionated stance, but it's intended to make it easier to add
-  future features to `wasm-bindgen` while continuing to work with JS.
+  future features to `wasm-bindgen` while continuing to work with JS. The ES
+  module system, however, is the only known official standard throughout the
+  ecosystem, so it's hoped that this is a clear choice for writing local JS
+  snippets.
 
 # Rationale and Alternatives
 [alternatives]: #rationale-and-alternatives
 
-Currently there aren't any competing designs solving this problem, so there
-aren't many known major alternatives. There's a number of alternatives to
-various smaller decisions in this RFC, but it's hoped that the various
-alternatives are listed or discussed inlined.
-
-The major rationale for this RFC is empowering this use case of "seamless local
-JS snippets" **at all**. The RFC proposes to start out with only including files
-as opposed to small JS snippets themselves (like `stdweb`'s own `js!` macro)
-because files are structured as ES modules which is what `#[wasm_bindgen]`
-already supports well and will also eventually have support natively in
-WebAssembly itself. While `#[wasm_bindgen]` may one day have a `js!`-like macro
-built-in, it's hoped that we can start out with a purely library-based solution
-like `stdweb`, iterate on it, and consider this question later.
+The primary alternative to this system is a macro like `js!` from stdweb. This
+allows written small snippets of JS code directly in Rust code, and then
+`wasm-bindgen` would have the knowledge to generate appropriate shims. This RFC
+proposes recognizing `module` paths instead of this approach as it's thought to
+be a more general approach. Additionally it's intended that the `js!` macro can
+be built on the `module` directive including local file paths. The
+`wasm-bindgen` crate may grow a `js!`-like macro one day, but it's thought that
+it's best to start with a more conservative approach.
 
 One alternative for ES modules is to simply concatenate all JS together. This
 way we wouldn't have to parse anything but we'd instead just throw everything
