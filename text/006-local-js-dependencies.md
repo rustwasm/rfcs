@@ -275,7 +275,8 @@ export function take_u8_slice(memory, ptr, len) {
 
 Here the `wasm_bindgen::memory()` existing intrinsic is used to pass along the
 memory object to the imported JS snippet. To mirror this we'll add
-`wasm_bindgen::function_table()` as well to access the function table.
+`wasm_bindgen::function_table()` as well to the `wasm-bindgen` crate as an
+intrinsic to access the function table and return it as a `JsValue`.
 
 Eventually we may want a more explicit way to import the memory/table, but for
 now this should be sufficient for expressiveness.
