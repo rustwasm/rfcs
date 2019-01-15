@@ -11,7 +11,7 @@ on local JS files.
 * The `module` attribute can now be used to import files explicitly:
 
   ```rust
-  #[wasm_bindgen(file = "/js/foo.js")]
+  #[wasm_bindgen(module = "/js/foo.js")]
   extern "C" {
       // ...
   }
@@ -108,7 +108,7 @@ As an example, a library may contain:
 
 ```rust
 // src/lib.rs
-#[wasm_bindgen(file = "js/foo.js")]
+#[wasm_bindgen(module = "/js/foo.js")]
 extern "C" {
     fn call_js();
 }
@@ -251,7 +251,7 @@ like so:
 ```rust
 // lib.rs
 
-#[wasm_bindgen(file = "local-snippet.js")]
+#[wasm_bindgen(module = "/js/local-snippet.js")]
 extern {
     fn take_u8_slice(memory: &JsValue, ptr: u32, len: u32);
 }
@@ -265,7 +265,7 @@ pub fn call_local_snippet() {
 ```
 
 ```js
-// local-snippet.js
+// js/local-snippet.js
 
 export function take_u8_slice(memory, ptr, len) {
     let slice = new UInt8Array(memory.arrayBuffer, ptr, len);
