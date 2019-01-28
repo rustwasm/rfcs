@@ -86,6 +86,12 @@ imported from the `/js/foo.js` file, relative to the current file and rooted at
 the crate root. The following rules are proposed for interpreting a `module`
 attribute.
 
+* If the strings starts with the platform-specific representation of an absolute
+  path to the cargo build directory (identified by `$OUT_DIR`) then the string
+  is interpreted as a file path in the output directory. This is intended for
+  procedural macros or build scripts which generate JS files as part of the
+  build.
+
 * If the string starts with `/`, `./`, or `../` then it's considered a path to a
   local file. If not, then it's passed through verbatim as the ES module import.
 
