@@ -17,6 +17,15 @@ on local JS files.
   }
   ```
 
+* The `inline_js` attribute can now be used to import JS modules inline:
+
+  ```rust
+  #[wasm_bindgen(inline_js = "export function foo() {}")]
+  extern "C" {
+      fn foo();
+  }
+  ```
+
 * The `--browser` flag is repurposed to generate an ES module for the browser
   and `--no-modules` is deprecated in favor of this flag.
 
@@ -71,26 +80,33 @@ here.
 ### New Syntactical Features
 
 The most user-facing change proposed here is the reinterpretation of the
-`module` attribute inside of `#[wasm_bindgen]`. It can now be used to import
-local files like so:
+`module` attribute inside of `#[wasm_bindgen]` and the addition of an
+`inline_js` attribute. They can now be used to import local files and define
+local imports like so:
 
 ```rust
 #[wasm_bindgen(module = "/js/foo.js")]
 extern "C" {
     // ... definitions
 }
+
+#[wasm_bindgen(inline_js = "export function foo() {}")]
+extern "C" {
+    fn foo();
+}
 ```
 
-This declaration says that the block of functions and types and such are all
-imported from the `/js/foo.js` file, relative to the current file and rooted at
-the crate root. The following rules are proposed for interpreting a `module`
-attribute.
+The first declaration says that the block of functions and types and such are
+all imported from the `/js/foo.js` file, relative to the current file and rooted
+at the crate root. The second declaration lists the JS inline as a string
+literal and the `extern` block describes the exports of the inline module.
+
+The following rules are proposed for interpreting a `module` attribute.
 
 * If the strings starts with the platform-specific representation of an absolute
   path to the cargo build directory (identified by `$OUT_DIR`) then the string
   is interpreted as a file path in the output directory. This is intended for
-  procedural macros or build scripts which generate JS files as part of the
-  build.
+  build scripts which generate JS files as part of the build.
 
 * If the string starts with `/`, `./`, or `../` then it's considered a path to a
   local file. If not, then it's passed through verbatim as the ES module import.
@@ -103,6 +119,10 @@ attribute.
 
 This will hopefully roughly match what programmers expect as well as preexisting
 conventions in browsers and bundlers.
+
+The `inline_js` attribute isn't really intended to be used for general-purpose
+development, but rather a way for procedural macros which can't currently today
+rely on the presence of `$OUT_DIR` to generate JS to import.
 
 ### Format of imported JS
 
