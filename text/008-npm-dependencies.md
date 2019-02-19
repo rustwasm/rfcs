@@ -43,7 +43,7 @@ requirement, need to be declare. This RFC proposes doing this in a
 ```json
  {
   "dependencies": {
-    "foo": "1.0.1"
+    "foo": "^1.0.1"
   }
 }
 ```
