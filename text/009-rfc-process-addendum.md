@@ -20,6 +20,15 @@ opportunity to provide input on the RFC and the FCP proposal. However, they must
 communicate to the other team members, and if they fail to do that, as a last
 resort it does not halt RFC progress.
 
+I'd like to emphasize that the intention of this amendment is **not** to provide
+a way to ram RFCs through the RFC process. It is only to provide a release valve
+for the current RFC procedure's failure mode where if a single team member is
+unavailable or otherwise unresponsive, then the whole RFC process grinds to a
+halt. Additionally, this amendment does not remove the ability for team members
+to file their own post facto amendments to RFCs for which they were unavailable,
+nor does it remove their ability to engage in the original RFC and FCP proposal
+discussion or raise FCP-blocking concerns.
+
 # Stakeholders
 [stakeholders]: #stakeholders
 
@@ -121,15 +130,6 @@ other team members' collective judgment. Right now it is effectively set to
 it to 28 days. We could potentially change those numbers to seven days and
 fourteen days, or to 28 and 56 days. We could potentially remove the extension
 option and have only a single time-to-respond limit.
-
-I'd like to emphasize that the intention of this amendment is **not** to provide
-a way to ram RFCs through the RFC process. It is only to provide a release valve
-for the current RFC procedure's failure mode where if a single team member is
-unavailable or otherwise unresponsive, the whole RFC process grinds to a
-halt. Additionally, this amendment does not remove the ability for team members
-to file their own post facto amendments to RFCs for which they were unavailable,
-nor does it remove their ability to engage in the original RFC and FCP proposal
-discussion.
 
 As far as prior art goes, the main Rust RFC process ran into similar problems
 that this amendment is attempting to solve, and [adopted a similar mechanism for
