@@ -85,9 +85,10 @@ ARGS:
 ### Implementation
 
 We can use [the `notify` crate][notify] to watch the filesystem for
-changes. Initially, we will just watch the crate directory for
-changes. Eventually, we can use [`cargo build --build-plan`][build-plan] to get
-a list of files that we should be watching.
+changes. Initially, we will use some heuristics to determine which files an
+directories to watch (see unresolved questions). Eventually, we can use [`cargo
+build --build-plan`][build-plan] to get a list of files that we should be
+watching.
 
 [notify]: https://crates.io/crates/notify
 [build-plan]: https://github.com/rust-lang/cargo/issues/5579
@@ -224,6 +225,20 @@ and add these `wasm-pack` features?
   writing Web servers, which shouldn't be *too* hard given our limited need for
   features. But ideally we shouldn't need to do this given that `miniserve`
   seems to fulfill all of our requirements.
+
+* Until we can use `cargo build --build-plan`, what heuristics should we employ
+  to guess what files and directories to watch for changes? This decision seems
+  like something that doesn't have to be written in stone in this RFC, and can
+  be experimented with during implementation and via user feedback. That said,
+  there have been suggestions for all of
+
+  * the crate's directory and its contained files and directories,
+  * walking up to find the `.git` folder at the root of a git repository and
+    watching the whole repository,
+  * finding the root of the workspace (either via `cargo-metadata` or by peeking
+    at the set of dependencies in the crate's `Cargo.toml`) and watching the
+    whole workspace,
+  * and some combination of these options.
 
 [https]: https://crates.io/crates/https
 [miniserve]: https://crates.io/crates/miniserve
