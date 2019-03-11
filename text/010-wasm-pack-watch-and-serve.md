@@ -107,9 +107,13 @@ defaults to the current directory. It has the usual flags for controlling the
 build profile, and the target environment. It takes extra options after `--`
 that get passed through straight to `cargo build`.
 
-Additionally, it has a `--no-watch` flag to disable watching the crate for
-changes to kick off automatic re-builds, and a `--port` option to specifiy the
-port the local server should bind to.
+Additionally, it has
+
+* a `--no-watch` flag to disable watching the crate for changes to kick off
+  automatic re-builds,
+* a `--port <port>` option to specifiy the port the local server should bind to,
+* and a `--root <root>` option to specify the root directory to serve files
+  from.
 
 ```
 USAGE:
@@ -132,6 +136,7 @@ OPTIONS:
     -t, --target <target>      Sets the target environment. [possible values: browser, nodejs, no-modules] [default:
                                browser]
     -p, --port <port>          Bind to this port number with the local development HTTP server. [default: 8000]
+    -r, --root <root>          Use this directory as the root to serve files from. [default: crate directory]
 
 ARGS:
     <path>                The path to the Rust crate.
