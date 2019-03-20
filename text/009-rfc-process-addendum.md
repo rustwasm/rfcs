@@ -118,10 +118,7 @@ Here are some example timelines for RFCs with team members X, Y, and Z.
 The primary drawback to this RFC is that it enables going forward with RFCs that
 have not been considered by every team member. The alternative, and our current
 state of affairs, is delaying the RFC until every team member has signed off on
-the RFC regardless how long that might take. There is a fundamental trade off
-between shipping and team member availability at play. Because of how young the
-Wasm space is, and how quickly it moves, we are inclined to err towards the
-shipping side of this trade off.
+the RFC regardless how long that might take.
 
 This RFC amendment also identifies a variable we can tweak: how long to wait for
 a response before considering an unavailable team member to have deferred to the
