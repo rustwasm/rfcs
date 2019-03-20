@@ -108,13 +108,6 @@ Here are some example timelines for RFCs with team members X, Y, and Z.
 # Drawbacks, Rationale, and Alternatives
 [alternatives]: #drawbacks-rationale-and-alternatives
 
-<!-- This is your chance to discuss your proposal in the context of the whole design -->
-<!-- space. This is probably the most important section! -->
-<!-- - Why is this design the best in the space of possible designs? -->
-<!-- - What other designs have been considered and what is the rationale for not -->
-<!--   choosing them? -->
-<!-- - What is the impact of not doing this? -->
-
 The primary drawback to this RFC is that it enables going forward with RFCs that
 have not been considered by every team member. The alternative, and our current
 state of affairs, is delaying the RFC until every team member has signed off on
