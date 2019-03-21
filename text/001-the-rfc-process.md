@@ -90,6 +90,12 @@ the RFC process, it may be closed with a polite request to submit an RFC first.
 
 ## The RFC process step by step
 
+> NOTE: this process was [amended in RFC
+> 009](https://rustwasm.github.io/rfcs/009-rfc-process-addendum.html) and the
+> canonical, up-to-date process is now defined in [the `README.md` of the
+> `rustwasm/rfcs`
+> repository](https://github.com/rustwasm/rfcs/blob/master/README.md#the-rfc-process).
+
 - Fork the [RFC repository][rfc-repo].
 - Copy `000-template.md` to `text/000-my-feature.md` (where "my-feature" is
   descriptive. Don't assign an RFC number yet).
