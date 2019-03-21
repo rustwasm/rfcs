@@ -1,0 +1,577 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>007-2019-roadmap - Rust and WebAssembly RFCs</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="A collection of the accepted RFCs for Rust and WebAssembly">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li class="affix"><a href="introduction.html">Introduction</a></li><li><a href="001-the-rfc-process.html">001-the-rfc-process</a></li><li><a href="002-wasm-bindgen-inheritance-casting.html">002-wasm-bindgen-inheritance-casting</a></li><li><a href="005-structural-and-deref.html">005-structural-and-deref</a></li><li><a href="006-local-js-dependencies.html">006-local-js-dependencies</a></li><li><a href="007-2019-roadmap.html" class="active">007-2019-roadmap</a></li><li><a href="008-npm-dependencies.html">008-npm-dependencies</a></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust and WebAssembly RFCs</h1> 
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <ul>
+<li>Start Date: 2019-01-23</li>
+<li>RFC PR: <a href="https://github.com/rustwasm/rfcs/pull/7">https://github.com/rustwasm/rfcs/pull/7</a></li>
+</ul>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
+<!-- One paragraph explanation of the proposal. -->
+<p><strong>2019 is the year WebAssembly with Rust goes from &quot;usable&quot; to &quot;stable,
+batteries-available, and production-ready.&quot;</strong></p>
+<p>To realize this goal, the Rust and WebAssembly domain working group will:</p>
+<ul>
+<li>
+<p>Cultivate a library ecosystem by collaborating on a modular toolkit</p>
+</li>
+<li>
+<p>Bring multithreading to Rust-generated Wasm</p>
+</li>
+<li>
+<p>Integrate best-in-class debugging support into our toolchain</p>
+</li>
+<li>
+<p>Polish our toolchain and developer workflow, culminating in a 1.0 version of
+<code>wasm-pack</code></p>
+</li>
+<li>
+<p>Invest in monitoring, testing, and profiling infrastructure to keep our tools
+and libraries snappy, stable and production-ready.</p>
+</li>
+</ul>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<!-- Why are we doing this? What use cases does it support? What problems does it -->
+<!-- solve? What is the expected outcome? -->
+<p>This proposed roadmap draws upon</p>
+<ul>
+<li>
+<p><a href="https://github.com/rustwasm/team/issues/241">the community's blog posts</a> in response to the working
+group's <a href="https://rustwasm.github.io/2018/12/06/reflecting-on-rust-and-wasm-in-2018.html#rustwasm2019">call for roadmap suggestions,</a></p>
+</li>
+<li>
+<p>and the working group's core team's intuition and experience.</p>
+</li>
+</ul>
+<a class="header" href="#detailed-explanation" id="detailed-explanation"><h1>Detailed Explanation</h1></a>
+<a class="header" href="#collaborating-on-a-modular-toolkit" id="collaborating-on-a-modular-toolkit"><h2>Collaborating on a Modular Toolkit</h2></a>
+<blockquote>
+<p>The idea of building [high-level libraries] in a modular way that will allow
+others in the community to put the components together in a different way is
+very exciting to me. This hopefully will make the ecosystem as a whole much
+stronger.</p>
+<p>In particular I’d love to see a modular effort towards implementing a virtual
+DOM library with JSX like syntax. There have been several efforts on this
+front but all have seemed relatively monolithic and “batteries included”. I
+hope this will change in 2019.</p>
+</blockquote>
+<p><cite>— Ryan Levick in <a href="https://blog.ryanlevick.com/posts/rust-wasm-2019/">Rust WebAssembly
+2019</a></cite></p>
+<blockquote>
+<p>Don't create branded silos. Branding might perhaps be useful to achieve
+fame. But if we truly want Rust's Wasm story to succeed we should think of
+ways to collaborate instead of carving out territory.</p>
+</blockquote>
+<p><cite>— Yoshua Wuyts in <a href="https://blog.yoshuawuyts.com/wasm-2019/">Wasm
+2019</a></cite></p>
+<p>In 2018, we created foundational libraries like <a href="https://rustwasm.github.io/2018/09/26/announcing-web-sys.html"><code>js-sys</code> and
+<code>web-sys</code></a>. In 2019, we should build modular, high-level
+libraries on top of them, and collect the libraries under an umbrella toolkit
+crate for a holistic experience. This toolkit and its libraries will make
+available all the batteries you want when targeting Wasm.</p>
+<p>Building a greenfield Web application? Use the whole toolkit to hit the ground
+running. Carefully crafting a tiny Wasm module and integrating it back into an
+existing JavaScript project? Grab that one targeted library you need out from
+the toolkit and use it by itself.</p>
+<ul>
+<li>
+<p><strong>Modular:</strong> Take or leave any individual component. Prefer interfaces over
+implementations.</p>
+</li>
+<li>
+<p><strong>Cultivate collaboration:</strong> We've already seen an ecosystem sprouting up in
+the Rust and WebAssembly domain, and lots of great experiments, but we haven't
+seen a lot of collaboration between projects. By deliberately creating a space
+for collaboration, we can reduce effort duplication, multiply impact, and help
+the ecosystem stay healthy.</p>
+</li>
+</ul>
+<a class="header" href="#multithreading-for-wasm" id="multithreading-for-wasm"><h2>Multithreading for Wasm</h2></a>
+<blockquote>
+<p>We must bring Rust’s <a href="https://blog.rust-lang.org/2015/04/10/Fearless-Concurrency.html">fearless
+concurrency</a>
+to the Web!</p>
+</blockquote>
+<p><cite>— Nick Fitzgerald in <a href="http://fitzgeraldnick.com/2018/12/14/rust-and-webassembly-in-2019.html">Rust and WebAssembly in
+2019</a></cite></p>
+<blockquote>
+<p>Be the absolute cutting edge when it comes to WebAssembly, we should be
+thinking about being the first to satisfy [threads and atomics].</p>
+</blockquote>
+<p><cite>— richardanaya in <a href="https://www.reddit.com/r/rust/comments/aac8zk/my_rust_2019_dream_dominate_the_web/">My Rust 2019
+Dream</a></cite></p>
+<p>Our toolchain already has <a href="https://rustwasm.github.io/2018/10/24/multithreading-rust-and-wasm.html">experimental support for multithreading in
+Wasm</a>. Browsers are currently shipping <code>SharedArrayBuffer</code> and
+atomics (the primitives of multithreading for Wasm) behind feature flags, and
+they expect to start shipping them enabled by default in 2019.</p>
+<p>One of WebAssembly's selling points is the ability to effectively utilize
+available hardware. Multithreading extends that story from a single core to
+many. While multithreading will be <em>literally possible</em> for both JavaScript and
+any compiled-to-Wasm language, Rust's unique ownership system makes it
+<em>economically realistic</em>.</p>
+<p>There are some technical snags (see the link above for details) that mean we
+can't get Rust's standard library's <code>std::thread::*</code> working on Wasm. But it is
+still crucial that we have shared implementations of core multithreading
+building blocks like thread pools and locks across the ecosystem. In 2019, we
+should transform our experimental multithreading support into a production-ready
+foundation for multithreading on Wasm, get popular crates like <code>rayon</code> working
+on the Web, and cash in on Rust's fearless concurrency.</p>
+<a class="header" href="#debugging" id="debugging"><h2>Debugging</h2></a>
+<blockquote>
+<p>Before [debugging] is working properly (including variable inspection, which
+doesn't work with wasm at all right now), everything else is just toying
+around.</p>
+</blockquote>
+<p><cite>— anlumo in <a href="https://www.reddit.com/r/rust/comments/aac8zk/my_rust_2019_dream_dominate_the_web/ecqu3wu/">a comment on
+r/rust</a></cite></p>
+<blockquote>
+<p>Having [source maps] would be excellent for debugging.</p>
+</blockquote>
+<p><cite>— Yoshua Wuyts in <a href="https://blog.yoshuawuyts.com/wasm-2019/">Wasm 2019</a></p>
+<p>Debugging is tricky because much of the story is out of this working group's
+hands, and depends on both the WebAssembly standardization bodies and the folks
+implementing browser developer tools instead. However, there are some concrete
+steps we can take to improve debugging:</p>
+<ol>
+<li>
+<p>Get <code>println!</code>, <code>dbg!</code>, and friends working out of the box with Wasm. To
+achieve this, we will build support for the <a href="https://github.com/WebAssembly/reference-sysroot">WebAssembly reference
+sysroot</a> and standard system calls for Wasm that are in the
+standardization pipeline.</p>
+</li>
+<li>
+<p>Create the ability to compile our Rust-generated Wasm to JavaScript with
+source maps when debugging. Source maps are a limited debug info format for
+JavaScript that enable stepping through source locations in a debugger,
+instead of stepping through compiler-generated JavaScript code.</p>
+</li>
+<li>
+<p>Add debugging-focused tracing and instrumentation features to our
+toolchain. For example, it is currently difficult to debug a JavaScript array
+buffer view of Wasm memory getting detached because Wasm memory was
+resized. We can make debugging easier by optionally instrumenting <code>mem.grow</code>
+instructions with logging.</p>
+</li>
+</ol>
+<p>In addition to that, we should work with the WebAssembly standardization bodies
+and browser developer tools makers, and actively participate in the WebAssembly
+debugging subcharter to create some movement in the debugging space. By keeping
+up the environmental and social pressure and lending a hand where we can, we
+will eventually have rich, source-level debugging for Wasm.</p>
+<a class="header" href="#toolchain-and-workflow-polish" id="toolchain-and-workflow-polish"><h2>Toolchain and Workflow Polish</h2></a>
+<blockquote>
+<p>Setting up a Wasm project requires quite some boilerplate. It'd be nice if we
+could find ways to reduce this.</p>
+</blockquote>
+<p><cite>— Yoshua Wuyts in <a href="https://blog.yoshuawuyts.com/wasm-2019/">Wasm
+2019</a></cite></p>
+<blockquote>
+<p>There are a few things that we intended to include in <code>wasm-pack</code> in 2018 that
+didn’t quite make the cut. [...] We should finish these tasks and polish
+<code>wasm-pack</code> into a 1.0 tool.</p>
+</blockquote>
+<p><cite>— Nick Fitzgerald in <a href="http://fitzgeraldnick.com/2018/12/14/rust-and-webassembly-in-2019.html">Rust and WebAssembly in
+2019</a></cite></p>
+<p>In 2019, our toolchain and workflow should be feature complete and
+polished. <code>wasm-pack</code>, being the entry point to our toolchain, will bear the
+brunt of this work, but much of it will also be in tools that are invoked by
+<code>wasm-pack</code> rather than work in <code>wasm-pack</code> itself.</p>
+<ul>
+<li>
+<p>Generate JavaScript API documentation from the Rust doc comments on
+<code>#[wasm_bindgen]</code> exports.</p>
+</li>
+<li>
+<p>Finish and implement <a href="https://github.com/rustwasm/rfcs/pull/4">the RFC for library crates depending on external NPM
+packages.</a></p>
+</li>
+<li>
+<p>Finish and implement <a href="https://github.com/rustwasm/rfcs/pull/6">the RFC for local JavaScript
+snippets.</a></p>
+</li>
+<li>
+<p>Support <a href="https://github.com/rustwasm/wasm-pack/issues/159">running Binaryen's <code>wasm-opt</code> on Rust-generated
+Wasm.</a></p>
+</li>
+<li>
+<p><a href="https://github.com/rustwasm/wasm-pack/issues/373">Integrate <code>cargo generate</code> into <code>wasm-pack</code> for new project
+scaffolding.</a> This would
+smooth the developer on ramp, by making one less tool required to get up and
+running.</p>
+</li>
+<li>
+<p>RFC and implementation for generating portable, universal NPM packages that
+work on the Web, with Node.js, and in any minimal JavaScript environment.</p>
+</li>
+<li>
+<p>Define a philosophy for <code>wasm-pack</code>'s user experience, interaction, and
+display. Once defined and agreed upon, we should triage each <code>wasm-pack</code>
+subcommand and ensure that it is consistent with our philosophy.</p>
+</li>
+</ul>
+<p>Given that this work is largely about plugging missing holes and improving user
+experience, it is a bit of a laundry list. But that is also good sign: it means
+that <code>wasm-pack</code> is actually fairly close to being feature complete.</p>
+<p>After we've finished all these tasks, we should publish a 1.0 release of
+<code>wasm-pack</code>.</p>
+<a class="header" href="#monitoring-profiling-and-testing-infrastructure" id="monitoring-profiling-and-testing-infrastructure"><h2>Monitoring, Profiling, and Testing Infrastructure</h2></a>
+<blockquote>
+<p>The main objection I've experienced when proposing rust/wasm is compile times,
+but the end-to-end latency actually looks pretty competitive so far [...]
+Having a couple of benchmarks in CI and a graph online somewhere would go a
+long way towards keeping it that way.</p>
+</blockquote>
+<p><cite>— @jamii in <a href="https://github.com/rustwasm/rfcs/pull/7#issuecomment-458543182">an RFC
+comment</a></cite></p>
+<blockquote>
+<p>If I want to run the tests of a library using both libtest and
+wasm-bindgen-test I need to write:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[cfg_attr(not(target_arch = &quot;wasm32&quot;), test)]
+#[cfg_attr(target_arch = &quot;wasm32&quot;, wasm_bindgen_test)]
+fn my_test() { ... }
+#}</code></pre></pre>
+<p>instead of just</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[test]`
+fn my_test() { ... }
+#}</code></pre></pre>
+</blockquote>
+<p><cite>— @gnzlbg in <a href="https://github.com/rustwasm/rfcs/pull/7#issuecomment-460257231">an RFC
+comment</a></cite></p>
+<p>We should build <a href="https://perf.rust-lang.org">perf.rust-lang.org</a>-style
+infrastructure<sup>0</sup> to keep an eye on</p>
+<ul>
+<li>
+<p>code size of popular and foundational wasm crates (such as those crates in our
+modular toolkit), and</p>
+</li>
+<li>
+<p>our <code>wasm-bindgen</code> and <code>wasm-pack</code> build times.</p>
+</li>
+</ul>
+<p>By continually tracking this data over time, and just at once at a particular,
+we will hold ourselves accountable to delivering on our promises of a
+lightweight toolkit and &quot;stable, production-ready&quot; toolchain.</p>
+<p><small><sup>0</sup> Or perhaps integrate our monitoring into perf.rust-lang.org
+if it makes sense and the maintainers are willing.</small></p>
+<p>That is the infrastructure story at the macro-level, but we also need to support
+the needs of crates within the ecosystem at the micro-level. That means
+continuing to invest in unit testing and profiling Rust-generated Wasm
+binaries. Concretely, we should</p>
+<ul>
+<li>
+<p>add benchmarking support to <code>wasm-bindgen-test</code>, and</p>
+</li>
+<li>
+<p>make <code>wasm-bindgen-test</code> future-compatible with the <a href="https://github.com/rust-lang/rust/issues/50297">eRFC for custom test
+frameworks</a>, paving the way
+forward for making regular <code>#[test]</code> and <code>#[bench]</code> Just Work™ with Wasm
+instead of requiring the use of <code>#[wasm_bindgen_test]</code> instead.</p>
+</li>
+</ul>
+<a class="header" href="#rationale-drawbacks-and-alternatives" id="rationale-drawbacks-and-alternatives"><h1>Rationale, Drawbacks, and Alternatives</h1></a>
+<!-- This is your chance to discuss your proposal in the context of the whole design -->
+<!-- space. This is probably the most important section! -->
+<!-- - Why is this design the best in the space of possible designs? -->
+<!-- - What other designs have been considered and what is the rationale for not -->
+<!--   choosing them? -->
+<!-- - What is the impact of not doing this? -->
+<p>We choose to focus our efforts in 2019 where:</p>
+<ol>
+<li>
+<p><em>We</em> — the Rust and WebAssembly working group — can build and
+ship features. Areas where we aren't potentially blocked by external factors,
+such as still-in-progress standards.</p>
+</li>
+<li>
+<p>We can leverage advantages that are <em>unique to Rust</em> in the WebAssembly
+domain.</p>
+</li>
+</ol>
+<a class="header" href="#things-we-can-build-and-ship" id="things-we-can-build-and-ship"><h2>Things <em>We</em> can Build and Ship</h2></a>
+<p>We don't want our fate in anyone's hands but our own.</p>
+<p>The toolkit and toolchain polish work don't involve any external entities that
+could slow our progress to a halt. For debugging, where the larger story
+involves significant consensus with external groups and standards work, we
+explicitly choose to focus on what we can do ourselves to improve our own
+debugging story. We do not set ourselves up to block on anything produced by the
+WebAssembly community group's debugging subcharter, and we won't wait on browser
+vendors to implement new Wasm debugging support in developer tools.</p>
+<p>Of the roadmap items, the multithreading story has the most risk: our success in
+this domain relies on browsers enabling Wasm's multithreading primitives by
+default. However, this seems like a relatively safe bet, since the
+multithreading primitives have moved past their most experimental phase, <a href="https://caniuse.com/#feat=sharedarraybuffer">Chrome
+is already shipping them enabled by default, and all other major browsers have
+implementations that just aren't enabled by default yet.</a></p>
+<a class="header" href="#leveraging-unique-advantages" id="leveraging-unique-advantages"><h2>Leveraging Unique Advantages</h2></a>
+<p>We want to focus our efforts where we get the biggest effort to impact
+efficiency, and establish ourselves as leaders in WebAssembly in ways that no
+one else even has a route towards catching up.</p>
+<p>The multithreading story is perhaps the biggest example of unique advantage:
+multithreading is <em>infamously</em> bug prone (to say the least!) and Rust's
+ownership system eliminates data races at compile time.</p>
+<p>By building a modular toolkit of libraries, we bolster our ability to target the
+full spectrum from tiny module surgically inserted into an existing JavaScript
+application, to building a complete Web application in Rust. Any language that
+relies on a garbage collector, fat runtime, or is overly opinionated about FFI
+and interaction with the outside world can't reach the tiny module end of that
+spectrum.</p>
+<p>The toolchain polish and debugging work have less clearly <em>unique</em>
+advantages. But both are table stakes for a good development experience, and the
+par for the course for these things in the Wasm domain is currently so low that
+we can and should stand out from the crowd.</p>
+<a class="header" href="#considered-alternative-roadmap-items" id="considered-alternative-roadmap-items"><h2>Considered Alternative Roadmap Items</h2></a>
+<p>Here are a few alternative items that were considered for the roadmap, perhaps
+because they were called out in <code>#RustWasm2019</code> posts, but ultimately were not
+included.</p>
+<a class="header" href="#pushing-anyref-integration-into-the-rust-language" id="pushing-anyref-integration-into-the-rust-language"><h3>Pushing <code>anyref</code> Integration into the Rust Language</h3></a>
+<p>We've already been well positioned to take advantage of host bindings and GC
+reference types once they ship in Wasm via <code>wasm-bindgen</code>. We could take it even
+further and imagine a future where the Rust language was able to pass around
+opaque references to objects in alternative memory spaces (some of which might
+be GC'd) in a first class way: structs that are split across memory spaces, fat
+pointers into multiple memory spaces, etc.</p>
+<p>However, it isn't clear that pushing this all the way into the language will
+bring that much utility over the existing <a href="https://github.com/rustwasm/wasm-bindgen/pull/1002">&quot;<code>anyref</code> at the edges&quot;
+implementation that <code>wasm-bindgen</code> already has.</a>
+Additionally, cashing in on this work could easily be blocked in a couple ways:
+<code>anyref</code> isn't shipping in any mainstream wasm engine yet, and getting this
+language-level integration through the larger Rust RFC process with all of its
+stakeholders would happen at a glacial pace (if it even happened!)</p>
+<a class="header" href="#a-focus-only-on-pure-rust-web-applications" id="a-focus-only-on-pure-rust-web-applications"><h3>A Focus Only on Pure-Rust Web Applications</h3></a>
+<p>We prefer to answer &quot;yes and&quot; to pure-Rust Web applications via the modular
+toolkit that can service the full spectrum of tiny module to whole Web app, than
+to focus only on the whole Web app end of the spectrum. Our hope with the
+toolkit is that a rising tide will lift all boats, regardless where your project
+lands on that spectrum.</p>
+<p>Additionally, full Web apps are not a <em>unique</em> advantage for Rust. JavaScript
+has been doing it for a while, and as far as Wasm goes, there are better-funded
+&quot;competitors&quot; in the space that will be able to provide a more compelling
+monolithic Web app development experience more quickly (via integration with
+tooling, existing ecosystems, or throwing money and developers at the
+problem). Microsoft and Blazor, Google and Go, bringing existing native
+applications to the Web with Emscripten, etc. We should compete where we are
+best positioned to do so, and monolithic Web applications is not that.</p>
+<p>All that said, if you want to build a whole Web application with Rust-generated
+Wasm and don't want to write any JavaScript at all, you should be able to do
+so. In fact, <a href="https://github.com/rustwasm/wasm-bindgen/tree/master/examples/no_modules">you already can with <code>#[wasm_bindgen(start)]</code> and the <code>no-modules</code>
+target</a>. We will never remove this ability, and the new toolkit will
+only make developing a whole Web app easier.</p>
+<a class="header" href="#non-javascript-and-non-web-embeddings" id="non-javascript-and-non-web-embeddings"><h3>Non-JavaScript and Non-Web Embeddings</h3></a>
+<p>While the whole of every non-Web and non-JavaScript WebAssembly embeddings looks
+very exciting, each embedding is a unique environment, and there is not yet a
+standard set of capabilities available. We don't want to block on waiting for a
+full set of standard capabilities to emerge, nor do we want to choose one
+particular embedding environment.</p>
+<p>We do intend to support the reference sysroot work, and any follow up work that
+comes after it, but we will take advantage of these things on a opportunistic
+basis rather than making it a roadmap item.</p>
+<p>We encourage anyone interested in non-JavaScript and non-Web embeddings to
+collaborate with the WebAssembly community group to push this story forward by
+defining standard Wasm capabilities!</p>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<p>To be determined.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="006-local-js-dependencies.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="008-npm-dependencies.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="006-local-js-dependencies.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="008-npm-dependencies.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

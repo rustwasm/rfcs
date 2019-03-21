@@ -1,0 +1,2155 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Rust and WebAssembly RFCs</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="A collection of the accepted RFCs for Rust and WebAssembly">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li class="affix"><a href="introduction.html">Introduction</a></li><li><a href="001-the-rfc-process.html">001-the-rfc-process</a></li><li><a href="002-wasm-bindgen-inheritance-casting.html">002-wasm-bindgen-inheritance-casting</a></li><li><a href="005-structural-and-deref.html">005-structural-and-deref</a></li><li><a href="006-local-js-dependencies.html">006-local-js-dependencies</a></li><li><a href="007-2019-roadmap.html">007-2019-roadmap</a></li><li><a href="008-npm-dependencies.html">008-npm-dependencies</a></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust and WebAssembly RFCs</h1> 
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <a class="header" href="#rust-and-webassembly-rfcs" id="rust-and-webassembly-rfcs"><h1>Rust and WebAssembly RFCs</h1></a>
+<p>Many changes, including bug fixes and documentation improvements can be
+implemented and reviewed via the normal GitHub pull request workflow.</p>
+<p>Some changes though are &quot;substantial&quot;, and we ask that these be put through a
+bit of a design process and produce a consensus among the Rust and WebAssembly
+community.</p>
+<p>The &quot;RFC&quot; (request for comments) process is intended to provide a consistent and
+controlled path for substantial changes and additions to enter the Rust and
+WebAssembly ecosystem, so that all stakeholders can be confident about the
+direction the ecosystem is evolving in.</p>
+<a class="header" href="#the-rfc-process" id="the-rfc-process"><h2>The RFC Process</h2></a>
+<p>When does a change require an RFC? How does an RFC get approved or rejected?
+What is the RFC life cycle?</p>
+<p><a href="https://rustwasm.github.io/rfcs/001-the-rfc-process.html">These questions are answered in RFC 001</a>.</p>
+<a class="header" href="#license" id="license"><h2>License</h2></a>
+<p>This repository is currently in the process of being licensed under either of</p>
+<ul>
+<li>Apache License, Version 2.0, (<a href="LICENSE-APACHE">LICENSE-APACHE</a> or
+http://www.apache.org/licenses/LICENSE-2.0)</li>
+<li>MIT license (<a href="LICENSE-MIT">LICENSE-MIT</a> or http://opensource.org/licenses/MIT)</li>
+</ul>
+<p>at your option. Some parts of the repository are already licensed according to
+those terms. For more see <a href="https://github.com/rust-lang/rfcs/pull/2044">RFC
+2044</a> and its <a href="https://github.com/rust-lang/rust/issues/43461">tracking
+issue</a>.</p>
+<a class="header" href="#contributions" id="contributions"><h3>Contributions</h3></a>
+<p>Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.</p>
+<ul>
+<li>Start Date: 2018-06-28</li>
+<li>RFC PR: (leave this empty)</li>
+<li>Tracking Issue: (leave this empty)</li>
+</ul>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
+<p>Adopt a simplified version of the Rust RFC process to the Rust and WebAssembly
+domain working group. The RFC process will provide a single place to decide on
+substantial changes and additions across the ecosystem for all stakeholders.</p>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<p>There are some decisions which have broad impact across the Rust and WebAssembly
+ecosystem, and therefore have many stakeholders who deserve to have a say in the
+decision and provide feedback on proposals and designs. Right now, these
+decisions tend to be made in whatever local repository pull request or issue
+tracker. This makes it difficult for stakeholders to stay on top of these
+decisions, because they need to watch many different places. For a repository
+owner or team, it is also difficult to determine whether the ecosystem is in
+favor of a feature or not.</p>
+<p>After adopting this RFC process, stakeholders should have an easier time staying
+on top of substantial changes and features within the ecosystem. Additionally,
+the maintainers of a particular repository within the Rust and WebAssembly
+ecosystem should feel confident that they've solicited feedback from everyone
+involved after going through an RFC, and won't get angry bug reports from users
+who felt that they were not consulted. Everyone should have shared confidence in
+the direction that the ecosystem evolves in.</p>
+<a class="header" href="#detailed-explanation" id="detailed-explanation"><h1>Detailed Explanation</h1></a>
+<p>Right now, governance for repositories within the <code>rustwasm</code> organization
+<a href="https://github.com/rustwasm/team/blob/master/GOVERNANCE.md#repositories">follow these rules</a> describing policy for merging pull
+requests:</p>
+<blockquote>
+<p>Unless otherwise noted, each <code>rustwasm/*</code> repository has the following general
+policies:</p>
+<ul>
+<li>
+<p>All pull requests must be reviewed and approved of by at least one relevant
+team member or repository collaborator before merging.</p>
+</li>
+<li>
+<p>Larger, more nuanced decisions about design, architecture, breaking changes,
+trade offs, etc are made by the relevant team and/or repository
+collaborators consensus. In other words, decisions on things that aren't
+straightforward improvements to or bug fixes for things that already exist
+in the project.</p>
+</li>
+</ul>
+</blockquote>
+<p>This policy categorizes pull requests as either &quot;larger, more nuanced ...&quot;
+changes or not (we will use &quot;substantial&quot; from now on). When a change is not
+substantial, it requires only a single team member approve of it. When a change
+is larger and more substantial, then the relevant team comes to consensus on how
+to proceed.</p>
+<p>This RFC intends to further sub-categorize substantial changes into those that
+affect only maintenance of the repository itself, and are therefore only
+substantial <em>internally</em> to the maintainers, versus those substantial changes
+that have an impact on <em>external</em> users and the larger Rust and WebAssembly
+community. For internally substantial changes, we do not intend to change the
+current policy at all. For substantial changes that have external impact, we
+will adopt a lightweight version of Rust's RFC process.</p>
+<a class="header" href="#when-does-a-change-need-an-rfc" id="when-does-a-change-need-an-rfc"><h2>When does a change need an RFC?</h2></a>
+<p>You need to follow the RFC process if you intend to make externally substantial
+changes to any repository within the <a href="https://github.com/rustwasm"><code>rustwasm</code> organization</a>, or the RFC
+process itself. What constitutes a &quot;substantial&quot; change is evolving based on
+community norms and varies depending on what part of the ecosystem you are
+proposing to change, but may include the following:</p>
+<ul>
+<li>The removal of or breaking changes to public APIs in widespread use.</li>
+<li>Public API additions that extend the public API in new ways (i.e. more than
+&quot;we implement <code>SomeTrait</code> for <code>ThisThing</code>, so also implement <code>SomeTrait</code> for
+<code>RelatedThing</code>&quot;).</li>
+</ul>
+<p>Some changes do not require an RFC:</p>
+<ul>
+<li>Rephrasing, reorganizing, refactoring, or otherwise &quot;changing shape does
+not change meaning&quot;.</li>
+<li>Additions that strictly improve objective, numerical quality criteria
+(warning removal, speedup, better platform coverage, more parallelism, trap
+more errors, etc.)</li>
+<li>Additions only likely to be <em>noticed by</em> other maintainers, and remain
+invisible to users.</li>
+</ul>
+<p>If you submit a pull request to implement a new feature without going through
+the RFC process, it may be closed with a polite request to submit an RFC first.</p>
+<a class="header" href="#the-rfc-process-step-by-step" id="the-rfc-process-step-by-step"><h2>The RFC process step by step</h2></a>
+<ul>
+<li>Fork the <a href="http://github.com/rustwasm/rfcs">RFC repository</a>.</li>
+<li>Copy <code>000-template.md</code> to <code>text/000-my-feature.md</code> (where &quot;my-feature&quot; is
+descriptive. Don't assign an RFC number yet).</li>
+<li>Fill in the RFC. Put care into the details: RFCs that do not present
+convincing motivation, demonstrate understanding of the impact of the design,
+or are disingenuous about the drawbacks or alternatives tend to be
+poorly-received.</li>
+<li>Submit a pull request. As a pull request, the RFC will receive design feedback
+from the larger community, and the author should be prepared to revise it in
+response.</li>
+<li>Each new RFC pull request will be triaged in the next Rust and WebAssembly
+domain working group meeting and assigned to one or more of the <a href="https://github.com/rustwasm/team/blob/master/GOVERNANCE.md#teams"><code>@rustwasm/*</code>
+teams</a>.</li>
+<li>Build consensus and integrate feedback. RFCs that have broad support are
+much more likely to make progress than those that don't receive any
+comments. Feel free to reach out to the RFC assignee in particular to get
+help identifying stakeholders and obstacles.</li>
+<li>The team(s) will discuss the RFC pull request, as much as possible in the
+comment thread of the pull request itself. Offline discussion will be
+summarized on the pull request comment thread.</li>
+<li>RFCs rarely go through this process unchanged, especially as alternatives
+and drawbacks are shown. You can make edits, big and small, to the RFC to
+clarify or change the design, but make changes as new commits to the pull
+request, and leave a comment on the pull request explaining your changes.
+Specifically, do not squash or rebase commits after they are visible on the
+pull request.</li>
+<li>At some point, a member of the subteam will propose a &quot;motion for final
+comment period&quot; (FCP), along with a <em>disposition</em> for the RFC (merge, close,
+or postpone).
+<ul>
+<li>This step is taken when enough of the tradeoffs have been discussed that the
+team(s) are in a position to make a decision. That does not require
+consensus amongst all participants in the RFC thread (which may be
+impossible). However, the argument supporting the disposition on the RFC
+needs to have already been clearly articulated, and there should not be a
+strong consensus <em>against</em> that position outside of the team(s). Team
+members use their best judgment in taking this step, and the FCP itself
+ensures there is ample time and notification for stakeholders to push back
+if it is made prematurely.</li>
+<li>For RFCs with lengthy discussion, the motion to FCP should be preceded by a
+<em>summary comment</em> trying to lay out the current state of the discussion and
+major tradeoffs/points of disagreement.</li>
+<li>Before actually entering FCP, <em>all</em> members of the team(s) must sign off;
+this is often the point at which many team members first review the RFC in
+full depth.</li>
+</ul>
+</li>
+<li>The FCP lasts seven calendar days. It is also advertised widely, e.g. in an
+issue of <a href="https://rustwasm.github.io/">&quot;This Week in Rust and WebAssembly&quot; on the Rust and WebAssembly
+blog</a>. This way all stakeholders have a chance to
+lodge any final objections before a decision is reached.</li>
+<li>In most cases, the FCP period is quiet, and the RFC is either merged or
+closed. However, sometimes substantial new arguments or ideas are raised,
+the FCP is canceled, and the RFC goes back into development mode.</li>
+</ul>
+<a class="header" href="#from-rfc-to-implementation" id="from-rfc-to-implementation"><h2>From RFC to implementation</h2></a>
+<p>Once an RFC is merged it becomes &quot;active&quot; then authors may implement it and
+submit the feature as a pull request to the relevant repositories. Being
+&quot;active&quot; is not a rubber stamp, and in particular still does not mean the
+feature will ultimately be merged; it does mean that in principle all the major
+stakeholders have agreed to the feature and are amenable to merging it.</p>
+<p>Furthermore, the fact that a given RFC has been accepted and is &quot;active&quot; implies
+nothing about what priority is assigned to its implementation, nor does it imply
+anything about whether a developer has been assigned the task of implementing
+the feature. While it is not <em>necessary</em> that the author of the RFC also write
+the implementation, it is by far the most effective way to see an RFC through to
+completion: authors should not expect that other project developers will take on
+responsibility for implementing their accepted feature.</p>
+<p>Modifications to &quot;active&quot; RFCs can be done in follow-up pull requests. We strive
+to write each RFC in a manner that it will reflect the final design of the
+feature; but the nature of the process means that we cannot expect every merged
+RFC to actually reflect what the end result will be at the time of the next
+major release.</p>
+<p>In general, once accepted, RFCs should not be substantially changed. Only very
+minor changes should be submitted as amendments. More substantial changes should
+be new RFCs, with a note added to the original RFC.</p>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<p>The design space for decision making is very large, from democratic to
+autocratic and more.</p>
+<p>Forking and simplifying Rust's RFC process is <em>practical</em>. Rather than designing
+a decision making process from scratch, we take an existing one that works well
+and tailor it to our needs. Many Rust and WebAssembly stakeholders are already
+familiar with it.</p>
+<p>The main differences from the Rust RFC process are:</p>
+<ul>
+<li>FCP lasts seven calendar days rather than ten. This reflects our desire for a
+lighter-weight process that moves more quickly than Rust's RFC process.</li>
+<li>The RFC template is shorter and merges together into single sections what were
+distinct sections in the Rust RFC template. Again, this reflects our desire
+for a lighter-weight process where we do not need to go into quite as much
+painstaking detail as Rust RFCs sometimes do (perhaps excluding <em>this</em> RFC).</li>
+</ul>
+<p>The phases of RFC development and post-RFC implementation are largely the same
+as the Rust RFC process. We found that the motivations for nearly every phase of
+Rust's RFC process are equally motivating for the Rust and WebAssembly
+domain. We expected to simplify phases a lot, for example, we initially
+considered removing FCP and going straight to signing off on accepting an RFC or
+not. However, FCP exists as a way to (1) allow stakeholders to voice any final
+concerns that hadn't been brought up yet, and (2) help enforce the &quot;no new
+rationale&quot; rule. Both points apply equally well to the Rust and WebAssembly
+domain working group and ecosystem as they apply to Rust itself.</p>
+<p>We can also avoid adopting an RFC process, and move more quickly by allowing
+each repository's team or owner to be dictators of their corner of the
+ecosystem. However, this will result in valuable feedback, opinions, and insight
+not getting voiced, and narrow decisions being made.</p>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<ul>
+<li>
+<p>Will we use <a href="https://github.com/anp/rfcbot-rs"><code>@rfcbot</code></a>? If we can, we probably should, but this can
+be decided separately from whether to accept this RFC.</p>
+</li>
+<li>
+<p>How to best advertise new RFCs and FCP? Should we make &quot;This Week in Rust and
+WebAssembly&quot; actually be weekly rather than every other week? The interaction
+between FCP length and frequency of TWiRaWA posting seems important.</p>
+</li>
+</ul>
+<ul>
+<li>Start Date: 2018-07-10</li>
+<li>RFC PR: https://github.com/rustwasm/rfcs/pull/2</li>
+<li>Tracking Issue: https://github.com/rustwasm/wasm-bindgen/pull/640</li>
+</ul>
+<a class="header" href="#summary-1" id="summary-1"><h1>Summary</h1></a>
+<p>Support defining single inheritance relationships in <code>wasm-bindgen</code>'s imported
+types. Specifically, we define static upcasts from a derived type to one of its
+base types, checked dynamic casts from a type to any other type using
+JavaScript's <code>instanceof</code> operator, and finally unchecked casts between any
+JavaScript types as an escape hatch for developers. For the proc-macro frontend,
+this is done by adding the <code>#[wasm_bindgen(extends = Base)]</code> attribute to the
+derived type. For the WebIDL frontend, WebIDL's existing interface inheritance
+syntax is used.</p>
+<a class="header" href="#motivation-1" id="motivation-1"><h1>Motivation</h1></a>
+<p>Prototype chains and ECMAScript classes allow JavaScript developers to define
+single inheritance relationships between types. <a href="https://heycam.github.io/webidl/#dfn-inherit">WebIDL interfaces can inherit
+from one another,</a> and Web APIs make widespread use of this
+feature. We want to support calling base methods on an imported derived type and
+passing an imported derived type to imported functions that expect a base type
+in <code>wasm-bindgen</code>. We want to support dynamically checking whether some JS value
+is an instance of a JS class, and dynamically-checked casts. Finally, the same
+way that <code>unsafe</code> provides an encapsulatable escape hatch for Rust's ownership
+and borrowing, we want to provide unchecked (but safe!) conversions between JS
+classes and values.</p>
+<a class="header" href="#stakeholders" id="stakeholders"><h1>Stakeholders</h1></a>
+<p>Anyone who is using <code>wasm-bindgen</code> directly or transitively through the
+<code>web-sys</code> crate is affected. This does <em>not</em> affect the larger wasm ecosystem
+outside of Rust (eg Webpack). Therefore, the usual advertisement of this RFC on
+<em>This Week in Rust and WebAssembly</em> and at our working group meetings should
+suffice in soliciting feedback.</p>
+<a class="header" href="#detailed-explanation-1" id="detailed-explanation-1"><h1>Detailed Explanation</h1></a>
+<a class="header" href="#example-usage" id="example-usage"><h2>Example Usage</h2></a>
+<p>Consider the following JavaScript class definitions:</p>
+<pre><code class="language-js">class MyBase { }
+class MyDerived extends MyBase { }
+</code></pre>
+<p>We translate this into <code>wasm-bindgen</code> proc-macro imports like this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+extern {
+    pub extern type MyBase;
+
+    #[wasm_bindgen(extends = MyBase)]
+    pub extern type MyDerived;
+}
+#}</code></pre></pre>
+<p>Note the <code>#[wasm_bindgen(extends = MyBase)]</code> annotation on <code>extern type MyDerived</code>. This tells <code>wasm-bindgen</code> that <code>MyDerived</code> inherits from <code>MyBase</code>.</p>
+<p>Alternatively, we could describe these same classes as WebIDL interfaces:</p>
+<pre><code class="language-webidl">interface MyBase {}
+interface MyDerived : MyBase {}
+</code></pre>
+<a class="header" href="#example-upcasting" id="example-upcasting"><h3>Example Upcasting</h3></a>
+<p>We can upcast into a <code>MyBase</code> from a <code>MyDerived</code> type using the normal <code>From</code>,
+<code>AsRef</code>, <code>AsMut</code>, and <code>Into</code> conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let derived: MyDerived = get_derived_from_somewhere();
+let base: MyBase = derived.into();
+#}</code></pre></pre>
+<a class="header" href="#example-dynamically-checked-casting" id="example-dynamically-checked-casting"><h3>Example Dynamically-Checked Casting</h3></a>
+<p>We can do dynamically-checked (checked with JavaScript's <code>instanceof</code> operator)
+downcasts from a <code>MyBase</code> into a <code>MyDerived</code> using the <code>dyn_{into,ref,mut}</code>
+methods:</p>
+<pre><code>let base: MyBase = get_base_from_somewhere();
+match base.dyn_into::&lt;MyDerived&gt;() {
+    Ok(derived) =&gt; {
+        // It was an instance of `MyDerived`!
+    }
+    Err(base) =&gt; {
+        // It was some other kind of instance of `MyBase`.
+    }
+}
+</code></pre>
+<a class="header" href="#example-unchecked-casting" id="example-unchecked-casting"><h3>Example Unchecked Casting</h3></a>
+<p>If we really know that a <code>MyBase</code> is an instance of <code>MyDerived</code> and we don't
+want to pay the cost of a dynamic check, we can also use unchecked conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let derived: MyDerived = get_derived_from_somewhere();
+let base: MyBase = derived.into();
+
+// We know that this is a `MyDerived` since we *just* converted it into `MyBase`
+// from `MyDerived` above.
+let derived: MyDerived = base.unchecked_into();
+#}</code></pre></pre>
+<p>Unchecked casting serves as an escape hatch for developers, and while it can
+lead to JavaScript exceptions, it cannot create memory unsafety.</p>
+<a class="header" href="#the-jscast-trait" id="the-jscast-trait"><h2>The <code>JsCast</code> Trait</h2></a>
+<p>For dynamically-checked and unchecked casting between arbitrary JavaScript
+types, we introduce the <code>JsCast</code> trait. It requires implementations provide a
+boolean predicate that consults JavaScript's <code>instanceof</code> operator, as well as
+unchecked conversions from JavaScript values:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+pub trait JsCast {
+    fn instanceof(val: &amp;JsValue) -&gt; bool;
+
+    fn unchecked_from_js(val: JsValue) -&gt; Self;
+    fn unchecked_from_js_ref(val: &amp;JsValue) -&gt; &amp;Self;
+    fn unchecked_from_js_mut(val: &amp;mut JsValue) -&gt; &amp;mut Self;
+
+    // ... provided methods elided ...
+}
+#}</code></pre></pre>
+<p><code>JsCast</code>'s required trait methods are not intended to be used to directly, but
+instead are leveraged by its provided methods. Users of <code>wasm-bindgen</code> will be
+able to ignore <code>JsCast</code>'s required trait methods for the most part, since the
+implementations will be mechanically generated, and they will only be using the
+required trait methods indirectly through the more ergonomic provided methods.</p>
+<p>For every <code>extern { type Illmatic; }</code> imported with <code>wasm-bindgen</code>, we emit an
+implementation of <code>JsCast</code> similar to this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl JsCast for Illmatic {
+    fn instanceof(val: &amp;JsValue) -&gt; bool {
+        #[cfg(all(target_arch = &quot;wasm32&quot;, not(target_os = &quot;emscripten&quot;)))]
+        #[wasm_import_module = &quot;__wbindgen_placeholder__&quot;]
+        extern {
+            fn __wbindgen_instanceof_Illmatic(idx: u32) -&gt; u32;
+        }
+
+        #[cfg(not(all(target_arch = &quot;wasm32&quot;, not(target_os = &quot;emscripten&quot;))))]
+        unsafe extern fn __wbindgen_instanceof_Illmatic(_: u32) -&gt; u32 {
+            panic!(&quot;function not implemented on non-wasm32 targets&quot;)
+        }
+
+        __wbindgen_instance_of_MyDerived(val.idx) == 1
+    }
+
+    fn unchecked_from_js(val: JsValue) -&gt; Illmatic {
+        Illmatic {
+            obj: val,
+        }
+    }
+
+    fn unchecked_from_js_ref(val: &amp;JsValue) -&gt; &amp;Illmatic {
+        unsafe {
+            &amp;*(val as *const JsValue as *const Illmatic)
+        }
+    }
+
+    fn unchecked_from_js_mut(val: &amp;mut JsValue) -&gt; &amp;mut Illmatic {
+        unsafe {
+            &amp;mut *(val as *mut JsValue as *mut Illmatic)
+        }
+    }
+}
+#}</code></pre></pre>
+<p>Additionally, <code>wasm-bindgen</code> will emit this JavaScript definition of
+<code>__wbindgen_instanceof_Illmatic</code> that simply wraps the JS <code>instanceof</code> operator:</p>
+<pre><code class="language-js">const __wbindgen_instanceof_Illmatic = function (idx) {
+  return getObject(idx) instanceof Illmatic;
+};
+</code></pre>
+<a class="header" href="#jscasts-provided-trait-methods" id="jscasts-provided-trait-methods"><h3><code>JsCast</code>'s Provided Trait Methods</h3></a>
+<p>The <code>JsCast</code> trait's provided methods wrap the unergonomic required static trait
+methods and provide ergonomic, chainable versions that operate on <code>self</code> and
+<em>another</em> <code>T: JsCast</code>. For example, the <code>JsCast::is_instance_of</code> method asks if
+<code>&amp;self</code> is an instance of some <em>other</em> <code>T</code> that also implements <code>JsCast</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+pub trait JsCast
+where
+    Self: AsRef&lt;JsValue&gt; + AsMut&lt;JsValue&gt; + Into&lt;JsValue&gt;,
+{
+    // ... required trait methods elided ...
+
+    // Unchecked conversions from `Self` into some other `T: JsCast`.
+
+    fn unchecked_into&lt;T&gt;(self) -&gt; T
+    where
+        T: JsCast,
+    {
+        T::unchecked_from_js(self.into())
+    }
+
+    fn unchecked_ref&lt;T&gt;(&amp;self) -&gt; &amp;T
+    where
+        T: JsCast,
+    {
+        T::unchecked_from_js_ref(self.as_ref())
+    }
+
+    fn unchecked_mut&lt;T&gt;(&amp;mut self) -&gt; &amp;mut T
+    where
+        T: JsCast,
+    {
+        T::unchecked_from_js_mut(self.as_mut())
+    }
+
+    // Predicate method to check whether `self` is an instance of `T` or not.
+
+    fn is_instance_of&lt;T&gt;(&amp;self) -&gt; bool
+    where
+        T: JsCast,
+    {
+        T::instanceof(self.as_ref())
+    }
+
+    // Dynamically-checked conversions from `Self` into some other `T: JsCast`.
+
+    fn dyn_into&lt;T&gt;(self) -&gt; Result&lt;T, Self&gt;
+    where
+        T: JsCast,
+    {
+        if self.is_instance_of::&lt;T&gt;() {
+            Ok(self.unchecked_into())
+        } else {
+            Err(self)
+        }
+    }
+
+    fn dyn_ref&lt;T&gt;(&amp;self) -&gt; Option&lt;&amp;T&gt;
+    where
+        T: JsCast,
+    {
+        if self.is_instance_of::&lt;T&gt;() {
+            Some(self.unchecked_ref())
+        } else {
+            None
+        }
+    }
+
+    fn dyn_mut&lt;T&gt;(&amp;mut self) -&gt; Option&lt;&amp;mut T&gt;
+    where
+        T: JsCast,
+    {
+        if self.is_instance_of::&lt;T&gt;() {
+            Some(self.unchecked_mut())
+        } else {
+            None
+        }
+    }
+}
+#}</code></pre></pre>
+<p>Using these methods provides better turbo-fishing syntax than using <code>JsCast</code>'s
+required trait methods directly.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+fn get_it() -&gt; JsValue { ... }
+
+// Tired -_-
+SomeJsThing::unchecked_from_js(get_it()).method();
+
+// Wired ^_^
+get_it()
+    .unchecked_into::&lt;SomeJsThing&gt;()
+    .method();
+#}</code></pre></pre>
+<a class="header" href="#jscast-implementation-for-jsvalue" id="jscast-implementation-for-jsvalue"><h3><code>JsCast</code> Implementation for <code>JsValue</code></h3></a>
+<p>We also trivially implement <code>JsCast</code> for <code>JsValue</code> with no-ops, and add
+<code>AsRef&lt;JsValue&gt;</code> and <code>AsMut&lt;JsValue&gt;</code> implementations for <code>JsValue</code> itself, so
+that the <code>JsCast</code> super trait bounds are satisfied:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl AsRef&lt;JsValue&gt; for JsValue {
+    fn as_ref(&amp;self) -&gt; &amp;JsValue {
+        self
+    }
+}
+
+impl AsMut&lt;JsValue&gt; for JsValue {
+    fn as_mut(&amp;mut self) -&gt; &amp;mut JsValue {
+        self
+    }
+}
+
+impl JsCast for JsValue {
+    fn instanceof(_: &amp;JsValue) -&gt; bool {
+        true
+    }
+
+    fn unchecked_from_js(val: JsValue) -&gt; Self {
+        val
+    }
+
+    fn unchecked_from_js_ref(val: &amp;JsValue) -&gt; &amp;Self {
+        val
+    }
+
+    fn unchecked_from_js_mut(val: &amp;mut JsValue) -&gt; &amp;mut Self {
+        val
+    }
+}
+#}</code></pre></pre>
+<a class="header" href="#upcasting-implementation" id="upcasting-implementation"><h2>Upcasting Implementation</h2></a>
+<p>For every <code>extends = MyBase</code> on a type imported with <code>extern type MyDerived</code>,
+and for every base and derived interface in a WebIDL interface inheritance
+chain, <code>wasm-bindgen</code> will emit these trait implementations that wrap unchecked
+conversions methods from <code>JsCast</code> that we know are valid due to the inheritance
+relationship:</p>
+<ol>
+<li>
+<p>A <code>From</code> implementation for <code>self</code>-consuming conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl From&lt;MyDerived&gt; for MyBase {
+    fn from(my_derived: MyDerived) -&gt; MyBase {
+        let val: JsValue = my_derived.into();
+        &lt;MyDerived as JsCast&gt;::unchecked_from_js(val)
+    }
+}
+#}</code></pre></pre>
+</li>
+<li>
+<p>An <code>AsRef</code> implementation for shared reference conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl AsRef&lt;MyBase&gt; for MyDerived {
+    fn as_ref(&amp;self) -&gt; &amp;MyDerived {
+        let val: &amp;JsValue = self.as_ref();
+        &lt;MyDerived as JsCast&gt;::uncheck_from_js_ref(val)
+    }
+}
+#}</code></pre></pre>
+</li>
+<li>
+<p>An <code>AsMut</code> implementation for exclusive reference conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl AsMut&lt;MyBase&gt; for MyDerived {
+    fn as_mut(&amp;mut self) -&gt; &amp;mut MyDerived {
+        let val: &amp;mut JsValue = self.as_mut();
+        &lt;MyDerived as JsCast&gt;::uncheck_from_js_mut(val)
+    }
+}
+#}</code></pre></pre>
+</li>
+</ol>
+<a class="header" href="#deep-inheritance-chains-example" id="deep-inheritance-chains-example"><h2>Deep Inheritance Chains Example</h2></a>
+<p>For deeper inheritance chain, like this example:</p>
+<pre><code class="language-js">class MyBase {}
+class MyDerived extends MyBase {}
+class MyDoubleDerived extends MyDerived {}
+</code></pre>
+<p>the proc-macro imports require an <code>extends</code> attribute for every transitive base:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+extern {
+    pub extern type MyBase;
+
+    #[wasm_bindgen(extends = MyBase)]
+    pub extern type MyDerived;
+
+    #[wasm_bindgen(extends = MyBase, extends = MyDerived)]
+    pub extern type MyDoubleDerived;
+}
+#}</code></pre></pre>
+<p>On the other hand, the WebIDL frontend can understand the full inheritance chain
+and nothing more than the usual interface inheritance syntax is required:</p>
+<pre><code class="language-webidl">interface MyBase {}
+interface MyDerived : MyBase {}
+interface MyDoubleDerived : MyDerived {}
+</code></pre>
+<p>Given these definitions, we can upcast a <code>MyDoubleDerived</code> all the way to a
+<code>MyBase</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let dub_derived: MyDoubleDerived = get_it_from_somewhere();
+let base: MyBase = dub_derived.into();
+#}</code></pre></pre>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<ul>
+<li>We might accidentally <em>encourage</em> using this inheritance instead of the more
+Rust-idiomatic usage of traits.</li>
+</ul>
+<a class="header" href="#rationale-and-alternatives-1" id="rationale-and-alternatives-1"><h1>Rationale and Alternatives</h1></a>
+<ul>
+<li>
+<p>We could define an <code>Upcast</code> trait instead of using the standard <code>From</code> and
+<code>As{Ref,Mut}</code> traits. This would make it more clear that we are doing
+inheritance-related casts, but would also be a new trait that folks would have
+to understand vs pretty much every Rust programmer's familiarity with the
+<code>std</code> traits.</p>
+</li>
+<li>
+<p>Upcasting using the <code>From</code> and <code>As{Ref,Mut}</code> traits does not provide
+chainable, turbofishing methods on <code>self</code> that one could use when type
+inference needs a helping hand. Instead, one must create a local variable with
+an explicit type.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+// Can't do this with upcasting.
+get_some_js_type()
+  .into::&lt;AnotherJsType&gt;()
+  .method();
+
+// Have to do this:
+let another: AnotherJsType = get_some_js_type().into();
+another.method();
+#}</code></pre></pre>
+<p>If we used a custom <code>Upcast</code> trait, we could provide turbofishable methods on
+<code>self</code>, at the cost of using non-standard traits.</p>
+</li>
+<li>
+<p>We could use <code>TryFrom</code> for dynamically-checked casts instead of
+<code>JsCast::dyn_into</code> et al. This would introduce a new nightly feature
+requirement when using <code>wasm-bindgen</code>. We leave the possibility open for when
+<code>TryFrom</code> is stabilized by not naming our dynamically-checked cast methods
+<code>JsCast::try_into</code> to be future compatible.</p>
+</li>
+<li>
+<p>Explicit upcasting still does not provide very good ergonomics. There are a
+couple things we could do here:</p>
+<ul>
+<li>
+<p>Use the <code>Deref</code> trait to hide upcasting. This is generally <a href="https://github.com/rust-unofficial/patterns/blob/master/anti_patterns/deref.md">considered an
+anti-pattern</a>.</p>
+</li>
+<li>
+<p>Automatically create a <code>MyBaseMethods</code> trait for base types that contain all
+the base type's methods and implement that trait for <code>MyBase</code> and
+<code>MyDerived</code>? Also emit a <code>MyDerivedMethods</code> trait that requires <code>MyBase</code> as
+a super trait, representing the inheritance at the trait level? This is the
+Rust-y thing to do and allows us to write generic functions with trait
+bounds. This is what <code>stdweb</code> does with the <code>IHTMLElement</code> trait for
+<code>HTMLElement</code>'s methods.</p>
+<p>Whether we do this or not also happens to be orthogonal to casting between
+base and derived types. We leave exploring this design space to follow up
+RFCs, and hope to land just the casting in an incremental fashion.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Traits sometimes get in the way of learning what one can do with a thing. They
+aren't as up-front in the generated documentation, and can lead people to
+thinking they <em>must</em> write code that is generic over a trait when it isn't
+necessary. There are two ways we could get rid of the <code>JsCast</code> trait:</p>
+<ol>
+<li>
+<p>Only implement its methods on <code>JsValue</code> and require that conversions like
+<code>ImportedJsClassUno</code> -&gt; <code>ImportedJsClassDos</code> go to <code>JsValue</code> in between:
+<code>ImportedJsClassUno</code> -&gt; <code>JsValue</code> -&gt; <code>ImpiortedJsClassDos</code>.</p>
+</li>
+<li>
+<p>We could redundantly implement all its methods on <code>JsValue</code> and imported JS
+classes directly.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Unchecked casting could be marked <code>unsafe</code> to reflect that correctness relies
+on the programmer in these cases. However, misusing unchecked JS casts cannot
+introduce memory unsafety in the Rust sense, so this would be using <code>unsafe</code>
+as a general-purpose &quot;you probably shouldn't use this&quot; warning, which is not
+<code>unsafe</code>'s intended purpose.</p>
+</li>
+<li>
+<p>We could only implement unchecked casts for everything all the time. This
+would encourage a loose, shoot-from-the-hip programming style. We would prefer
+leveraging types when possible. We realize that escape hatches are still
+required at times, and we do provide arbitrary unchecked casts, but guide
+folks towards upcasting with <code>From</code>, <code>AsRef</code>, and <code>AsMut</code> and doing
+dynamically checks for other types of casts.</p>
+</li>
+</ul>
+<a class="header" href="#unresolved-questions-1" id="unresolved-questions-1"><h1>Unresolved Questions</h1></a>
+<ul>
+<li>Should the <code>JsCast</code> trait be re-exported in <code>wasm_bindgen::prelude</code>? We do not
+specify that it should be in this RFC, and we can initially ship without
+re-exporting it in prelude and see what it feels like. Based on experience, we
+may decide in the future to add it to the prelude.</li>
+</ul>
+<ul>
+<li>Start Date: 2018-10-05</li>
+<li>RFC PR: https://github.com/rustwasm/rfcs/pull/5</li>
+<li>Tracking Issue: (leave this empty)</li>
+</ul>
+<a class="header" href="#summary-2" id="summary-2"><h1>Summary</h1></a>
+<p>Change <code>#[wasm_bindgen]</code> to use <code>structural</code> by default, and add a new
+attribute <code>final</code> for an opt-in to today's behavior. Once implemented then use
+<code>Deref</code> to model the class inheritance hierarchy in <code>web-sys</code> and <code>js-sys</code> to
+enable ergonomic usage of superclass methods of web types.</p>
+<a class="header" href="#motivation-2" id="motivation-2"><h1>Motivation</h1></a>
+<p>The initial motivation for this is outlined <a href="https://github.com/rustwasm/rfcs/pull/3">RFC 3</a>, namely that the <code>web-sys</code>
+crate provides bindings for many APIs found on the web but accessing the
+functionality of parent classes is quite cumbersome.</p>
+<p>The web makes extensive use of class inheritance hierarchies, and in <code>web-sys</code>
+right now each class gets its own <code>struct</code> type with inherent methods. These
+types implement <code>AsRef</code> between one another for subclass relationships, but it's
+quite unergonomic to actually reference the functionality! For example:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let x: &amp;Element = ...;
+let y: &amp;Node = x.as_ref();
+y.append_child(...);
+#}</code></pre></pre>
+<p>or...</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let x: &amp;Element = ...;
+&lt;Element as AsRef&lt;Node&gt;&gt;::as_ref(x)
+    .append_child(...);
+#}</code></pre></pre>
+<p>It's be much nicer if we could support this in a more first-class fashion and
+make it more ergonomic!</p>
+<blockquote>
+<p><strong>Note</strong>: While this RFC has the same motivation as <a href="https://github.com/rustwasm/rfcs/pull/3">RFC 3</a> it's proposing an
+alternative solution, specifically enabled by switching by <code>structural</code> by
+default, which is discussed in <a href="https://github.com/rustwasm/rfcs/pull/3">RFC 3</a> but is hopefully formally outlined
+here.</p>
+</blockquote>
+<a class="header" href="#detailed-explanation-2" id="detailed-explanation-2"><h1>Detailed Explanation</h1></a>
+<p>This RFC proposes using the built-in <code>Deref</code> trait to model the class hierarchy
+found on the web in <code>web-sys</code>. This also proposes changes to <code>#[wasm_bindgen]</code>
+to make using <code>Deref</code> feasible for binding arbitrary JS apis (such as those on
+NPM) with <code>Deref</code> as well.</p>
+<p>For example, <code>web-sys</code> will contain:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl Deref for Element {
+    type Target = Node;
+
+    fn deref(&amp;self) -&gt; &amp;Node { /* ... */ }
+}
+#}</code></pre></pre>
+<p>allowing us to write our example above as:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let x: &amp;Element = ...;
+x.append_child(...); // implicit deref to `Node`!
+#}</code></pre></pre>
+<p>All JS types in <code>web-sys</code> and in general have at most one superclass. Currently,
+however, the <code>#[wasm_bindgen]</code> attribute allows specifying multiple <code>extends</code>
+attributes to indicate superclasses:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+extern {
+    #[wasm_bindgen(extends = Node, extends = Object)]
+    type Element;
+
+    // ...
+}
+#}</code></pre></pre>
+<p>The <code>web-sys</code> API generator currently lists an <code>extends</code> for all superclasses,
+transitively. This is then used in the code generator to generate <code>AsRef</code>
+implementatiosn for <code>Element</code>.</p>
+<p>The code generation of <code>#[wasm_bindgen]</code> will be updated with the following
+rules:</p>
+<ul>
+<li>If no <code>extends</code> attribute is present, defined types will implement
+<code>Deref&lt;Target=JsValue&gt;</code>.</li>
+<li>Otherwise, the <em>first</em> <code>extends</code> attribute is used to implement
+<code>Deref&lt;Target=ListedType&gt;</code>.</li>
+<li>(long term, currently require a breaking change) reject multiple <code>extends</code>
+attributes, requiring there's only one.</li>
+</ul>
+<p>This means that <code>web-sys</code> may need to be updated to ensure that the immediate
+superclass is listed first in <code>extends</code>. Manual bindings will continue to work
+and will have the old <code>AsRef</code> implementations as well as a new <code>Deref</code>
+implementation.</p>
+<p>The <code>Deref</code> implementation will concretely be implemented as:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl Deref for #imported_type {
+    type Target = #target_type;
+
+    #[inline]
+    fn deref(&amp;self) -&gt; &amp;#target_type {
+        ::wasm_bindgen::JsCast::unchecked_ref(self)
+    }
+}
+#}</code></pre></pre>
+<a class="header" href="#switching-to-structural-by-default" id="switching-to-structural-by-default"><h3>Switching to <code>structural</code> by default</h3></a>
+<p>If we were to implement the above <code>Deref</code> proposal as-is today in
+<code>wasm-bindgen</code>, it would have a crucial drawback. It may not handle inheritance
+correctly! Let's explore this with an example. Say we have some JS we'd like to
+import:</p>
+<pre><code class="language-js">class Parent {
+    constructor() {}
+    method() { console.log('parent'); }
+}
+
+class Child extends Parent {
+    constructor() {}
+    method() { console.log('child'); }
+}
+</code></pre>
+<p>we would then bind this in Rust with:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+extern {
+    type Parent;
+    #[wasm_bindgen(constructor)]
+    fn new() -&gt; Parent;
+    #[wasm_bindgen(method)]
+    fn method(this: &amp;Parent);
+
+    #[wasm_bindgen(extends = Parent)]
+    type Child;
+    #[wasm_bindgen(constructor)]
+    fn new() -&gt; Child;
+    #[wasm_bindgen(method)]
+    fn method(this: &amp;Child);
+}
+#}</code></pre></pre>
+<p>and we could then use it like so:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+pub fn run() {
+    let parent = Parent::new();
+    parent.method();
+    let child = Child::new();
+    child.method();
+}
+#}</code></pre></pre>
+<p>and we would today see <code>parent</code> and <code>child</code> logged to the console. Ok everything
+is working as expected so far! We know we've got <code>Deref&lt;Target=Parent&gt; for Child</code>, though, so let's say we tweak this example a bit:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+pub fn run() {
+    call_method(&amp;Parent::new());
+    call_method(&amp;Child::new());
+}
+
+fn call_method(object: &amp;Parent) {
+    object.method();
+}
+#}</code></pre></pre>
+<p>Here we'd naively (and correctly) expect <code>parent</code> and <code>child</code> to be output like
+before, but much to our surprise this actually prints out <code>parent</code> twice!</p>
+<p>The issue with this is how <code>#[wasm_bindgen]</code> treats method calls today. When you
+say:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(method)]
+fn method(this: &amp;Parent);
+#}</code></pre></pre>
+<p>then <code>wasm-bindgen</code> (the CLI tool) generates JS that looks like this:</p>
+<pre><code class="language-js">const Parent_method_target = Parent.prototype.method;
+
+export function __wasm_bindgen_Parent_method(obj) {
+    Parent_method_target.call(getObject(obj));
+}
+</code></pre>
+<p>Here we can see that, by default, <code>wasm-bindgen</code> is <strong>reaching into the
+<code>prototype</code> of each class to figure out what method to call</strong>. This in turn
+means that when <code>Parent::method</code> is called in Rust, it unconditionally uses the
+method defined on <code>Parent</code> rather than walking the protype chain (that JS
+usually does) to find the right <code>method</code> method.</p>
+<p>To improve the situation there's a <code>structural</code> attribute to wasm-bindgen to fix
+this, which when applied like so:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(method, structural)]
+fn method(this: &amp;Parent);
+#}</code></pre></pre>
+<p>means that the following JS code is generated:</p>
+<pre><code class="language-js">const Parent_method_target = function() { this.method(); };
+
+// ...
+</code></pre>
+<p>Here we can see that a JS function shim is generated instead of using the raw
+function value in the prototype. This, however, means that our example above
+will indeed print <code>parent</code> and then <code>child</code> because JS is using prototype
+lookups to find the <code>method</code> method.</p>
+<p>Phew! Ok with all that information, we can see that <strong>if <code>structural</code> is omitted
+then JS class hierarchies can be subtly incorrect when methods taking parent
+classes are passed child classes which override methods</strong>.</p>
+<p>An easy solution to this problem is to simply use <code>structural</code> everywhere, so...
+let's propose that! Consequently, this RFC proposes changing <code>#[wasm_bindgen]</code>
+to act as if all bindings are labeled as <code>structural</code>. While technically a
+breaking change it's believed that we don't have any usage which would actually
+run into the breakage here.</p>
+<a class="header" href="#adding-wasm_bindgenfinal" id="adding-wasm_bindgenfinal"><h3>Adding <code>#[wasm_bindgen(final)]</code></h3></a>
+<p>Since <code>structural</code> is not the default today we don't actually have a name for
+the default behavior of <code>#[wasm_bindgen]</code> today. This RFC proposes adding a new
+attribute to <code>#[wasm_bindgen]</code>, <code>final</code>, which indicates that it should have
+today's behavior.</p>
+<p>When attached to an attribute or method, the <code>final</code> attribute indicates that
+the method or attribute should be processed through the <code>prototype</code> of a class
+rather than looked up structurally via the prototype chain.</p>
+<p>You can think of this as &quot;everything today is <code>final</code> by default&quot;.</p>
+<a class="header" href="#why-is-it-ok-to-make-structural-the-default" id="why-is-it-ok-to-make-structural-the-default"><h3>Why is it ok to make <code>structural</code> the default?</h3></a>
+<p>One pretty reasonable question you might have at this point is &quot;why, if
+<code>structural</code> is the default today, is it ok to switch?&quot; To answer this, let's
+first explore why <code>final</code> is the default today!</p>
+<p>From its inception <code>wasm-bindgen</code> has been designed with the future <a href="https://github.com/WebAssembly/host-bindings">host
+bindings</a> proposal for WebAssembly. The host bindings proposal promises
+faster-than-JS DOM access by removing many of the dynamic checks necessary when
+calling DOM methods. This proposal, however, is still in relatively early stages
+and hasn't been implemented in any browser yet (as far as we know).</p>
+<p>In WebAssembly on the web all imported functions must be plain old JS functions.
+They're all currently invoked with <code>undefined</code> as the <code>this</code> parameter. With
+host bindings, however, there's a way to say that an imported function uses the
+first argument to the function as the <code>this</code> parameter (like <code>Function.call</code> in
+JS). This in turn brings the promise of <em>eliminating any shim functions
+necessary when calling imported functionality</em>.</p>
+<p>As an example, today for <code>#[wasm_bindgen(method)] fn parent(this: &amp;Parent);</code> we
+generate JS that looks like:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(method)]
+fn method(this: &amp;Parent);
+#}</code></pre></pre>
+<p>means that the following JS code is generated:</p>
+<pre><code class="language-js">const Parent_method_target = Parent.prototype.method;
+
+export function __wasm_bindgen_Parent_method(idx) {
+    Parent_method_target.call(getObject(idx));
+}
+</code></pre>
+<p>If we assume for a moment that <a href="https://github.com/WebAssembly/reference-types"><code>anyref</code> is implemented</a> we
+could instead change this to:</p>
+<pre><code class="language-js">const Parent_method_target = Parent.prototype.method;
+
+export function __wasm_bindgen_Parent_method(obj) {
+    Parent_method_target.call(obj);
+}
+</code></pre>
+<p>(note the lack of need for <code>getObject</code>). And finally, with <a href="https://github.com/WebAssembly/host-bindings">host bindings</a> we
+can say that the wasm module's import of <code>__wasm_bindgen_Parent_method</code> uses the
+first parameter as <code>this</code>, meaning we can transform this to:</p>
+<pre><code class="language-js">export const __wasm_bindgen_Parent_method = Parent.prototype.method;
+</code></pre>
+<p>and <em>voila</em>, no JS function shims necessary! With <code>structural</code> we'll still need
+a function shim in this future world:</p>
+<pre><code class="language-js">export const __wasm_bindgen_Parent_method = function() { this.method(); };
+</code></pre>
+<p>Alright, with some of those basics out of the way, let's get back to
+why-<code>final</code>-by-default. The promise of <a href="https://github.com/WebAssembly/host-bindings">host bindings</a> is that by eliminating
+all these JS function shims necessary we can be faster than we would otherwise
+be, providing a feeling that <code>final</code> is faster than <code>structural</code>. This future,
+however, relies on a number of unimplemented features in wasm engines today.
+Let's consequently get an idea of what the performance looks like today!</p>
+<p>I've been slowly over time preparing a <a href="https://alexcrichton.github.io/rust-wasm-benchmark/">microbenchmark suite</a> for measuring
+JS/wasm/wasm-bindgen performance. The interesting one here is the benchmark
+&quot;<code>structural</code> vs not&quot;. If you click &quot;Run test&quot; in a browser after awhile you'll
+see two bars show up. The left-hand one is a method call with <code>final</code> and the
+right-hand one is a method call with <code>structural</code>. The results I see on my
+computer are:</p>
+<ul>
+<li>Firefox 62, <code>structural</code> is 3% faster</li>
+<li>Firefox 64, <code>structural</code> is 3% slower</li>
+<li>Chrome 69, <code>structural</code> is 5% slower</li>
+<li>Edge 42, <code>structural</code> is 22% slower</li>
+<li>Safari 12, <code>strutural</code> is 17% slower</li>
+</ul>
+<p>So it looks like for Firefox/Chrome it's not really making much of a difference
+but in Edge/Safari it's much faster to use <code>final</code>! It turns out, however, that
+we're not optimizing <code>structural</code> as much as we can. Let's change our generated
+code from:</p>
+<pre><code class="language-js">const Parent_method_target = function() { this.method(); };
+
+export function __wasm_bindgen_Parent_method(obj) {
+    Parent_method_target.call(getObject(obj));
+}
+</code></pre>
+<p>to...</p>
+<pre><code class="language-js">export function __wasm_bindgen_Parent_method(obj) {
+    getObject(obj).method();
+}
+</code></pre>
+<p>(manually editing the JS today)</p>
+<p>and if we rerun the benchmarks (sorry no online demo) we get:</p>
+<ul>
+<li>Firefox 62, <code>structural</code> is 22% faster</li>
+<li>Firefox 64, <code>structural</code> is 10% faster</li>
+<li>Chrome 69, <code>structural</code> is 0.3% slower</li>
+<li>Edge 42, <code>structural</code> is 15% faster</li>
+<li>Safai 12, <code>structural</code> is 8% slower</li>
+</ul>
+<p>and these numbers look quite different! There's some strong data here showing
+that <code>final</code> <em>is not universally faster today</em> and is actually almost
+universally slower (when we optimize <code>structural</code> slightly).</p>
+<p>Ok! That's all basically a very long winded way of saying <strong><code>final</code> was the
+historical default because we thought it was faster, but it turns out that in JS
+engines today it isn't always faster</strong>. As a result, this RFC proposes that it's
+ok to make <code>structural</code> the default.</p>
+<a class="header" href="#drawbacks-1" id="drawbacks-1"><h1>Drawbacks</h1></a>
+<p><code>Deref</code> is a somewhat quiet trait with disproportionately large ramifications.
+It affects method resolution (the <code>.</code> operator) as well as coercions (<code>&amp;T</code> to
+<code>&amp;U</code>). Discovering this in <code>web-sys</code> and/or JS apis in the ecosystem isn't
+always the easiest thing to do. It's thought, though, that this aspect of
+<code>Deref</code> won't come up very often when using JS apis in practice. Instead most
+APIs will work &quot;as-is&quot; as you might expect in JS in Rust as well, with <code>Deref</code>
+being an unobtrusive solution for developers to mostly ignore it an just call
+methods.</p>
+<p>Additionally <code>Deref</code> has the drawback that it's not explicitly designed for
+class inheritance hierarchies. For example <code>*element</code> produces a <code>Node</code>,
+<code>**element</code> produces an <code>Object</code>, etc. This is expected to not really come up
+that much in practice, though, and instead automatic coercions will cover almost
+all type conversions.</p>
+<a class="header" href="#rationale-and-alternatives-2" id="rationale-and-alternatives-2"><h1>Rationale and Alternatives</h1></a>
+<p>The primary alternative to this design is <a href="https://github.com/rustwasm/rfcs/pull/3">RFC 3</a>, using traits to model the
+inheritance hierarchy. The pros/cons of that proposal are well listed in <a href="https://github.com/rustwasm/rfcs/pull/3">RFC
+3</a>.</p>
+<a class="header" href="#unresolved-questions-2" id="unresolved-questions-2"><h1>Unresolved Questions</h1></a>
+<p>None right now!</p>
+<ul>
+<li>Start Date: 2018-01-08</li>
+<li>RFC PR: (leave this empty)</li>
+<li>Tracking Issue: (leave this empty)</li>
+</ul>
+<a class="header" href="#summary-3" id="summary-3"><h1>Summary</h1></a>
+<p>Add the ability for <code>#[wasm_bindgen]</code> to process, load, and handle dependencies
+on local JS files.</p>
+<ul>
+<li>
+<p>The <code>module</code> attribute can now be used to import files explicitly:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(module = &quot;/js/foo.js&quot;)]
+extern &quot;C&quot; {
+    // ...
+}
+#}</code></pre></pre>
+</li>
+<li>
+<p>The <code>inline_js</code> attribute can now be used to import JS modules inline:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(inline_js = &quot;export function foo() {}&quot;)]
+extern &quot;C&quot; {
+    fn foo();
+}
+#}</code></pre></pre>
+</li>
+<li>
+<p>The <code>--browser</code> flag is repurposed to generate an ES module for the browser
+and <code>--no-modules</code> is deprecated in favor of this flag.</p>
+</li>
+<li>
+<p>The <code>--nodejs</code> will not immediately support local JS snippets, but will do so
+in the future.</p>
+</li>
+</ul>
+<a class="header" href="#motivation-3" id="motivation-3"><h1>Motivation</h1></a>
+<p>The goal of <code>wasm-bindgen</code> is to enable easy interoperation between Rust and JS.
+While it's very easy to write custom Rust code, it's actually pretty difficult
+to write custom JS and hook it up with <code>#[wasm_bindgen]</code> (see
+<a href="https://github.com/rustwasm/wasm-bindgen/issues/224">rustwasm/wasm-bindgen#224</a>). The <code>#[wasm_bindgen]</code>
+attribute currently only supports importing functions from ES modules, but even
+then the support is limited and simply assumes that the ES module string exists
+in the final application build step.</p>
+<p>Currently there is no composable way for a crate to have some auxiliary JS that
+it is built with which ends up seamlessly being included into a final built
+application. For example the <code>rand</code> crate can't easily include local JS (perhaps
+to detect what API for randomness it's supposed to use) without imposing strong
+requirements on the final artifact.</p>
+<p>Ergonomically support imports from custom JS files also looks to be required by
+frameworks like <code>stdweb</code> to build a macro like <code>js!</code>. This involves generating
+snippets of JS at compile time which need to be included into the final bundle,
+which is intended to be powered by this new attribute.</p>
+<a class="header" href="#stakeholders-1" id="stakeholders-1"><h1>Stakeholders</h1></a>
+<p>Some major stakeholders in this RFC are:</p>
+<ul>
+<li>Users of <code>#[wasm_bindgen]</code></li>
+<li>Crate authors wishing to add wasm support to their crate.</li>
+<li>The <code>stdweb</code> authors</li>
+<li>Bundler (webpack) and <code>wasm-bindgen</code> integration folks.</li>
+</ul>
+<p>Most of the various folks here will be cc'd onto the RFC, and reaching out to
+more is always welcome!</p>
+<a class="header" href="#detailed-explanation-3" id="detailed-explanation-3"><h1>Detailed Explanation</h1></a>
+<p>This proposal involves a number of moving pieces, all of which are intended to
+work in concert to provide a streamlined story to including local JS files into
+a final <code>#[wasm_bindgen]</code> artifact. We'll take a look at each piece at a time
+here.</p>
+<a class="header" href="#new-syntactical-features" id="new-syntactical-features"><h3>New Syntactical Features</h3></a>
+<p>The most user-facing change proposed here is the reinterpretation of the
+<code>module</code> attribute inside of <code>#[wasm_bindgen]</code> and the addition of an
+<code>inline_js</code> attribute. They can now be used to import local files and define
+local imports like so:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(module = &quot;/js/foo.js&quot;)]
+extern &quot;C&quot; {
+    // ... definitions
+}
+
+#[wasm_bindgen(inline_js = &quot;export function foo() {}&quot;)]
+extern &quot;C&quot; {
+    fn foo();
+}
+#}</code></pre></pre>
+<p>The first declaration says that the block of functions and types and such are
+all imported from the <code>/js/foo.js</code> file, relative to the current file and rooted
+at the crate root. The second declaration lists the JS inline as a string
+literal and the <code>extern</code> block describes the exports of the inline module.</p>
+<p>The following rules are proposed for interpreting a <code>module</code> attribute.</p>
+<ul>
+<li>
+<p>If the strings starts with the platform-specific representation of an absolute
+path to the cargo build directory (identified by <code>$OUT_DIR</code>) then the string
+is interpreted as a file path in the output directory. This is intended for
+build scripts which generate JS files as part of the build.</p>
+</li>
+<li>
+<p>If the string starts with <code>/</code>, <code>./</code>, or <code>../</code> then it's considered a path to a
+local file. If not, then it's passed through verbatim as the ES module import.</p>
+</li>
+<li>
+<p>All paths are resolved relative to the current file, like Rust's own
+<code>#[path]</code>, <code>include_str!</code>, etc. At this time, however, it's unknown how we'd
+actually do this for relative files. As a result all paths will be required to
+start with <code>/</code>. When <code>proc_macro</code> has a stable API (or we otherwise figure
+out how) we can start allowing <code>./</code> and <code>../</code>-prefixed paths.</p>
+</li>
+</ul>
+<p>This will hopefully roughly match what programmers expect as well as preexisting
+conventions in browsers and bundlers.</p>
+<p>The <code>inline_js</code> attribute isn't really intended to be used for general-purpose
+development, but rather a way for procedural macros which can't currently today
+rely on the presence of <code>$OUT_DIR</code> to generate JS to import.</p>
+<a class="header" href="#format-of-imported-js" id="format-of-imported-js"><h3>Format of imported JS</h3></a>
+<p>All imported JS is required to written with ES module syntax. Initially the JS
+must be hand-written and cannot be postprocessed. For example the JS cannot be
+written with TypeScript, nor can it be compiled by Babel or similar.</p>
+<p>As an example, a library may contain:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+// src/lib.rs
+#[wasm_bindgen(module = &quot;/js/foo.js&quot;)]
+extern &quot;C&quot; {
+    fn call_js();
+}
+#}</code></pre></pre>
+<p>accompanied with:</p>
+<pre><code class="language-js">// js/foo.js
+
+export function call_js() {
+    // ...
+}
+</code></pre>
+<p>Note that <code>js/foo.js</code> uses ES module syntax to export the function <code>call_js</code>.
+When <code>call_js</code> is called from Rust it will call the <code>call_js</code> function in
+<code>foo.js</code>.</p>
+<a class="header" href="#propagation-through-dependencies" id="propagation-through-dependencies"><h3>Propagation Through Dependencies</h3></a>
+<p>The purpose of the <code>file</code> attribute is to work seamlessly with dependencies.
+When building a project with <code>#[wasm_bindgen]</code> you shouldn't be required to know
+whether your dependencies are using local JS snippets or not!</p>
+<p>The <code>#[wasm_bindgen]</code> macro, at compile time, will read the contents of the file
+provided, if any. This file will be serialized into the wasm-bindgen custom
+sections in a wasm-bindgen specific format. The final wasm artifact produced by
+rustc will contain all referenced JS file contents in its custom sections.</p>
+<p>The <code>wasm-bindgen</code> CLI tool will extract all this JS and write it out to the
+filesystem. The wasm file (or the wasm-bindgen-generated shim JS file) emitted
+will import all the emitted JS files with relative imports.</p>
+<a class="header" href="#updating-wasm-bindgen-output-modes" id="updating-wasm-bindgen-output-modes"><h3>Updating <code>wasm-bindgen</code> output modes</h3></a>
+<p>The <code>wasm-bindgen</code> has a few modes of output generation today. These output
+modes are largely centered around modules vs no modules and how modules are
+defined. This RFC proposes that we move away from this moreso towards
+<em>environments</em>, such as node.js-compatible vs browser-compatible code (which
+involves more than only module format). This means that in cases where an
+environment supports multiple module systems, or the module system is optional
+(browsers support es modules and also no modules) <code>wasm-bindgen</code> will choose
+what module system it thinks is best as long as it is compatible with that
+environment.</p>
+<p>The current output modes of <code>wasm-bindgen</code> are:</p>
+<ul>
+<li>
+<p><strong>Default</strong> - by default <code>wasm-bindgen</code> emits output that assumes the wasm
+module itself is an ES module. This will naturally work with custom JS
+snippets that are themselves ES modules, as they'll just be more modules in
+the graph all found in the local output directory. This output mode is
+currently only consumable by bundlers like Webpack, the default output cannot
+be loaded in either a web browser or Node.js.</p>
+</li>
+<li>
+<p><strong><code>--no-modules</code></strong> - the <code>--no-modules</code> flag to <code>wasm-bindgen</code> is incompatible
+with ES modules because it's intended to be included via a <code>&lt;script&gt;</code> tag
+which is not a module. This mode, like today, will fail to work if upstream
+crates contain local JS snippets.</p>
+</li>
+<li>
+<p><strong><code>--nodejs</code></strong> - this flag to <code>wasm-bindgen</code> indicates that the output should
+be tailored for Node.js, notably using CommonJS module conventions. In this
+mode <code>wasm-bindgen</code> will eventually use a JS parser in Rust to rewrite ES
+syntax of locally imported JS modules into CommonJS syntax.</p>
+</li>
+<li>
+<p><strong><code>--browser</code></strong> - currently this flag is the same as the default output mode
+except that the output is tailored slightly for a browser environment (such as
+assuming that <code>TextEncoder</code> is ambiently available).</p>
+<p>This RFC proposes
+repurposing this flag (breaking it) to instead generate an ES module natively
+loadable inside the web browser, but otherwise having a similar interface to
+<code>--no-modules</code> today, detailed below.</p>
+</li>
+</ul>
+<p>This RFC proposes rethinking these output modes as follows:</p>
+<table><thead><tr><th> Target Environment      </th><th> CLI Flag    </th><th> Module Format </th><th> User Experience                          </th><th> How are Local JS Snippets Loaded?                                                            </th></tr></thead><tbody>
+<tr><td> Node.js without bundler </td><td> <code>--nodejs</code>  </td><td> Common.js     </td><td> <code>require()</code> the main JS glue file        </td><td> Main JS glue file <code>require()</code>s crates' local JS snippets.                                    </td></tr>
+<tr><td> Web without bundler     </td><td> <code>--browser</code> </td><td> ES Modules    </td><td> <code>&lt;script&gt;</code> pointing to main JS glue file, using <code>type=module</code> </td><td> <code>import</code> statements cause additional network requests for crates' local snippets.            </td></tr>
+<tr><td> Web with bundler        </td><td> none        </td><td> ES Modules    </td><td> <code>&lt;script&gt;</code> pointing to main JS glue file </td><td> Bundler links crates' local snippets into main JS glue file. No additional network requests except for the <code>wasm</code> module itself. </td></tr>
+</tbody></table>
+<p>It is notable that browser with and without bundler is almost the same as far
+as <code>wasm-bindgen</code> is concerned: the only difference is that if we assume a
+bundler, we can rely on the bundler polyfilling wasm-as-ES-module for us.
+Note the <code>--browser</code> here is relatively radically different today and as such
+would be a breaking change. It's thought that the usage of <code>--browser</code> is small
+enough that we can get away with this, but feedback is always welcome on this
+point!</p>
+<p>The <code>--no-modules</code> flag doesn't really fit any more as the <code>--browser</code> use case
+is intended to subsume that. Note that the this RFC proposes only having the
+bundler-oriented and browser-oriented modes supporting local JS snippets for
+now, while paving a way forward to eventually support local JS snippets in
+Node.js. The <code>--no-modules</code> could eventually also be supported in the same
+manner as Node.js is (once we're parsing the JS file and rewriting the exports),
+but it's proposed here to generally move away from <code>--no-modules</code> towards
+<code>--browser</code>.</p>
+<p>The <code>--browser</code> output is currently considered to export an initialization
+function which, after called and the returned promise is resolved (like
+<code>--no-modules</code> today) will cause all exports to work when called. Before the
+promise resolves all exports will throw an error when called.</p>
+<a class="header" href="#js-files-depending-on-other-js-files" id="js-files-depending-on-other-js-files"><h3>JS files depending on other JS files</h3></a>
+<p>One tricky point about this RFC is when a local JS snippet depends on other JS
+files. For example your JS might look like:</p>
+<pre><code class="language-js">// js/foo.js
+
+import { foo } from '@some/npm-package';
+import { bar } from './bar.js'
+
+// ...
+</code></pre>
+<p>As designed above, these imports would not work. It's intended that we
+explicitly say this is an initial limitation of this design. We won't support
+imports between JS snippets just yet, but we should eventually be able to do so.</p>
+<p>In the long run to support <code>--nodejs</code> we'll need some level of ES module parser
+for JS. Once we can parse the imports themselves it would be relatively
+straightforward for <code>#[wasm_bindgen]</code>, during expansion, to load transitively
+included files. For example in the file above we'd include <code>./bar.js</code> into the
+wasm custom section. In this future world we'd just rewrite <code>./bar.js</code> (if
+necessary) when the final output artifact is emitted. Additionally with NPM
+package support in <code>wasm-pack</code> and <code>wasm-bindgen</code> (a future goal) we could
+validate entries in <code>package.json</code> are present for imports found.</p>
+<a class="header" href="#accessing-wasm-memorytable" id="accessing-wasm-memorytable"><h3>Accessing wasm Memory/Table</h3></a>
+<p>JS snippets interacting with the wasm module may commonly need to work with the
+<code>WebAssembly.Memory</code> and <code>WebAssembly.Table</code> instances associated with the wasm
+module. This RFC proposes using the wasm itself to pass along these objects,
+like so:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+// lib.rs
+
+#[wasm_bindgen(module = &quot;/js/local-snippet.js&quot;)]
+extern {
+    fn take_u8_slice(memory: &amp;JsValue, ptr: u32, len: u32);
+}
+
+#[wasm_bindgen]
+pub fn call_local_snippet() {
+    let vec = vec![0,1,2,3,4];
+    let mem = wasm_bindgen::memory();
+    take_u8_slice(&amp;mem, vec.as_ptr() as usize as u32, vec.len() as u32);
+}
+#}</code></pre></pre>
+<pre><code class="language-js">// js/local-snippet.js
+
+export function take_u8_slice(memory, ptr, len) {
+    let slice = new UInt8Array(memory.arrayBuffer, ptr, len);
+    // ...
+}
+</code></pre>
+<p>Here the <code>wasm_bindgen::memory()</code> existing intrinsic is used to pass along the
+memory object to the imported JS snippet. To mirror this we'll add
+<code>wasm_bindgen::function_table()</code> as well to the <code>wasm-bindgen</code> crate as an
+intrinsic to access the function table and return it as a <code>JsValue</code>.</p>
+<p>Eventually we may want a more explicit way to import the memory/table, but for
+now this should be sufficient for expressiveness.</p>
+<a class="header" href="#drawbacks-2" id="drawbacks-2"><h1>Drawbacks</h1></a>
+<ul>
+<li>
+<p>The initial RFC is fairly conservative. It doesn't work with <code>--nodejs</code> out of
+the gate nor <code>--no-modules</code>. Additionally it doesn't support JS snippets
+importing other JS initially. Note that all of these are intended to be
+supported in the future, it's just thought that it may take more design than
+we need at the get-go for now.</p>
+</li>
+<li>
+<p>JS snippets must be written in vanilla ES module JS syntax. Common
+preprocessors like TypeScript can't be used. It's unclear how such
+preprocessed JS would be imported. It's hoped that JS snippets are small
+enough that this isn't too much of a problem. Larger JS snippets can always be
+extracted to an NPM package and postprocessed there. Note that it's always
+possible for authors to manually run the TypeScript compiler by hand for these
+use cases, though.</p>
+</li>
+<li>
+<p>The relatively popular <code>--no-modules</code> flag is proposed to be deprecated in
+favor of a <code>--browser</code> flag, which itself will have a breaking change relative
+to today. It's thought though that <code>--browser</code> is only very rarely used so is
+safe to break, and it's also thought that we'll want to avoid breaking
+<code>--no-modules</code> as-is today.</p>
+</li>
+<li>
+<p>Local JS snippets are required to be written in ES module syntax. This may be
+a somewhat opinionated stance, but it's intended to make it easier to add
+future features to <code>wasm-bindgen</code> while continuing to work with JS. The ES
+module system, however, is the only known official standard throughout the
+ecosystem, so it's hoped that this is a clear choice for writing local JS
+snippets.</p>
+</li>
+</ul>
+<a class="header" href="#rationale-and-alternatives-3" id="rationale-and-alternatives-3"><h1>Rationale and Alternatives</h1></a>
+<p>The primary alternative to this system is a macro like <code>js!</code> from stdweb. This
+allows written small snippets of JS code directly in Rust code, and then
+<code>wasm-bindgen</code> would have the knowledge to generate appropriate shims. This RFC
+proposes recognizing <code>module</code> paths instead of this approach as it's thought to
+be a more general approach. Additionally it's intended that the <code>js!</code> macro can
+be built on the <code>module</code> directive including local file paths. The
+<code>wasm-bindgen</code> crate may grow a <code>js!</code>-like macro one day, but it's thought that
+it's best to start with a more conservative approach.</p>
+<p>One alternative for ES modules is to simply concatenate all JS together. This
+way we wouldn't have to parse anything but we'd instead just throw everything
+into one file. The downside of this approach, however, is that it can easily
+lead to namespacing conflicts and it also forces everyone to agree on module
+formats and runs the risk of forcing the module format of the final product.</p>
+<p>Another alternative to emitting small files at wasm-bindgen time is to instead
+unpack all files at <em>runtime</em> by leaving them in custom sections of the wasm
+executable. This in turn, however, may violate some CSP settings (particularly
+strict ones).</p>
+<a class="header" href="#unresolved-questions-3" id="unresolved-questions-3"><h1>Unresolved Questions</h1></a>
+<ul>
+<li>
+<p>Is it necessary to support <code>--nodejs</code> initially?</p>
+</li>
+<li>
+<p>Is it necessary to support local JS imports in local JS snippets initially?</p>
+</li>
+<li>
+<p>Are there known parsers of JS ES modules today? Are we forced to include a
+full JS parser or can we have a minimal one which only deals with ES syntax?</p>
+</li>
+<li>
+<p>How would we handle other assets like CSS, HTML, or images that want to be
+referenced by the final wasm file?</p>
+</li>
+</ul>
+<ul>
+<li>Start Date: 2019-01-23</li>
+<li>RFC PR: <a href="https://github.com/rustwasm/rfcs/pull/7">https://github.com/rustwasm/rfcs/pull/7</a></li>
+</ul>
+<a class="header" href="#summary-4" id="summary-4"><h1>Summary</h1></a>
+<!-- One paragraph explanation of the proposal. -->
+<p><strong>2019 is the year WebAssembly with Rust goes from &quot;usable&quot; to &quot;stable,
+batteries-available, and production-ready.&quot;</strong></p>
+<p>To realize this goal, the Rust and WebAssembly domain working group will:</p>
+<ul>
+<li>
+<p>Cultivate a library ecosystem by collaborating on a modular toolkit</p>
+</li>
+<li>
+<p>Bring multithreading to Rust-generated Wasm</p>
+</li>
+<li>
+<p>Integrate best-in-class debugging support into our toolchain</p>
+</li>
+<li>
+<p>Polish our toolchain and developer workflow, culminating in a 1.0 version of
+<code>wasm-pack</code></p>
+</li>
+<li>
+<p>Invest in monitoring, testing, and profiling infrastructure to keep our tools
+and libraries snappy, stable and production-ready.</p>
+</li>
+</ul>
+<a class="header" href="#motivation-4" id="motivation-4"><h1>Motivation</h1></a>
+<!-- Why are we doing this? What use cases does it support? What problems does it -->
+<!-- solve? What is the expected outcome? -->
+<p>This proposed roadmap draws upon</p>
+<ul>
+<li>
+<p><a href="https://github.com/rustwasm/team/issues/241">the community's blog posts</a> in response to the working
+group's <a href="https://rustwasm.github.io/2018/12/06/reflecting-on-rust-and-wasm-in-2018.html#rustwasm2019">call for roadmap suggestions,</a></p>
+</li>
+<li>
+<p>and the working group's core team's intuition and experience.</p>
+</li>
+</ul>
+<a class="header" href="#detailed-explanation-4" id="detailed-explanation-4"><h1>Detailed Explanation</h1></a>
+<a class="header" href="#collaborating-on-a-modular-toolkit" id="collaborating-on-a-modular-toolkit"><h2>Collaborating on a Modular Toolkit</h2></a>
+<blockquote>
+<p>The idea of building [high-level libraries] in a modular way that will allow
+others in the community to put the components together in a different way is
+very exciting to me. This hopefully will make the ecosystem as a whole much
+stronger.</p>
+<p>In particular I’d love to see a modular effort towards implementing a virtual
+DOM library with JSX like syntax. There have been several efforts on this
+front but all have seemed relatively monolithic and “batteries included”. I
+hope this will change in 2019.</p>
+</blockquote>
+<p><cite>— Ryan Levick in <a href="https://blog.ryanlevick.com/posts/rust-wasm-2019/">Rust WebAssembly
+2019</a></cite></p>
+<blockquote>
+<p>Don't create branded silos. Branding might perhaps be useful to achieve
+fame. But if we truly want Rust's Wasm story to succeed we should think of
+ways to collaborate instead of carving out territory.</p>
+</blockquote>
+<p><cite>— Yoshua Wuyts in <a href="https://blog.yoshuawuyts.com/wasm-2019/">Wasm
+2019</a></cite></p>
+<p>In 2018, we created foundational libraries like <a href="https://rustwasm.github.io/2018/09/26/announcing-web-sys.html"><code>js-sys</code> and
+<code>web-sys</code></a>. In 2019, we should build modular, high-level
+libraries on top of them, and collect the libraries under an umbrella toolkit
+crate for a holistic experience. This toolkit and its libraries will make
+available all the batteries you want when targeting Wasm.</p>
+<p>Building a greenfield Web application? Use the whole toolkit to hit the ground
+running. Carefully crafting a tiny Wasm module and integrating it back into an
+existing JavaScript project? Grab that one targeted library you need out from
+the toolkit and use it by itself.</p>
+<ul>
+<li>
+<p><strong>Modular:</strong> Take or leave any individual component. Prefer interfaces over
+implementations.</p>
+</li>
+<li>
+<p><strong>Cultivate collaboration:</strong> We've already seen an ecosystem sprouting up in
+the Rust and WebAssembly domain, and lots of great experiments, but we haven't
+seen a lot of collaboration between projects. By deliberately creating a space
+for collaboration, we can reduce effort duplication, multiply impact, and help
+the ecosystem stay healthy.</p>
+</li>
+</ul>
+<a class="header" href="#multithreading-for-wasm" id="multithreading-for-wasm"><h2>Multithreading for Wasm</h2></a>
+<blockquote>
+<p>We must bring Rust’s <a href="https://blog.rust-lang.org/2015/04/10/Fearless-Concurrency.html">fearless
+concurrency</a>
+to the Web!</p>
+</blockquote>
+<p><cite>— Nick Fitzgerald in <a href="http://fitzgeraldnick.com/2018/12/14/rust-and-webassembly-in-2019.html">Rust and WebAssembly in
+2019</a></cite></p>
+<blockquote>
+<p>Be the absolute cutting edge when it comes to WebAssembly, we should be
+thinking about being the first to satisfy [threads and atomics].</p>
+</blockquote>
+<p><cite>— richardanaya in <a href="https://www.reddit.com/r/rust/comments/aac8zk/my_rust_2019_dream_dominate_the_web/">My Rust 2019
+Dream</a></cite></p>
+<p>Our toolchain already has <a href="https://rustwasm.github.io/2018/10/24/multithreading-rust-and-wasm.html">experimental support for multithreading in
+Wasm</a>. Browsers are currently shipping <code>SharedArrayBuffer</code> and
+atomics (the primitives of multithreading for Wasm) behind feature flags, and
+they expect to start shipping them enabled by default in 2019.</p>
+<p>One of WebAssembly's selling points is the ability to effectively utilize
+available hardware. Multithreading extends that story from a single core to
+many. While multithreading will be <em>literally possible</em> for both JavaScript and
+any compiled-to-Wasm language, Rust's unique ownership system makes it
+<em>economically realistic</em>.</p>
+<p>There are some technical snags (see the link above for details) that mean we
+can't get Rust's standard library's <code>std::thread::*</code> working on Wasm. But it is
+still crucial that we have shared implementations of core multithreading
+building blocks like thread pools and locks across the ecosystem. In 2019, we
+should transform our experimental multithreading support into a production-ready
+foundation for multithreading on Wasm, get popular crates like <code>rayon</code> working
+on the Web, and cash in on Rust's fearless concurrency.</p>
+<a class="header" href="#debugging" id="debugging"><h2>Debugging</h2></a>
+<blockquote>
+<p>Before [debugging] is working properly (including variable inspection, which
+doesn't work with wasm at all right now), everything else is just toying
+around.</p>
+</blockquote>
+<p><cite>— anlumo in <a href="https://www.reddit.com/r/rust/comments/aac8zk/my_rust_2019_dream_dominate_the_web/ecqu3wu/">a comment on
+r/rust</a></cite></p>
+<blockquote>
+<p>Having [source maps] would be excellent for debugging.</p>
+</blockquote>
+<p><cite>— Yoshua Wuyts in <a href="https://blog.yoshuawuyts.com/wasm-2019/">Wasm 2019</a></p>
+<p>Debugging is tricky because much of the story is out of this working group's
+hands, and depends on both the WebAssembly standardization bodies and the folks
+implementing browser developer tools instead. However, there are some concrete
+steps we can take to improve debugging:</p>
+<ol>
+<li>
+<p>Get <code>println!</code>, <code>dbg!</code>, and friends working out of the box with Wasm. To
+achieve this, we will build support for the <a href="https://github.com/WebAssembly/reference-sysroot">WebAssembly reference
+sysroot</a> and standard system calls for Wasm that are in the
+standardization pipeline.</p>
+</li>
+<li>
+<p>Create the ability to compile our Rust-generated Wasm to JavaScript with
+source maps when debugging. Source maps are a limited debug info format for
+JavaScript that enable stepping through source locations in a debugger,
+instead of stepping through compiler-generated JavaScript code.</p>
+</li>
+<li>
+<p>Add debugging-focused tracing and instrumentation features to our
+toolchain. For example, it is currently difficult to debug a JavaScript array
+buffer view of Wasm memory getting detached because Wasm memory was
+resized. We can make debugging easier by optionally instrumenting <code>mem.grow</code>
+instructions with logging.</p>
+</li>
+</ol>
+<p>In addition to that, we should work with the WebAssembly standardization bodies
+and browser developer tools makers, and actively participate in the WebAssembly
+debugging subcharter to create some movement in the debugging space. By keeping
+up the environmental and social pressure and lending a hand where we can, we
+will eventually have rich, source-level debugging for Wasm.</p>
+<a class="header" href="#toolchain-and-workflow-polish" id="toolchain-and-workflow-polish"><h2>Toolchain and Workflow Polish</h2></a>
+<blockquote>
+<p>Setting up a Wasm project requires quite some boilerplate. It'd be nice if we
+could find ways to reduce this.</p>
+</blockquote>
+<p><cite>— Yoshua Wuyts in <a href="https://blog.yoshuawuyts.com/wasm-2019/">Wasm
+2019</a></cite></p>
+<blockquote>
+<p>There are a few things that we intended to include in <code>wasm-pack</code> in 2018 that
+didn’t quite make the cut. [...] We should finish these tasks and polish
+<code>wasm-pack</code> into a 1.0 tool.</p>
+</blockquote>
+<p><cite>— Nick Fitzgerald in <a href="http://fitzgeraldnick.com/2018/12/14/rust-and-webassembly-in-2019.html">Rust and WebAssembly in
+2019</a></cite></p>
+<p>In 2019, our toolchain and workflow should be feature complete and
+polished. <code>wasm-pack</code>, being the entry point to our toolchain, will bear the
+brunt of this work, but much of it will also be in tools that are invoked by
+<code>wasm-pack</code> rather than work in <code>wasm-pack</code> itself.</p>
+<ul>
+<li>
+<p>Generate JavaScript API documentation from the Rust doc comments on
+<code>#[wasm_bindgen]</code> exports.</p>
+</li>
+<li>
+<p>Finish and implement <a href="https://github.com/rustwasm/rfcs/pull/4">the RFC for library crates depending on external NPM
+packages.</a></p>
+</li>
+<li>
+<p>Finish and implement <a href="https://github.com/rustwasm/rfcs/pull/6">the RFC for local JavaScript
+snippets.</a></p>
+</li>
+<li>
+<p>Support <a href="https://github.com/rustwasm/wasm-pack/issues/159">running Binaryen's <code>wasm-opt</code> on Rust-generated
+Wasm.</a></p>
+</li>
+<li>
+<p><a href="https://github.com/rustwasm/wasm-pack/issues/373">Integrate <code>cargo generate</code> into <code>wasm-pack</code> for new project
+scaffolding.</a> This would
+smooth the developer on ramp, by making one less tool required to get up and
+running.</p>
+</li>
+<li>
+<p>RFC and implementation for generating portable, universal NPM packages that
+work on the Web, with Node.js, and in any minimal JavaScript environment.</p>
+</li>
+<li>
+<p>Define a philosophy for <code>wasm-pack</code>'s user experience, interaction, and
+display. Once defined and agreed upon, we should triage each <code>wasm-pack</code>
+subcommand and ensure that it is consistent with our philosophy.</p>
+</li>
+</ul>
+<p>Given that this work is largely about plugging missing holes and improving user
+experience, it is a bit of a laundry list. But that is also good sign: it means
+that <code>wasm-pack</code> is actually fairly close to being feature complete.</p>
+<p>After we've finished all these tasks, we should publish a 1.0 release of
+<code>wasm-pack</code>.</p>
+<a class="header" href="#monitoring-profiling-and-testing-infrastructure" id="monitoring-profiling-and-testing-infrastructure"><h2>Monitoring, Profiling, and Testing Infrastructure</h2></a>
+<blockquote>
+<p>The main objection I've experienced when proposing rust/wasm is compile times,
+but the end-to-end latency actually looks pretty competitive so far [...]
+Having a couple of benchmarks in CI and a graph online somewhere would go a
+long way towards keeping it that way.</p>
+</blockquote>
+<p><cite>— @jamii in <a href="https://github.com/rustwasm/rfcs/pull/7#issuecomment-458543182">an RFC
+comment</a></cite></p>
+<blockquote>
+<p>If I want to run the tests of a library using both libtest and
+wasm-bindgen-test I need to write:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[cfg_attr(not(target_arch = &quot;wasm32&quot;), test)]
+#[cfg_attr(target_arch = &quot;wasm32&quot;, wasm_bindgen_test)]
+fn my_test() { ... }
+#}</code></pre></pre>
+<p>instead of just</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[test]`
+fn my_test() { ... }
+#}</code></pre></pre>
+</blockquote>
+<p><cite>— @gnzlbg in <a href="https://github.com/rustwasm/rfcs/pull/7#issuecomment-460257231">an RFC
+comment</a></cite></p>
+<p>We should build <a href="https://perf.rust-lang.org">perf.rust-lang.org</a>-style
+infrastructure<sup>0</sup> to keep an eye on</p>
+<ul>
+<li>
+<p>code size of popular and foundational wasm crates (such as those crates in our
+modular toolkit), and</p>
+</li>
+<li>
+<p>our <code>wasm-bindgen</code> and <code>wasm-pack</code> build times.</p>
+</li>
+</ul>
+<p>By continually tracking this data over time, and just at once at a particular,
+we will hold ourselves accountable to delivering on our promises of a
+lightweight toolkit and &quot;stable, production-ready&quot; toolchain.</p>
+<p><small><sup>0</sup> Or perhaps integrate our monitoring into perf.rust-lang.org
+if it makes sense and the maintainers are willing.</small></p>
+<p>That is the infrastructure story at the macro-level, but we also need to support
+the needs of crates within the ecosystem at the micro-level. That means
+continuing to invest in unit testing and profiling Rust-generated Wasm
+binaries. Concretely, we should</p>
+<ul>
+<li>
+<p>add benchmarking support to <code>wasm-bindgen-test</code>, and</p>
+</li>
+<li>
+<p>make <code>wasm-bindgen-test</code> future-compatible with the <a href="https://github.com/rust-lang/rust/issues/50297">eRFC for custom test
+frameworks</a>, paving the way
+forward for making regular <code>#[test]</code> and <code>#[bench]</code> Just Work™ with Wasm
+instead of requiring the use of <code>#[wasm_bindgen_test]</code> instead.</p>
+</li>
+</ul>
+<a class="header" href="#rationale-drawbacks-and-alternatives" id="rationale-drawbacks-and-alternatives"><h1>Rationale, Drawbacks, and Alternatives</h1></a>
+<!-- This is your chance to discuss your proposal in the context of the whole design -->
+<!-- space. This is probably the most important section! -->
+<!-- - Why is this design the best in the space of possible designs? -->
+<!-- - What other designs have been considered and what is the rationale for not -->
+<!--   choosing them? -->
+<!-- - What is the impact of not doing this? -->
+<p>We choose to focus our efforts in 2019 where:</p>
+<ol>
+<li>
+<p><em>We</em> — the Rust and WebAssembly working group — can build and
+ship features. Areas where we aren't potentially blocked by external factors,
+such as still-in-progress standards.</p>
+</li>
+<li>
+<p>We can leverage advantages that are <em>unique to Rust</em> in the WebAssembly
+domain.</p>
+</li>
+</ol>
+<a class="header" href="#things-we-can-build-and-ship" id="things-we-can-build-and-ship"><h2>Things <em>We</em> can Build and Ship</h2></a>
+<p>We don't want our fate in anyone's hands but our own.</p>
+<p>The toolkit and toolchain polish work don't involve any external entities that
+could slow our progress to a halt. For debugging, where the larger story
+involves significant consensus with external groups and standards work, we
+explicitly choose to focus on what we can do ourselves to improve our own
+debugging story. We do not set ourselves up to block on anything produced by the
+WebAssembly community group's debugging subcharter, and we won't wait on browser
+vendors to implement new Wasm debugging support in developer tools.</p>
+<p>Of the roadmap items, the multithreading story has the most risk: our success in
+this domain relies on browsers enabling Wasm's multithreading primitives by
+default. However, this seems like a relatively safe bet, since the
+multithreading primitives have moved past their most experimental phase, <a href="https://caniuse.com/#feat=sharedarraybuffer">Chrome
+is already shipping them enabled by default, and all other major browsers have
+implementations that just aren't enabled by default yet.</a></p>
+<a class="header" href="#leveraging-unique-advantages" id="leveraging-unique-advantages"><h2>Leveraging Unique Advantages</h2></a>
+<p>We want to focus our efforts where we get the biggest effort to impact
+efficiency, and establish ourselves as leaders in WebAssembly in ways that no
+one else even has a route towards catching up.</p>
+<p>The multithreading story is perhaps the biggest example of unique advantage:
+multithreading is <em>infamously</em> bug prone (to say the least!) and Rust's
+ownership system eliminates data races at compile time.</p>
+<p>By building a modular toolkit of libraries, we bolster our ability to target the
+full spectrum from tiny module surgically inserted into an existing JavaScript
+application, to building a complete Web application in Rust. Any language that
+relies on a garbage collector, fat runtime, or is overly opinionated about FFI
+and interaction with the outside world can't reach the tiny module end of that
+spectrum.</p>
+<p>The toolchain polish and debugging work have less clearly <em>unique</em>
+advantages. But both are table stakes for a good development experience, and the
+par for the course for these things in the Wasm domain is currently so low that
+we can and should stand out from the crowd.</p>
+<a class="header" href="#considered-alternative-roadmap-items" id="considered-alternative-roadmap-items"><h2>Considered Alternative Roadmap Items</h2></a>
+<p>Here are a few alternative items that were considered for the roadmap, perhaps
+because they were called out in <code>#RustWasm2019</code> posts, but ultimately were not
+included.</p>
+<a class="header" href="#pushing-anyref-integration-into-the-rust-language" id="pushing-anyref-integration-into-the-rust-language"><h3>Pushing <code>anyref</code> Integration into the Rust Language</h3></a>
+<p>We've already been well positioned to take advantage of host bindings and GC
+reference types once they ship in Wasm via <code>wasm-bindgen</code>. We could take it even
+further and imagine a future where the Rust language was able to pass around
+opaque references to objects in alternative memory spaces (some of which might
+be GC'd) in a first class way: structs that are split across memory spaces, fat
+pointers into multiple memory spaces, etc.</p>
+<p>However, it isn't clear that pushing this all the way into the language will
+bring that much utility over the existing <a href="https://github.com/rustwasm/wasm-bindgen/pull/1002">&quot;<code>anyref</code> at the edges&quot;
+implementation that <code>wasm-bindgen</code> already has.</a>
+Additionally, cashing in on this work could easily be blocked in a couple ways:
+<code>anyref</code> isn't shipping in any mainstream wasm engine yet, and getting this
+language-level integration through the larger Rust RFC process with all of its
+stakeholders would happen at a glacial pace (if it even happened!)</p>
+<a class="header" href="#a-focus-only-on-pure-rust-web-applications" id="a-focus-only-on-pure-rust-web-applications"><h3>A Focus Only on Pure-Rust Web Applications</h3></a>
+<p>We prefer to answer &quot;yes and&quot; to pure-Rust Web applications via the modular
+toolkit that can service the full spectrum of tiny module to whole Web app, than
+to focus only on the whole Web app end of the spectrum. Our hope with the
+toolkit is that a rising tide will lift all boats, regardless where your project
+lands on that spectrum.</p>
+<p>Additionally, full Web apps are not a <em>unique</em> advantage for Rust. JavaScript
+has been doing it for a while, and as far as Wasm goes, there are better-funded
+&quot;competitors&quot; in the space that will be able to provide a more compelling
+monolithic Web app development experience more quickly (via integration with
+tooling, existing ecosystems, or throwing money and developers at the
+problem). Microsoft and Blazor, Google and Go, bringing existing native
+applications to the Web with Emscripten, etc. We should compete where we are
+best positioned to do so, and monolithic Web applications is not that.</p>
+<p>All that said, if you want to build a whole Web application with Rust-generated
+Wasm and don't want to write any JavaScript at all, you should be able to do
+so. In fact, <a href="https://github.com/rustwasm/wasm-bindgen/tree/master/examples/no_modules">you already can with <code>#[wasm_bindgen(start)]</code> and the <code>no-modules</code>
+target</a>. We will never remove this ability, and the new toolkit will
+only make developing a whole Web app easier.</p>
+<a class="header" href="#non-javascript-and-non-web-embeddings" id="non-javascript-and-non-web-embeddings"><h3>Non-JavaScript and Non-Web Embeddings</h3></a>
+<p>While the whole of every non-Web and non-JavaScript WebAssembly embeddings looks
+very exciting, each embedding is a unique environment, and there is not yet a
+standard set of capabilities available. We don't want to block on waiting for a
+full set of standard capabilities to emerge, nor do we want to choose one
+particular embedding environment.</p>
+<p>We do intend to support the reference sysroot work, and any follow up work that
+comes after it, but we will take advantage of these things on a opportunistic
+basis rather than making it a roadmap item.</p>
+<p>We encourage anyone interested in non-JavaScript and non-Web embeddings to
+collaborate with the WebAssembly community group to push this story forward by
+defining standard Wasm capabilities!</p>
+<a class="header" href="#unresolved-questions-4" id="unresolved-questions-4"><h1>Unresolved Questions</h1></a>
+<p>To be determined.</p>
+<ul>
+<li>Start Date: 2018-02-14</li>
+<li>RFC PR: (leave this empty)</li>
+<li>Tracking Issue: (leave this empty)</li>
+</ul>
+<a class="header" href="#summary-5" id="summary-5"><h1>Summary</h1></a>
+<p>Enable Rust crates to transparently depend on packages in the npm ecosystem.
+These dependencies will, like normal Rust dependencies through Cargo, work
+seamlessly when consumed by other crates.</p>
+<a class="header" href="#motivation-5" id="motivation-5"><h1>Motivation</h1></a>
+<p>The primary goal of <code>wasm-bindgen</code> and <code>wasm-pack</code> is to enable seamless
+integration of Rust with JS. A massive portion of the JS ecosystem, npm, however
+currently has little support in <code>wasm-bindgen</code> and <code>wasm-pack</code>, making it
+difficult to access this rich resource that JS offers!</p>
+<p>The goal of this RFC is to enable these dependencies to exist. Rust crates
+should be able to require functionality from NPM, just like how NPM can require
+Rust crates compiled to wasm. Any workflow which currently uses NPM packages
+(such as packaging WebAssembly with a bundler) should continue to work but also
+allow pulling in &quot;custom&quot; NPM packages as well as requested by Rust
+dependencies.</p>
+<a class="header" href="#stakeholders-2" id="stakeholders-2"><h1>Stakeholders</h1></a>
+<p>This RFC primarily affects uses of <code>wasm-pack</code> and <code>wasm-bindgen</code> who are also
+currently using bundlers like Webpack. This also affects, however, developers of
+core foundational crates in the Rust ecosystem who want to be concious of the
+ability to pull in NPM dependencies and such.</p>
+<a class="header" href="#detailed-explanation-5" id="detailed-explanation-5"><h1>Detailed Explanation</h1></a>
+<p>Adding an NPM dependency to a Rust project will look very similar to adding an
+NPM dependency to a normal JS project. First the dependency, and its version
+requirement, need to be declare. This RFC proposes doing this in a
+<code>package.json</code> file adjacent to the crate's <code>Cargo.toml</code> file:</p>
+<pre><code class="language-json"> {
+  &quot;dependencies&quot;: {
+    &quot;foo&quot;: &quot;^1.0.1&quot;
+  }
+}
+</code></pre>
+<p>The <code>package.json</code> file will initially be a subset of NPM's <code>package.json</code>,
+only supporting one <code>dependencies</code> top-level key which internally has key/value
+pairs with strings. Beyond this validation though no validation will be
+performed of either key or value pairs within <code>dependencies</code>. In the future
+it's intended that more keys of <code>package.json</code> in NPM will be supported, but
+this RFC is intended to be an MVP for now to enable dependencies on NPM at all.</p>
+<p>After this <code>package.json</code> file is created, the package next needs to be
+imported in the Rust crate. Like with other Rust dependencies on JS, this will
+be done with the <code>#[wasm_bindgen]</code> attribute:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(module = &quot;foo&quot;)]
+extern &quot;C&quot; {
+    fn function_in_foo_package();
+}
+#}</code></pre></pre>
+<blockquote>
+<p><strong>Note</strong>: in JS the above import would be similar to:</p>
+<pre><code class="language-js">import { function_in_foo_package } from &quot;foo&quot;;
+</code></pre>
+</blockquote>
+<p>The exiting <code>module</code> key in the <code>#[wasm_bindgen]</code> attribute can be used to
+indicate which ES module the import is coming from. This affects the <code>module</code>
+key in the final output wasm binary, and corresponds to the name of the package
+in <code>package.json</code>. This is intended to match how bundler conventions already
+interpret NPM packages as ES modules.</p>
+<p>After these two tools are in place, all that's needed is a <code>wasm-pack build</code> and
+you should be good to go! The final <code>package.json</code> will have the <code>foo</code>
+dependency listed in our <code>package.json</code> above and be ready for consumption via a
+bundler.</p>
+<a class="header" href="#technical-implementation" id="technical-implementation"><h3>Technical Implementation</h3></a>
+<p>Under the hood there's a few moving parts which enables all of this to happen.
+Let's first take a look at the pieces in <code>wasm-bindgen</code>.</p>
+<p>The primary goal of this RFC is to enable <em>tranparent</em> and <em>transitive</em>
+dependencies on NPM. The <code>#[wasm_bindgen]</code> macro is the only aspect of a crate's
+build which has access to all transitive dependencies, so this is what we'll be
+using to slurp up <code>package.json</code>. When <code>#[wasm_bindgen]</code> with a <code>module</code> key is
+specified it will look for <code>package.json</code> inside the cwd of the procedural macro
+(note that the cwd is set by Cargo to be the directory with the crate's
+<code>Cargo.toml</code> that is being compiled, or the crate in which <code>#[wasm_bindgen]</code> is
+written). This <code>package.json</code>, if found, will have an absolute path to it
+encoded into the custom section that <code>wasm-bindgen</code> already emits.</p>
+<p>Later, when the <code>wasm-bindgen</code> CLI tool executes, it will parse an interpret all
+items in the wasm-bindgen custom section. All <code>package.json</code> files listed will
+be loaded, parsed, and validated (aka only <code>dependencies</code> allowed for now). If
+any <code>package.json</code> is loaded then a <code>package.json</code> file will be emitted next to
+the output JS file inside of <code>--out-dir</code>.</p>
+<p>After <code>wasm-bindgen</code> executes, then <code>wasm-pack</code> will read the <code>package.json</code>
+output, if any, and augment it with metadata and other items which are already
+emitted.</p>
+<p>If more than one crate in a dependency graph depends on an NPM package then in
+this MVP proposal an error will be generated. In the future we can implement
+some degree of merging version requirements, but for now to remain simple
+<code>wasm-bindgen</code> will emit an error.</p>
+<a class="header" href="#interaction-with---no-modules" id="interaction-with---no-modules"><h3>Interaction with <code>--no-modules</code></h3></a>
+<p>Depending on NPM packages fundamentally requires, well, NPM, in one way or
+another. The <code>wasm-bindgen</code> and <code>wasm-pack</code> CLI tools have modes of output
+(notably <code>wasm-bindgen</code>'s <code>--no-modules</code> and <code>wasm-pack</code>'s <code>--target no-modules</code>
+flags) which are intended to not require NPM and other JS tooling. In these
+situations if a <code>package.json</code> in any Rust crate is detected an error will be
+emitted indicating so.</p>
+<p>Note that this means that core crates which are intended to work with
+<code>--no-modules</code> will not be able add NPM dependencies. Instead they'll have to
+either import Rust dependencies from crates.io or use a feature like <a href="https://github.com/rustwasm/rfcs/pull/6">local JS
+snippets</a> to import custom JS code.</p>
+<a class="header" href="#drawbacks-3" id="drawbacks-3"><h1>Drawbacks</h1></a>
+<p>One of the primary drawbacks of this RFC is that it's fundamentally incompatible
+with a major use case of <code>wasm-bindgen</code> and <code>wasm-pack</code>, the <code>--no-modules</code> and
+<code>--target no-modules</code> flags. As a short-term band-aid this RFC proposes making
+it a hard error which would hinder the adoption of this feature in crates that
+want to be usable in this mode.</p>
+<p>In the long-term, however, it may be possible to get this working. For example
+many NPM packages are available on <code>unpkg.com</code> or in other locations. It may be
+possible, if all packages in these locations adhere to well-known conventions,
+to generate code that's compatible with these locations of hosting NPM packages.
+In these situations it may then be possible to &quot;just drop a script tag&quot; in a few
+locations to get <code>--no-modules</code> working with NPM packages. It's unclear how
+viable this is, though.</p>
+<a class="header" href="#rationale-and-alternatives-4" id="rationale-and-alternatives-4"><h1>Rationale and Alternatives</h1></a>
+<p>When developing this RFC, some guiding values for its design have been
+articulated:</p>
+<ul>
+<li>
+<p>Development on Rust-generated WebAssembly projects should allow developers to
+use the development environment they are most comfortable with. Developers
+writing Rust should get to use Rust, and developers using JavaScript should
+get to use a JS based runtime environment (Node.js, Chakra, etc).</p>
+</li>
+<li>
+<p>JavaScript tooling and workflows should be usable with Rust-generated
+WebAssembly projects. For example, bundlers like WebPack and Parcel, or
+dependency management tools such as <code>npm audit</code> and GreenKeeper.</p>
+</li>
+<li>
+<p>When possible, decisions should be made that allow the solution to be
+available to developers of not just Rust, but also C, and C++.</p>
+</li>
+<li>
+<p>Decisions should be focused on creating workflows that allow developers an
+easy learning curve and productive development experience.</p>
+</li>
+</ul>
+<p>These principles lead to the above proposal of using <code>package.json</code> to declare
+NPM dependencies which is then grouped together by <code>wasm-bindgen</code> to be
+published by <code>wasm-pack</code>. By using <code>package.json</code> we get inherent compatibility
+with existing workflows like GreenKeeper and <code>npm install</code>. Additionally
+<code>package.json</code> is very well documented and supported throughout the JS ecosystem
+making it very familiar.</p>
+<p>Some other alternatives to this RFC which have been ruled out are:</p>
+<ul>
+<li>
+<p><strong>Using <code>Cargo.toml</code> instead of <code>package.json</code></strong> to declare NPM dependencies.
+For example we could use:</p>
+<pre><code class="language-toml">[package.metadata.npm.dependencies]
+foo = &quot;0.1&quot;
+</code></pre>
+<p>This has the drawback though of being incompatible with all existing workflows
+around <code>package.json</code>. Additionally it also highlights a discrepancy between
+NPM and Cargo and how <code>&quot;0.1&quot;</code> as a version requirement is interpreted (e.g.
+<code>^0.1</code> or <code>~0.1</code>).</p>
+</li>
+<li>
+<p><strong>Adding a separate manifest file</strong> instead of using <code>package.json</code> is also
+possibility and might be easier for <code>wasm-bindgen</code> to read and later
+parse/include. This has a possible benefit of being scoped to exactly our use
+case and not being misleading by disallowing otherwise-valid fields of
+<code>package.json</code>. The downside of this approach is the same as <code>Cargo.toml</code>,
+however, in that it's an unfamiliar format to most and is incompatible with
+existing tooling without bringing too much benefit.</p>
+</li>
+<li>
+<p><strong>Annotating version dependencies inline</strong> could be used rather than
+<code>package.json</code> as well, such as:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(module = &quot;foo&quot;, version = &quot;0.1&quot;)]
+extern &quot;C&quot; {
+    // ...
+}
+#}</code></pre></pre>
+<p>As with all other alternatives this is incompatible with existing tooling, but
+it's also not aligned with Rust's own mechanism for declaring dependencies
+which separates the location for version information and the code iteslf.</p>
+</li>
+</ul>
+<a class="header" href="#unresolved-questions-5" id="unresolved-questions-5"><h1>Unresolved Questions</h1></a>
+<ul>
+<li>Is the MVP restriction of only using <code>dependencies</code> too limiting? Should more
+fields be supported in <code>package.json</code>?</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+        
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+        
+        
+
+    </body>
+</html>

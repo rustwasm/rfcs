@@ -1,0 +1,683 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>002-wasm-bindgen-inheritance-casting - Rust and WebAssembly RFCs</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="A collection of the accepted RFCs for Rust and WebAssembly">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li class="affix"><a href="introduction.html">Introduction</a></li><li><a href="001-the-rfc-process.html">001-the-rfc-process</a></li><li><a href="002-wasm-bindgen-inheritance-casting.html" class="active">002-wasm-bindgen-inheritance-casting</a></li><li><a href="005-structural-and-deref.html">005-structural-and-deref</a></li><li><a href="006-local-js-dependencies.html">006-local-js-dependencies</a></li><li><a href="007-2019-roadmap.html">007-2019-roadmap</a></li><li><a href="008-npm-dependencies.html">008-npm-dependencies</a></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust and WebAssembly RFCs</h1> 
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <ul>
+<li>Start Date: 2018-07-10</li>
+<li>RFC PR: https://github.com/rustwasm/rfcs/pull/2</li>
+<li>Tracking Issue: https://github.com/rustwasm/wasm-bindgen/pull/640</li>
+</ul>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
+<p>Support defining single inheritance relationships in <code>wasm-bindgen</code>'s imported
+types. Specifically, we define static upcasts from a derived type to one of its
+base types, checked dynamic casts from a type to any other type using
+JavaScript's <code>instanceof</code> operator, and finally unchecked casts between any
+JavaScript types as an escape hatch for developers. For the proc-macro frontend,
+this is done by adding the <code>#[wasm_bindgen(extends = Base)]</code> attribute to the
+derived type. For the WebIDL frontend, WebIDL's existing interface inheritance
+syntax is used.</p>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<p>Prototype chains and ECMAScript classes allow JavaScript developers to define
+single inheritance relationships between types. <a href="https://heycam.github.io/webidl/#dfn-inherit">WebIDL interfaces can inherit
+from one another,</a> and Web APIs make widespread use of this
+feature. We want to support calling base methods on an imported derived type and
+passing an imported derived type to imported functions that expect a base type
+in <code>wasm-bindgen</code>. We want to support dynamically checking whether some JS value
+is an instance of a JS class, and dynamically-checked casts. Finally, the same
+way that <code>unsafe</code> provides an encapsulatable escape hatch for Rust's ownership
+and borrowing, we want to provide unchecked (but safe!) conversions between JS
+classes and values.</p>
+<a class="header" href="#stakeholders" id="stakeholders"><h1>Stakeholders</h1></a>
+<p>Anyone who is using <code>wasm-bindgen</code> directly or transitively through the
+<code>web-sys</code> crate is affected. This does <em>not</em> affect the larger wasm ecosystem
+outside of Rust (eg Webpack). Therefore, the usual advertisement of this RFC on
+<em>This Week in Rust and WebAssembly</em> and at our working group meetings should
+suffice in soliciting feedback.</p>
+<a class="header" href="#detailed-explanation" id="detailed-explanation"><h1>Detailed Explanation</h1></a>
+<a class="header" href="#example-usage" id="example-usage"><h2>Example Usage</h2></a>
+<p>Consider the following JavaScript class definitions:</p>
+<pre><code class="language-js">class MyBase { }
+class MyDerived extends MyBase { }
+</code></pre>
+<p>We translate this into <code>wasm-bindgen</code> proc-macro imports like this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+extern {
+    pub extern type MyBase;
+
+    #[wasm_bindgen(extends = MyBase)]
+    pub extern type MyDerived;
+}
+#}</code></pre></pre>
+<p>Note the <code>#[wasm_bindgen(extends = MyBase)]</code> annotation on <code>extern type MyDerived</code>. This tells <code>wasm-bindgen</code> that <code>MyDerived</code> inherits from <code>MyBase</code>.</p>
+<p>Alternatively, we could describe these same classes as WebIDL interfaces:</p>
+<pre><code class="language-webidl">interface MyBase {}
+interface MyDerived : MyBase {}
+</code></pre>
+<a class="header" href="#example-upcasting" id="example-upcasting"><h3>Example Upcasting</h3></a>
+<p>We can upcast into a <code>MyBase</code> from a <code>MyDerived</code> type using the normal <code>From</code>,
+<code>AsRef</code>, <code>AsMut</code>, and <code>Into</code> conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let derived: MyDerived = get_derived_from_somewhere();
+let base: MyBase = derived.into();
+#}</code></pre></pre>
+<a class="header" href="#example-dynamically-checked-casting" id="example-dynamically-checked-casting"><h3>Example Dynamically-Checked Casting</h3></a>
+<p>We can do dynamically-checked (checked with JavaScript's <code>instanceof</code> operator)
+downcasts from a <code>MyBase</code> into a <code>MyDerived</code> using the <code>dyn_{into,ref,mut}</code>
+methods:</p>
+<pre><code>let base: MyBase = get_base_from_somewhere();
+match base.dyn_into::&lt;MyDerived&gt;() {
+    Ok(derived) =&gt; {
+        // It was an instance of `MyDerived`!
+    }
+    Err(base) =&gt; {
+        // It was some other kind of instance of `MyBase`.
+    }
+}
+</code></pre>
+<a class="header" href="#example-unchecked-casting" id="example-unchecked-casting"><h3>Example Unchecked Casting</h3></a>
+<p>If we really know that a <code>MyBase</code> is an instance of <code>MyDerived</code> and we don't
+want to pay the cost of a dynamic check, we can also use unchecked conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let derived: MyDerived = get_derived_from_somewhere();
+let base: MyBase = derived.into();
+
+// We know that this is a `MyDerived` since we *just* converted it into `MyBase`
+// from `MyDerived` above.
+let derived: MyDerived = base.unchecked_into();
+#}</code></pre></pre>
+<p>Unchecked casting serves as an escape hatch for developers, and while it can
+lead to JavaScript exceptions, it cannot create memory unsafety.</p>
+<a class="header" href="#the-jscast-trait" id="the-jscast-trait"><h2>The <code>JsCast</code> Trait</h2></a>
+<p>For dynamically-checked and unchecked casting between arbitrary JavaScript
+types, we introduce the <code>JsCast</code> trait. It requires implementations provide a
+boolean predicate that consults JavaScript's <code>instanceof</code> operator, as well as
+unchecked conversions from JavaScript values:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+pub trait JsCast {
+    fn instanceof(val: &amp;JsValue) -&gt; bool;
+
+    fn unchecked_from_js(val: JsValue) -&gt; Self;
+    fn unchecked_from_js_ref(val: &amp;JsValue) -&gt; &amp;Self;
+    fn unchecked_from_js_mut(val: &amp;mut JsValue) -&gt; &amp;mut Self;
+
+    // ... provided methods elided ...
+}
+#}</code></pre></pre>
+<p><code>JsCast</code>'s required trait methods are not intended to be used to directly, but
+instead are leveraged by its provided methods. Users of <code>wasm-bindgen</code> will be
+able to ignore <code>JsCast</code>'s required trait methods for the most part, since the
+implementations will be mechanically generated, and they will only be using the
+required trait methods indirectly through the more ergonomic provided methods.</p>
+<p>For every <code>extern { type Illmatic; }</code> imported with <code>wasm-bindgen</code>, we emit an
+implementation of <code>JsCast</code> similar to this:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl JsCast for Illmatic {
+    fn instanceof(val: &amp;JsValue) -&gt; bool {
+        #[cfg(all(target_arch = &quot;wasm32&quot;, not(target_os = &quot;emscripten&quot;)))]
+        #[wasm_import_module = &quot;__wbindgen_placeholder__&quot;]
+        extern {
+            fn __wbindgen_instanceof_Illmatic(idx: u32) -&gt; u32;
+        }
+
+        #[cfg(not(all(target_arch = &quot;wasm32&quot;, not(target_os = &quot;emscripten&quot;))))]
+        unsafe extern fn __wbindgen_instanceof_Illmatic(_: u32) -&gt; u32 {
+            panic!(&quot;function not implemented on non-wasm32 targets&quot;)
+        }
+
+        __wbindgen_instance_of_MyDerived(val.idx) == 1
+    }
+
+    fn unchecked_from_js(val: JsValue) -&gt; Illmatic {
+        Illmatic {
+            obj: val,
+        }
+    }
+
+    fn unchecked_from_js_ref(val: &amp;JsValue) -&gt; &amp;Illmatic {
+        unsafe {
+            &amp;*(val as *const JsValue as *const Illmatic)
+        }
+    }
+
+    fn unchecked_from_js_mut(val: &amp;mut JsValue) -&gt; &amp;mut Illmatic {
+        unsafe {
+            &amp;mut *(val as *mut JsValue as *mut Illmatic)
+        }
+    }
+}
+#}</code></pre></pre>
+<p>Additionally, <code>wasm-bindgen</code> will emit this JavaScript definition of
+<code>__wbindgen_instanceof_Illmatic</code> that simply wraps the JS <code>instanceof</code> operator:</p>
+<pre><code class="language-js">const __wbindgen_instanceof_Illmatic = function (idx) {
+  return getObject(idx) instanceof Illmatic;
+};
+</code></pre>
+<a class="header" href="#jscasts-provided-trait-methods" id="jscasts-provided-trait-methods"><h3><code>JsCast</code>'s Provided Trait Methods</h3></a>
+<p>The <code>JsCast</code> trait's provided methods wrap the unergonomic required static trait
+methods and provide ergonomic, chainable versions that operate on <code>self</code> and
+<em>another</em> <code>T: JsCast</code>. For example, the <code>JsCast::is_instance_of</code> method asks if
+<code>&amp;self</code> is an instance of some <em>other</em> <code>T</code> that also implements <code>JsCast</code>.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+pub trait JsCast
+where
+    Self: AsRef&lt;JsValue&gt; + AsMut&lt;JsValue&gt; + Into&lt;JsValue&gt;,
+{
+    // ... required trait methods elided ...
+
+    // Unchecked conversions from `Self` into some other `T: JsCast`.
+
+    fn unchecked_into&lt;T&gt;(self) -&gt; T
+    where
+        T: JsCast,
+    {
+        T::unchecked_from_js(self.into())
+    }
+
+    fn unchecked_ref&lt;T&gt;(&amp;self) -&gt; &amp;T
+    where
+        T: JsCast,
+    {
+        T::unchecked_from_js_ref(self.as_ref())
+    }
+
+    fn unchecked_mut&lt;T&gt;(&amp;mut self) -&gt; &amp;mut T
+    where
+        T: JsCast,
+    {
+        T::unchecked_from_js_mut(self.as_mut())
+    }
+
+    // Predicate method to check whether `self` is an instance of `T` or not.
+
+    fn is_instance_of&lt;T&gt;(&amp;self) -&gt; bool
+    where
+        T: JsCast,
+    {
+        T::instanceof(self.as_ref())
+    }
+
+    // Dynamically-checked conversions from `Self` into some other `T: JsCast`.
+
+    fn dyn_into&lt;T&gt;(self) -&gt; Result&lt;T, Self&gt;
+    where
+        T: JsCast,
+    {
+        if self.is_instance_of::&lt;T&gt;() {
+            Ok(self.unchecked_into())
+        } else {
+            Err(self)
+        }
+    }
+
+    fn dyn_ref&lt;T&gt;(&amp;self) -&gt; Option&lt;&amp;T&gt;
+    where
+        T: JsCast,
+    {
+        if self.is_instance_of::&lt;T&gt;() {
+            Some(self.unchecked_ref())
+        } else {
+            None
+        }
+    }
+
+    fn dyn_mut&lt;T&gt;(&amp;mut self) -&gt; Option&lt;&amp;mut T&gt;
+    where
+        T: JsCast,
+    {
+        if self.is_instance_of::&lt;T&gt;() {
+            Some(self.unchecked_mut())
+        } else {
+            None
+        }
+    }
+}
+#}</code></pre></pre>
+<p>Using these methods provides better turbo-fishing syntax than using <code>JsCast</code>'s
+required trait methods directly.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+fn get_it() -&gt; JsValue { ... }
+
+// Tired -_-
+SomeJsThing::unchecked_from_js(get_it()).method();
+
+// Wired ^_^
+get_it()
+    .unchecked_into::&lt;SomeJsThing&gt;()
+    .method();
+#}</code></pre></pre>
+<a class="header" href="#jscast-implementation-for-jsvalue" id="jscast-implementation-for-jsvalue"><h3><code>JsCast</code> Implementation for <code>JsValue</code></h3></a>
+<p>We also trivially implement <code>JsCast</code> for <code>JsValue</code> with no-ops, and add
+<code>AsRef&lt;JsValue&gt;</code> and <code>AsMut&lt;JsValue&gt;</code> implementations for <code>JsValue</code> itself, so
+that the <code>JsCast</code> super trait bounds are satisfied:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl AsRef&lt;JsValue&gt; for JsValue {
+    fn as_ref(&amp;self) -&gt; &amp;JsValue {
+        self
+    }
+}
+
+impl AsMut&lt;JsValue&gt; for JsValue {
+    fn as_mut(&amp;mut self) -&gt; &amp;mut JsValue {
+        self
+    }
+}
+
+impl JsCast for JsValue {
+    fn instanceof(_: &amp;JsValue) -&gt; bool {
+        true
+    }
+
+    fn unchecked_from_js(val: JsValue) -&gt; Self {
+        val
+    }
+
+    fn unchecked_from_js_ref(val: &amp;JsValue) -&gt; &amp;Self {
+        val
+    }
+
+    fn unchecked_from_js_mut(val: &amp;mut JsValue) -&gt; &amp;mut Self {
+        val
+    }
+}
+#}</code></pre></pre>
+<a class="header" href="#upcasting-implementation" id="upcasting-implementation"><h2>Upcasting Implementation</h2></a>
+<p>For every <code>extends = MyBase</code> on a type imported with <code>extern type MyDerived</code>,
+and for every base and derived interface in a WebIDL interface inheritance
+chain, <code>wasm-bindgen</code> will emit these trait implementations that wrap unchecked
+conversions methods from <code>JsCast</code> that we know are valid due to the inheritance
+relationship:</p>
+<ol>
+<li>
+<p>A <code>From</code> implementation for <code>self</code>-consuming conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl From&lt;MyDerived&gt; for MyBase {
+    fn from(my_derived: MyDerived) -&gt; MyBase {
+        let val: JsValue = my_derived.into();
+        &lt;MyDerived as JsCast&gt;::unchecked_from_js(val)
+    }
+}
+#}</code></pre></pre>
+</li>
+<li>
+<p>An <code>AsRef</code> implementation for shared reference conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl AsRef&lt;MyBase&gt; for MyDerived {
+    fn as_ref(&amp;self) -&gt; &amp;MyDerived {
+        let val: &amp;JsValue = self.as_ref();
+        &lt;MyDerived as JsCast&gt;::uncheck_from_js_ref(val)
+    }
+}
+#}</code></pre></pre>
+</li>
+<li>
+<p>An <code>AsMut</code> implementation for exclusive reference conversions:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl AsMut&lt;MyBase&gt; for MyDerived {
+    fn as_mut(&amp;mut self) -&gt; &amp;mut MyDerived {
+        let val: &amp;mut JsValue = self.as_mut();
+        &lt;MyDerived as JsCast&gt;::uncheck_from_js_mut(val)
+    }
+}
+#}</code></pre></pre>
+</li>
+</ol>
+<a class="header" href="#deep-inheritance-chains-example" id="deep-inheritance-chains-example"><h2>Deep Inheritance Chains Example</h2></a>
+<p>For deeper inheritance chain, like this example:</p>
+<pre><code class="language-js">class MyBase {}
+class MyDerived extends MyBase {}
+class MyDoubleDerived extends MyDerived {}
+</code></pre>
+<p>the proc-macro imports require an <code>extends</code> attribute for every transitive base:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+extern {
+    pub extern type MyBase;
+
+    #[wasm_bindgen(extends = MyBase)]
+    pub extern type MyDerived;
+
+    #[wasm_bindgen(extends = MyBase, extends = MyDerived)]
+    pub extern type MyDoubleDerived;
+}
+#}</code></pre></pre>
+<p>On the other hand, the WebIDL frontend can understand the full inheritance chain
+and nothing more than the usual interface inheritance syntax is required:</p>
+<pre><code class="language-webidl">interface MyBase {}
+interface MyDerived : MyBase {}
+interface MyDoubleDerived : MyDerived {}
+</code></pre>
+<p>Given these definitions, we can upcast a <code>MyDoubleDerived</code> all the way to a
+<code>MyBase</code>:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let dub_derived: MyDoubleDerived = get_it_from_somewhere();
+let base: MyBase = dub_derived.into();
+#}</code></pre></pre>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<ul>
+<li>We might accidentally <em>encourage</em> using this inheritance instead of the more
+Rust-idiomatic usage of traits.</li>
+</ul>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<ul>
+<li>
+<p>We could define an <code>Upcast</code> trait instead of using the standard <code>From</code> and
+<code>As{Ref,Mut}</code> traits. This would make it more clear that we are doing
+inheritance-related casts, but would also be a new trait that folks would have
+to understand vs pretty much every Rust programmer's familiarity with the
+<code>std</code> traits.</p>
+</li>
+<li>
+<p>Upcasting using the <code>From</code> and <code>As{Ref,Mut}</code> traits does not provide
+chainable, turbofishing methods on <code>self</code> that one could use when type
+inference needs a helping hand. Instead, one must create a local variable with
+an explicit type.</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+// Can't do this with upcasting.
+get_some_js_type()
+  .into::&lt;AnotherJsType&gt;()
+  .method();
+
+// Have to do this:
+let another: AnotherJsType = get_some_js_type().into();
+another.method();
+#}</code></pre></pre>
+<p>If we used a custom <code>Upcast</code> trait, we could provide turbofishable methods on
+<code>self</code>, at the cost of using non-standard traits.</p>
+</li>
+<li>
+<p>We could use <code>TryFrom</code> for dynamically-checked casts instead of
+<code>JsCast::dyn_into</code> et al. This would introduce a new nightly feature
+requirement when using <code>wasm-bindgen</code>. We leave the possibility open for when
+<code>TryFrom</code> is stabilized by not naming our dynamically-checked cast methods
+<code>JsCast::try_into</code> to be future compatible.</p>
+</li>
+<li>
+<p>Explicit upcasting still does not provide very good ergonomics. There are a
+couple things we could do here:</p>
+<ul>
+<li>
+<p>Use the <code>Deref</code> trait to hide upcasting. This is generally <a href="https://github.com/rust-unofficial/patterns/blob/master/anti_patterns/deref.md">considered an
+anti-pattern</a>.</p>
+</li>
+<li>
+<p>Automatically create a <code>MyBaseMethods</code> trait for base types that contain all
+the base type's methods and implement that trait for <code>MyBase</code> and
+<code>MyDerived</code>? Also emit a <code>MyDerivedMethods</code> trait that requires <code>MyBase</code> as
+a super trait, representing the inheritance at the trait level? This is the
+Rust-y thing to do and allows us to write generic functions with trait
+bounds. This is what <code>stdweb</code> does with the <code>IHTMLElement</code> trait for
+<code>HTMLElement</code>'s methods.</p>
+<p>Whether we do this or not also happens to be orthogonal to casting between
+base and derived types. We leave exploring this design space to follow up
+RFCs, and hope to land just the casting in an incremental fashion.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Traits sometimes get in the way of learning what one can do with a thing. They
+aren't as up-front in the generated documentation, and can lead people to
+thinking they <em>must</em> write code that is generic over a trait when it isn't
+necessary. There are two ways we could get rid of the <code>JsCast</code> trait:</p>
+<ol>
+<li>
+<p>Only implement its methods on <code>JsValue</code> and require that conversions like
+<code>ImportedJsClassUno</code> -&gt; <code>ImportedJsClassDos</code> go to <code>JsValue</code> in between:
+<code>ImportedJsClassUno</code> -&gt; <code>JsValue</code> -&gt; <code>ImpiortedJsClassDos</code>.</p>
+</li>
+<li>
+<p>We could redundantly implement all its methods on <code>JsValue</code> and imported JS
+classes directly.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Unchecked casting could be marked <code>unsafe</code> to reflect that correctness relies
+on the programmer in these cases. However, misusing unchecked JS casts cannot
+introduce memory unsafety in the Rust sense, so this would be using <code>unsafe</code>
+as a general-purpose &quot;you probably shouldn't use this&quot; warning, which is not
+<code>unsafe</code>'s intended purpose.</p>
+</li>
+<li>
+<p>We could only implement unchecked casts for everything all the time. This
+would encourage a loose, shoot-from-the-hip programming style. We would prefer
+leveraging types when possible. We realize that escape hatches are still
+required at times, and we do provide arbitrary unchecked casts, but guide
+folks towards upcasting with <code>From</code>, <code>AsRef</code>, and <code>AsMut</code> and doing
+dynamically checks for other types of casts.</p>
+</li>
+</ul>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<ul>
+<li>Should the <code>JsCast</code> trait be re-exported in <code>wasm_bindgen::prelude</code>? We do not
+specify that it should be in this RFC, and we can initially ship without
+re-exporting it in prelude and see what it feels like. Based on experience, we
+may decide in the future to add it to the prelude.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="001-the-rfc-process.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="005-structural-and-deref.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="001-the-rfc-process.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="005-structural-and-deref.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

@@ -1,0 +1,383 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>008-npm-dependencies - Rust and WebAssembly RFCs</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="A collection of the accepted RFCs for Rust and WebAssembly">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li class="affix"><a href="introduction.html">Introduction</a></li><li><a href="001-the-rfc-process.html">001-the-rfc-process</a></li><li><a href="002-wasm-bindgen-inheritance-casting.html">002-wasm-bindgen-inheritance-casting</a></li><li><a href="005-structural-and-deref.html">005-structural-and-deref</a></li><li><a href="006-local-js-dependencies.html">006-local-js-dependencies</a></li><li><a href="007-2019-roadmap.html">007-2019-roadmap</a></li><li><a href="008-npm-dependencies.html" class="active">008-npm-dependencies</a></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust and WebAssembly RFCs</h1> 
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <ul>
+<li>Start Date: 2018-02-14</li>
+<li>RFC PR: (leave this empty)</li>
+<li>Tracking Issue: (leave this empty)</li>
+</ul>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
+<p>Enable Rust crates to transparently depend on packages in the npm ecosystem.
+These dependencies will, like normal Rust dependencies through Cargo, work
+seamlessly when consumed by other crates.</p>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<p>The primary goal of <code>wasm-bindgen</code> and <code>wasm-pack</code> is to enable seamless
+integration of Rust with JS. A massive portion of the JS ecosystem, npm, however
+currently has little support in <code>wasm-bindgen</code> and <code>wasm-pack</code>, making it
+difficult to access this rich resource that JS offers!</p>
+<p>The goal of this RFC is to enable these dependencies to exist. Rust crates
+should be able to require functionality from NPM, just like how NPM can require
+Rust crates compiled to wasm. Any workflow which currently uses NPM packages
+(such as packaging WebAssembly with a bundler) should continue to work but also
+allow pulling in &quot;custom&quot; NPM packages as well as requested by Rust
+dependencies.</p>
+<a class="header" href="#stakeholders" id="stakeholders"><h1>Stakeholders</h1></a>
+<p>This RFC primarily affects uses of <code>wasm-pack</code> and <code>wasm-bindgen</code> who are also
+currently using bundlers like Webpack. This also affects, however, developers of
+core foundational crates in the Rust ecosystem who want to be concious of the
+ability to pull in NPM dependencies and such.</p>
+<a class="header" href="#detailed-explanation" id="detailed-explanation"><h1>Detailed Explanation</h1></a>
+<p>Adding an NPM dependency to a Rust project will look very similar to adding an
+NPM dependency to a normal JS project. First the dependency, and its version
+requirement, need to be declare. This RFC proposes doing this in a
+<code>package.json</code> file adjacent to the crate's <code>Cargo.toml</code> file:</p>
+<pre><code class="language-json"> {
+  &quot;dependencies&quot;: {
+    &quot;foo&quot;: &quot;^1.0.1&quot;
+  }
+}
+</code></pre>
+<p>The <code>package.json</code> file will initially be a subset of NPM's <code>package.json</code>,
+only supporting one <code>dependencies</code> top-level key which internally has key/value
+pairs with strings. Beyond this validation though no validation will be
+performed of either key or value pairs within <code>dependencies</code>. In the future
+it's intended that more keys of <code>package.json</code> in NPM will be supported, but
+this RFC is intended to be an MVP for now to enable dependencies on NPM at all.</p>
+<p>After this <code>package.json</code> file is created, the package next needs to be
+imported in the Rust crate. Like with other Rust dependencies on JS, this will
+be done with the <code>#[wasm_bindgen]</code> attribute:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(module = &quot;foo&quot;)]
+extern &quot;C&quot; {
+    fn function_in_foo_package();
+}
+#}</code></pre></pre>
+<blockquote>
+<p><strong>Note</strong>: in JS the above import would be similar to:</p>
+<pre><code class="language-js">import { function_in_foo_package } from &quot;foo&quot;;
+</code></pre>
+</blockquote>
+<p>The exiting <code>module</code> key in the <code>#[wasm_bindgen]</code> attribute can be used to
+indicate which ES module the import is coming from. This affects the <code>module</code>
+key in the final output wasm binary, and corresponds to the name of the package
+in <code>package.json</code>. This is intended to match how bundler conventions already
+interpret NPM packages as ES modules.</p>
+<p>After these two tools are in place, all that's needed is a <code>wasm-pack build</code> and
+you should be good to go! The final <code>package.json</code> will have the <code>foo</code>
+dependency listed in our <code>package.json</code> above and be ready for consumption via a
+bundler.</p>
+<a class="header" href="#technical-implementation" id="technical-implementation"><h3>Technical Implementation</h3></a>
+<p>Under the hood there's a few moving parts which enables all of this to happen.
+Let's first take a look at the pieces in <code>wasm-bindgen</code>.</p>
+<p>The primary goal of this RFC is to enable <em>tranparent</em> and <em>transitive</em>
+dependencies on NPM. The <code>#[wasm_bindgen]</code> macro is the only aspect of a crate's
+build which has access to all transitive dependencies, so this is what we'll be
+using to slurp up <code>package.json</code>. When <code>#[wasm_bindgen]</code> with a <code>module</code> key is
+specified it will look for <code>package.json</code> inside the cwd of the procedural macro
+(note that the cwd is set by Cargo to be the directory with the crate's
+<code>Cargo.toml</code> that is being compiled, or the crate in which <code>#[wasm_bindgen]</code> is
+written). This <code>package.json</code>, if found, will have an absolute path to it
+encoded into the custom section that <code>wasm-bindgen</code> already emits.</p>
+<p>Later, when the <code>wasm-bindgen</code> CLI tool executes, it will parse an interpret all
+items in the wasm-bindgen custom section. All <code>package.json</code> files listed will
+be loaded, parsed, and validated (aka only <code>dependencies</code> allowed for now). If
+any <code>package.json</code> is loaded then a <code>package.json</code> file will be emitted next to
+the output JS file inside of <code>--out-dir</code>.</p>
+<p>After <code>wasm-bindgen</code> executes, then <code>wasm-pack</code> will read the <code>package.json</code>
+output, if any, and augment it with metadata and other items which are already
+emitted.</p>
+<p>If more than one crate in a dependency graph depends on an NPM package then in
+this MVP proposal an error will be generated. In the future we can implement
+some degree of merging version requirements, but for now to remain simple
+<code>wasm-bindgen</code> will emit an error.</p>
+<a class="header" href="#interaction-with---no-modules" id="interaction-with---no-modules"><h3>Interaction with <code>--no-modules</code></h3></a>
+<p>Depending on NPM packages fundamentally requires, well, NPM, in one way or
+another. The <code>wasm-bindgen</code> and <code>wasm-pack</code> CLI tools have modes of output
+(notably <code>wasm-bindgen</code>'s <code>--no-modules</code> and <code>wasm-pack</code>'s <code>--target no-modules</code>
+flags) which are intended to not require NPM and other JS tooling. In these
+situations if a <code>package.json</code> in any Rust crate is detected an error will be
+emitted indicating so.</p>
+<p>Note that this means that core crates which are intended to work with
+<code>--no-modules</code> will not be able add NPM dependencies. Instead they'll have to
+either import Rust dependencies from crates.io or use a feature like <a href="https://github.com/rustwasm/rfcs/pull/6">local JS
+snippets</a> to import custom JS code.</p>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<p>One of the primary drawbacks of this RFC is that it's fundamentally incompatible
+with a major use case of <code>wasm-bindgen</code> and <code>wasm-pack</code>, the <code>--no-modules</code> and
+<code>--target no-modules</code> flags. As a short-term band-aid this RFC proposes making
+it a hard error which would hinder the adoption of this feature in crates that
+want to be usable in this mode.</p>
+<p>In the long-term, however, it may be possible to get this working. For example
+many NPM packages are available on <code>unpkg.com</code> or in other locations. It may be
+possible, if all packages in these locations adhere to well-known conventions,
+to generate code that's compatible with these locations of hosting NPM packages.
+In these situations it may then be possible to &quot;just drop a script tag&quot; in a few
+locations to get <code>--no-modules</code> working with NPM packages. It's unclear how
+viable this is, though.</p>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<p>When developing this RFC, some guiding values for its design have been
+articulated:</p>
+<ul>
+<li>
+<p>Development on Rust-generated WebAssembly projects should allow developers to
+use the development environment they are most comfortable with. Developers
+writing Rust should get to use Rust, and developers using JavaScript should
+get to use a JS based runtime environment (Node.js, Chakra, etc).</p>
+</li>
+<li>
+<p>JavaScript tooling and workflows should be usable with Rust-generated
+WebAssembly projects. For example, bundlers like WebPack and Parcel, or
+dependency management tools such as <code>npm audit</code> and GreenKeeper.</p>
+</li>
+<li>
+<p>When possible, decisions should be made that allow the solution to be
+available to developers of not just Rust, but also C, and C++.</p>
+</li>
+<li>
+<p>Decisions should be focused on creating workflows that allow developers an
+easy learning curve and productive development experience.</p>
+</li>
+</ul>
+<p>These principles lead to the above proposal of using <code>package.json</code> to declare
+NPM dependencies which is then grouped together by <code>wasm-bindgen</code> to be
+published by <code>wasm-pack</code>. By using <code>package.json</code> we get inherent compatibility
+with existing workflows like GreenKeeper and <code>npm install</code>. Additionally
+<code>package.json</code> is very well documented and supported throughout the JS ecosystem
+making it very familiar.</p>
+<p>Some other alternatives to this RFC which have been ruled out are:</p>
+<ul>
+<li>
+<p><strong>Using <code>Cargo.toml</code> instead of <code>package.json</code></strong> to declare NPM dependencies.
+For example we could use:</p>
+<pre><code class="language-toml">[package.metadata.npm.dependencies]
+foo = &quot;0.1&quot;
+</code></pre>
+<p>This has the drawback though of being incompatible with all existing workflows
+around <code>package.json</code>. Additionally it also highlights a discrepancy between
+NPM and Cargo and how <code>&quot;0.1&quot;</code> as a version requirement is interpreted (e.g.
+<code>^0.1</code> or <code>~0.1</code>).</p>
+</li>
+<li>
+<p><strong>Adding a separate manifest file</strong> instead of using <code>package.json</code> is also
+possibility and might be easier for <code>wasm-bindgen</code> to read and later
+parse/include. This has a possible benefit of being scoped to exactly our use
+case and not being misleading by disallowing otherwise-valid fields of
+<code>package.json</code>. The downside of this approach is the same as <code>Cargo.toml</code>,
+however, in that it's an unfamiliar format to most and is incompatible with
+existing tooling without bringing too much benefit.</p>
+</li>
+<li>
+<p><strong>Annotating version dependencies inline</strong> could be used rather than
+<code>package.json</code> as well, such as:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(module = &quot;foo&quot;, version = &quot;0.1&quot;)]
+extern &quot;C&quot; {
+    // ...
+}
+#}</code></pre></pre>
+<p>As with all other alternatives this is incompatible with existing tooling, but
+it's also not aligned with Rust's own mechanism for declaring dependencies
+which separates the location for version information and the code iteslf.</p>
+</li>
+</ul>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<ul>
+<li>Is the MVP restriction of only using <code>dependencies</code> too limiting? Should more
+fields be supported in <code>package.json</code>?</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="007-2019-roadmap.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="007-2019-roadmap.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

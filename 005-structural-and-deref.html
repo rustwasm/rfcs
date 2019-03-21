@@ -1,0 +1,545 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>005-structural-and-deref - Rust and WebAssembly RFCs</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="A collection of the accepted RFCs for Rust and WebAssembly">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li class="affix"><a href="introduction.html">Introduction</a></li><li><a href="001-the-rfc-process.html">001-the-rfc-process</a></li><li><a href="002-wasm-bindgen-inheritance-casting.html">002-wasm-bindgen-inheritance-casting</a></li><li><a href="005-structural-and-deref.html" class="active">005-structural-and-deref</a></li><li><a href="006-local-js-dependencies.html">006-local-js-dependencies</a></li><li><a href="007-2019-roadmap.html">007-2019-roadmap</a></li><li><a href="008-npm-dependencies.html">008-npm-dependencies</a></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust and WebAssembly RFCs</h1> 
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <ul>
+<li>Start Date: 2018-10-05</li>
+<li>RFC PR: https://github.com/rustwasm/rfcs/pull/5</li>
+<li>Tracking Issue: (leave this empty)</li>
+</ul>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
+<p>Change <code>#[wasm_bindgen]</code> to use <code>structural</code> by default, and add a new
+attribute <code>final</code> for an opt-in to today's behavior. Once implemented then use
+<code>Deref</code> to model the class inheritance hierarchy in <code>web-sys</code> and <code>js-sys</code> to
+enable ergonomic usage of superclass methods of web types.</p>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<p>The initial motivation for this is outlined <a href="https://github.com/rustwasm/rfcs/pull/3">RFC 3</a>, namely that the <code>web-sys</code>
+crate provides bindings for many APIs found on the web but accessing the
+functionality of parent classes is quite cumbersome.</p>
+<p>The web makes extensive use of class inheritance hierarchies, and in <code>web-sys</code>
+right now each class gets its own <code>struct</code> type with inherent methods. These
+types implement <code>AsRef</code> between one another for subclass relationships, but it's
+quite unergonomic to actually reference the functionality! For example:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let x: &amp;Element = ...;
+let y: &amp;Node = x.as_ref();
+y.append_child(...);
+#}</code></pre></pre>
+<p>or...</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let x: &amp;Element = ...;
+&lt;Element as AsRef&lt;Node&gt;&gt;::as_ref(x)
+    .append_child(...);
+#}</code></pre></pre>
+<p>It's be much nicer if we could support this in a more first-class fashion and
+make it more ergonomic!</p>
+<blockquote>
+<p><strong>Note</strong>: While this RFC has the same motivation as <a href="https://github.com/rustwasm/rfcs/pull/3">RFC 3</a> it's proposing an
+alternative solution, specifically enabled by switching by <code>structural</code> by
+default, which is discussed in <a href="https://github.com/rustwasm/rfcs/pull/3">RFC 3</a> but is hopefully formally outlined
+here.</p>
+</blockquote>
+<a class="header" href="#detailed-explanation" id="detailed-explanation"><h1>Detailed Explanation</h1></a>
+<p>This RFC proposes using the built-in <code>Deref</code> trait to model the class hierarchy
+found on the web in <code>web-sys</code>. This also proposes changes to <code>#[wasm_bindgen]</code>
+to make using <code>Deref</code> feasible for binding arbitrary JS apis (such as those on
+NPM) with <code>Deref</code> as well.</p>
+<p>For example, <code>web-sys</code> will contain:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl Deref for Element {
+    type Target = Node;
+
+    fn deref(&amp;self) -&gt; &amp;Node { /* ... */ }
+}
+#}</code></pre></pre>
+<p>allowing us to write our example above as:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+let x: &amp;Element = ...;
+x.append_child(...); // implicit deref to `Node`!
+#}</code></pre></pre>
+<p>All JS types in <code>web-sys</code> and in general have at most one superclass. Currently,
+however, the <code>#[wasm_bindgen]</code> attribute allows specifying multiple <code>extends</code>
+attributes to indicate superclasses:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+extern {
+    #[wasm_bindgen(extends = Node, extends = Object)]
+    type Element;
+
+    // ...
+}
+#}</code></pre></pre>
+<p>The <code>web-sys</code> API generator currently lists an <code>extends</code> for all superclasses,
+transitively. This is then used in the code generator to generate <code>AsRef</code>
+implementatiosn for <code>Element</code>.</p>
+<p>The code generation of <code>#[wasm_bindgen]</code> will be updated with the following
+rules:</p>
+<ul>
+<li>If no <code>extends</code> attribute is present, defined types will implement
+<code>Deref&lt;Target=JsValue&gt;</code>.</li>
+<li>Otherwise, the <em>first</em> <code>extends</code> attribute is used to implement
+<code>Deref&lt;Target=ListedType&gt;</code>.</li>
+<li>(long term, currently require a breaking change) reject multiple <code>extends</code>
+attributes, requiring there's only one.</li>
+</ul>
+<p>This means that <code>web-sys</code> may need to be updated to ensure that the immediate
+superclass is listed first in <code>extends</code>. Manual bindings will continue to work
+and will have the old <code>AsRef</code> implementations as well as a new <code>Deref</code>
+implementation.</p>
+<p>The <code>Deref</code> implementation will concretely be implemented as:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+impl Deref for #imported_type {
+    type Target = #target_type;
+
+    #[inline]
+    fn deref(&amp;self) -&gt; &amp;#target_type {
+        ::wasm_bindgen::JsCast::unchecked_ref(self)
+    }
+}
+#}</code></pre></pre>
+<a class="header" href="#switching-to-structural-by-default" id="switching-to-structural-by-default"><h3>Switching to <code>structural</code> by default</h3></a>
+<p>If we were to implement the above <code>Deref</code> proposal as-is today in
+<code>wasm-bindgen</code>, it would have a crucial drawback. It may not handle inheritance
+correctly! Let's explore this with an example. Say we have some JS we'd like to
+import:</p>
+<pre><code class="language-js">class Parent {
+    constructor() {}
+    method() { console.log('parent'); }
+}
+
+class Child extends Parent {
+    constructor() {}
+    method() { console.log('child'); }
+}
+</code></pre>
+<p>we would then bind this in Rust with:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+extern {
+    type Parent;
+    #[wasm_bindgen(constructor)]
+    fn new() -&gt; Parent;
+    #[wasm_bindgen(method)]
+    fn method(this: &amp;Parent);
+
+    #[wasm_bindgen(extends = Parent)]
+    type Child;
+    #[wasm_bindgen(constructor)]
+    fn new() -&gt; Child;
+    #[wasm_bindgen(method)]
+    fn method(this: &amp;Child);
+}
+#}</code></pre></pre>
+<p>and we could then use it like so:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+pub fn run() {
+    let parent = Parent::new();
+    parent.method();
+    let child = Child::new();
+    child.method();
+}
+#}</code></pre></pre>
+<p>and we would today see <code>parent</code> and <code>child</code> logged to the console. Ok everything
+is working as expected so far! We know we've got <code>Deref&lt;Target=Parent&gt; for Child</code>, though, so let's say we tweak this example a bit:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen]
+pub fn run() {
+    call_method(&amp;Parent::new());
+    call_method(&amp;Child::new());
+}
+
+fn call_method(object: &amp;Parent) {
+    object.method();
+}
+#}</code></pre></pre>
+<p>Here we'd naively (and correctly) expect <code>parent</code> and <code>child</code> to be output like
+before, but much to our surprise this actually prints out <code>parent</code> twice!</p>
+<p>The issue with this is how <code>#[wasm_bindgen]</code> treats method calls today. When you
+say:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(method)]
+fn method(this: &amp;Parent);
+#}</code></pre></pre>
+<p>then <code>wasm-bindgen</code> (the CLI tool) generates JS that looks like this:</p>
+<pre><code class="language-js">const Parent_method_target = Parent.prototype.method;
+
+export function __wasm_bindgen_Parent_method(obj) {
+    Parent_method_target.call(getObject(obj));
+}
+</code></pre>
+<p>Here we can see that, by default, <code>wasm-bindgen</code> is <strong>reaching into the
+<code>prototype</code> of each class to figure out what method to call</strong>. This in turn
+means that when <code>Parent::method</code> is called in Rust, it unconditionally uses the
+method defined on <code>Parent</code> rather than walking the protype chain (that JS
+usually does) to find the right <code>method</code> method.</p>
+<p>To improve the situation there's a <code>structural</code> attribute to wasm-bindgen to fix
+this, which when applied like so:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(method, structural)]
+fn method(this: &amp;Parent);
+#}</code></pre></pre>
+<p>means that the following JS code is generated:</p>
+<pre><code class="language-js">const Parent_method_target = function() { this.method(); };
+
+// ...
+</code></pre>
+<p>Here we can see that a JS function shim is generated instead of using the raw
+function value in the prototype. This, however, means that our example above
+will indeed print <code>parent</code> and then <code>child</code> because JS is using prototype
+lookups to find the <code>method</code> method.</p>
+<p>Phew! Ok with all that information, we can see that <strong>if <code>structural</code> is omitted
+then JS class hierarchies can be subtly incorrect when methods taking parent
+classes are passed child classes which override methods</strong>.</p>
+<p>An easy solution to this problem is to simply use <code>structural</code> everywhere, so...
+let's propose that! Consequently, this RFC proposes changing <code>#[wasm_bindgen]</code>
+to act as if all bindings are labeled as <code>structural</code>. While technically a
+breaking change it's believed that we don't have any usage which would actually
+run into the breakage here.</p>
+<a class="header" href="#adding-wasm_bindgenfinal" id="adding-wasm_bindgenfinal"><h3>Adding <code>#[wasm_bindgen(final)]</code></h3></a>
+<p>Since <code>structural</code> is not the default today we don't actually have a name for
+the default behavior of <code>#[wasm_bindgen]</code> today. This RFC proposes adding a new
+attribute to <code>#[wasm_bindgen]</code>, <code>final</code>, which indicates that it should have
+today's behavior.</p>
+<p>When attached to an attribute or method, the <code>final</code> attribute indicates that
+the method or attribute should be processed through the <code>prototype</code> of a class
+rather than looked up structurally via the prototype chain.</p>
+<p>You can think of this as &quot;everything today is <code>final</code> by default&quot;.</p>
+<a class="header" href="#why-is-it-ok-to-make-structural-the-default" id="why-is-it-ok-to-make-structural-the-default"><h3>Why is it ok to make <code>structural</code> the default?</h3></a>
+<p>One pretty reasonable question you might have at this point is &quot;why, if
+<code>structural</code> is the default today, is it ok to switch?&quot; To answer this, let's
+first explore why <code>final</code> is the default today!</p>
+<p>From its inception <code>wasm-bindgen</code> has been designed with the future <a href="https://github.com/WebAssembly/host-bindings">host
+bindings</a> proposal for WebAssembly. The host bindings proposal promises
+faster-than-JS DOM access by removing many of the dynamic checks necessary when
+calling DOM methods. This proposal, however, is still in relatively early stages
+and hasn't been implemented in any browser yet (as far as we know).</p>
+<p>In WebAssembly on the web all imported functions must be plain old JS functions.
+They're all currently invoked with <code>undefined</code> as the <code>this</code> parameter. With
+host bindings, however, there's a way to say that an imported function uses the
+first argument to the function as the <code>this</code> parameter (like <code>Function.call</code> in
+JS). This in turn brings the promise of <em>eliminating any shim functions
+necessary when calling imported functionality</em>.</p>
+<p>As an example, today for <code>#[wasm_bindgen(method)] fn parent(this: &amp;Parent);</code> we
+generate JS that looks like:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(method)]
+fn method(this: &amp;Parent);
+#}</code></pre></pre>
+<p>means that the following JS code is generated:</p>
+<pre><code class="language-js">const Parent_method_target = Parent.prototype.method;
+
+export function __wasm_bindgen_Parent_method(idx) {
+    Parent_method_target.call(getObject(idx));
+}
+</code></pre>
+<p>If we assume for a moment that <a href="https://github.com/WebAssembly/reference-types"><code>anyref</code> is implemented</a> we
+could instead change this to:</p>
+<pre><code class="language-js">const Parent_method_target = Parent.prototype.method;
+
+export function __wasm_bindgen_Parent_method(obj) {
+    Parent_method_target.call(obj);
+}
+</code></pre>
+<p>(note the lack of need for <code>getObject</code>). And finally, with <a href="https://github.com/WebAssembly/host-bindings">host bindings</a> we
+can say that the wasm module's import of <code>__wasm_bindgen_Parent_method</code> uses the
+first parameter as <code>this</code>, meaning we can transform this to:</p>
+<pre><code class="language-js">export const __wasm_bindgen_Parent_method = Parent.prototype.method;
+</code></pre>
+<p>and <em>voila</em>, no JS function shims necessary! With <code>structural</code> we'll still need
+a function shim in this future world:</p>
+<pre><code class="language-js">export const __wasm_bindgen_Parent_method = function() { this.method(); };
+</code></pre>
+<p>Alright, with some of those basics out of the way, let's get back to
+why-<code>final</code>-by-default. The promise of <a href="https://github.com/WebAssembly/host-bindings">host bindings</a> is that by eliminating
+all these JS function shims necessary we can be faster than we would otherwise
+be, providing a feeling that <code>final</code> is faster than <code>structural</code>. This future,
+however, relies on a number of unimplemented features in wasm engines today.
+Let's consequently get an idea of what the performance looks like today!</p>
+<p>I've been slowly over time preparing a <a href="https://alexcrichton.github.io/rust-wasm-benchmark/">microbenchmark suite</a> for measuring
+JS/wasm/wasm-bindgen performance. The interesting one here is the benchmark
+&quot;<code>structural</code> vs not&quot;. If you click &quot;Run test&quot; in a browser after awhile you'll
+see two bars show up. The left-hand one is a method call with <code>final</code> and the
+right-hand one is a method call with <code>structural</code>. The results I see on my
+computer are:</p>
+<ul>
+<li>Firefox 62, <code>structural</code> is 3% faster</li>
+<li>Firefox 64, <code>structural</code> is 3% slower</li>
+<li>Chrome 69, <code>structural</code> is 5% slower</li>
+<li>Edge 42, <code>structural</code> is 22% slower</li>
+<li>Safari 12, <code>strutural</code> is 17% slower</li>
+</ul>
+<p>So it looks like for Firefox/Chrome it's not really making much of a difference
+but in Edge/Safari it's much faster to use <code>final</code>! It turns out, however, that
+we're not optimizing <code>structural</code> as much as we can. Let's change our generated
+code from:</p>
+<pre><code class="language-js">const Parent_method_target = function() { this.method(); };
+
+export function __wasm_bindgen_Parent_method(obj) {
+    Parent_method_target.call(getObject(obj));
+}
+</code></pre>
+<p>to...</p>
+<pre><code class="language-js">export function __wasm_bindgen_Parent_method(obj) {
+    getObject(obj).method();
+}
+</code></pre>
+<p>(manually editing the JS today)</p>
+<p>and if we rerun the benchmarks (sorry no online demo) we get:</p>
+<ul>
+<li>Firefox 62, <code>structural</code> is 22% faster</li>
+<li>Firefox 64, <code>structural</code> is 10% faster</li>
+<li>Chrome 69, <code>structural</code> is 0.3% slower</li>
+<li>Edge 42, <code>structural</code> is 15% faster</li>
+<li>Safai 12, <code>structural</code> is 8% slower</li>
+</ul>
+<p>and these numbers look quite different! There's some strong data here showing
+that <code>final</code> <em>is not universally faster today</em> and is actually almost
+universally slower (when we optimize <code>structural</code> slightly).</p>
+<p>Ok! That's all basically a very long winded way of saying <strong><code>final</code> was the
+historical default because we thought it was faster, but it turns out that in JS
+engines today it isn't always faster</strong>. As a result, this RFC proposes that it's
+ok to make <code>structural</code> the default.</p>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<p><code>Deref</code> is a somewhat quiet trait with disproportionately large ramifications.
+It affects method resolution (the <code>.</code> operator) as well as coercions (<code>&amp;T</code> to
+<code>&amp;U</code>). Discovering this in <code>web-sys</code> and/or JS apis in the ecosystem isn't
+always the easiest thing to do. It's thought, though, that this aspect of
+<code>Deref</code> won't come up very often when using JS apis in practice. Instead most
+APIs will work &quot;as-is&quot; as you might expect in JS in Rust as well, with <code>Deref</code>
+being an unobtrusive solution for developers to mostly ignore it an just call
+methods.</p>
+<p>Additionally <code>Deref</code> has the drawback that it's not explicitly designed for
+class inheritance hierarchies. For example <code>*element</code> produces a <code>Node</code>,
+<code>**element</code> produces an <code>Object</code>, etc. This is expected to not really come up
+that much in practice, though, and instead automatic coercions will cover almost
+all type conversions.</p>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<p>The primary alternative to this design is <a href="https://github.com/rustwasm/rfcs/pull/3">RFC 3</a>, using traits to model the
+inheritance hierarchy. The pros/cons of that proposal are well listed in <a href="https://github.com/rustwasm/rfcs/pull/3">RFC
+3</a>.</p>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<p>None right now!</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="002-wasm-bindgen-inheritance-casting.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="006-local-js-dependencies.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="002-wasm-bindgen-inheritance-casting.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="006-local-js-dependencies.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

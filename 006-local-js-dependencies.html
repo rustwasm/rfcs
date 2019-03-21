@@ -1,0 +1,549 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>006-local-js-dependencies - Rust and WebAssembly RFCs</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="A collection of the accepted RFCs for Rust and WebAssembly">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body class="light">
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { } 
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            document.body.className = theme;
+            document.querySelector('html').className = theme + ' js';
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <ol class="chapter"><li class="affix"><a href="introduction.html">Introduction</a></li><li><a href="001-the-rfc-process.html">001-the-rfc-process</a></li><li><a href="002-wasm-bindgen-inheritance-casting.html">002-wasm-bindgen-inheritance-casting</a></li><li><a href="005-structural-and-deref.html">005-structural-and-deref</a></li><li><a href="006-local-js-dependencies.html" class="active">006-local-js-dependencies</a></li><li><a href="007-2019-roadmap.html">007-2019-roadmap</a></li><li><a href="008-npm-dependencies.html">008-npm-dependencies</a></li></ol>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar" class="menu-bar">
+                    <div id="menu-bar-sticky-container">
+                        <div class="left-buttons">
+                            <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                                <i class="fa fa-bars"></i>
+                            </button>
+                            <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                                <i class="fa fa-paint-brush"></i>
+                            </button>
+                            <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                                <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                                <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                            </ul>
+                            
+                            <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                                <i class="fa fa-search"></i>
+                            </button>
+                            
+                        </div>
+
+                        <h1 class="menu-title">Rust and WebAssembly RFCs</h1> 
+
+                        <div class="right-buttons">
+                            <a href="print.html" title="Print this book" aria-label="Print this book">
+                                <i id="print-button" class="fa fa-print"></i>
+                            </a>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <ul>
+<li>Start Date: 2018-01-08</li>
+<li>RFC PR: (leave this empty)</li>
+<li>Tracking Issue: (leave this empty)</li>
+</ul>
+<a class="header" href="#summary" id="summary"><h1>Summary</h1></a>
+<p>Add the ability for <code>#[wasm_bindgen]</code> to process, load, and handle dependencies
+on local JS files.</p>
+<ul>
+<li>
+<p>The <code>module</code> attribute can now be used to import files explicitly:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(module = &quot;/js/foo.js&quot;)]
+extern &quot;C&quot; {
+    // ...
+}
+#}</code></pre></pre>
+</li>
+<li>
+<p>The <code>inline_js</code> attribute can now be used to import JS modules inline:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(inline_js = &quot;export function foo() {}&quot;)]
+extern &quot;C&quot; {
+    fn foo();
+}
+#}</code></pre></pre>
+</li>
+<li>
+<p>The <code>--browser</code> flag is repurposed to generate an ES module for the browser
+and <code>--no-modules</code> is deprecated in favor of this flag.</p>
+</li>
+<li>
+<p>The <code>--nodejs</code> will not immediately support local JS snippets, but will do so
+in the future.</p>
+</li>
+</ul>
+<a class="header" href="#motivation" id="motivation"><h1>Motivation</h1></a>
+<p>The goal of <code>wasm-bindgen</code> is to enable easy interoperation between Rust and JS.
+While it's very easy to write custom Rust code, it's actually pretty difficult
+to write custom JS and hook it up with <code>#[wasm_bindgen]</code> (see
+<a href="https://github.com/rustwasm/wasm-bindgen/issues/224">rustwasm/wasm-bindgen#224</a>). The <code>#[wasm_bindgen]</code>
+attribute currently only supports importing functions from ES modules, but even
+then the support is limited and simply assumes that the ES module string exists
+in the final application build step.</p>
+<p>Currently there is no composable way for a crate to have some auxiliary JS that
+it is built with which ends up seamlessly being included into a final built
+application. For example the <code>rand</code> crate can't easily include local JS (perhaps
+to detect what API for randomness it's supposed to use) without imposing strong
+requirements on the final artifact.</p>
+<p>Ergonomically support imports from custom JS files also looks to be required by
+frameworks like <code>stdweb</code> to build a macro like <code>js!</code>. This involves generating
+snippets of JS at compile time which need to be included into the final bundle,
+which is intended to be powered by this new attribute.</p>
+<a class="header" href="#stakeholders" id="stakeholders"><h1>Stakeholders</h1></a>
+<p>Some major stakeholders in this RFC are:</p>
+<ul>
+<li>Users of <code>#[wasm_bindgen]</code></li>
+<li>Crate authors wishing to add wasm support to their crate.</li>
+<li>The <code>stdweb</code> authors</li>
+<li>Bundler (webpack) and <code>wasm-bindgen</code> integration folks.</li>
+</ul>
+<p>Most of the various folks here will be cc'd onto the RFC, and reaching out to
+more is always welcome!</p>
+<a class="header" href="#detailed-explanation" id="detailed-explanation"><h1>Detailed Explanation</h1></a>
+<p>This proposal involves a number of moving pieces, all of which are intended to
+work in concert to provide a streamlined story to including local JS files into
+a final <code>#[wasm_bindgen]</code> artifact. We'll take a look at each piece at a time
+here.</p>
+<a class="header" href="#new-syntactical-features" id="new-syntactical-features"><h3>New Syntactical Features</h3></a>
+<p>The most user-facing change proposed here is the reinterpretation of the
+<code>module</code> attribute inside of <code>#[wasm_bindgen]</code> and the addition of an
+<code>inline_js</code> attribute. They can now be used to import local files and define
+local imports like so:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+#[wasm_bindgen(module = &quot;/js/foo.js&quot;)]
+extern &quot;C&quot; {
+    // ... definitions
+}
+
+#[wasm_bindgen(inline_js = &quot;export function foo() {}&quot;)]
+extern &quot;C&quot; {
+    fn foo();
+}
+#}</code></pre></pre>
+<p>The first declaration says that the block of functions and types and such are
+all imported from the <code>/js/foo.js</code> file, relative to the current file and rooted
+at the crate root. The second declaration lists the JS inline as a string
+literal and the <code>extern</code> block describes the exports of the inline module.</p>
+<p>The following rules are proposed for interpreting a <code>module</code> attribute.</p>
+<ul>
+<li>
+<p>If the strings starts with the platform-specific representation of an absolute
+path to the cargo build directory (identified by <code>$OUT_DIR</code>) then the string
+is interpreted as a file path in the output directory. This is intended for
+build scripts which generate JS files as part of the build.</p>
+</li>
+<li>
+<p>If the string starts with <code>/</code>, <code>./</code>, or <code>../</code> then it's considered a path to a
+local file. If not, then it's passed through verbatim as the ES module import.</p>
+</li>
+<li>
+<p>All paths are resolved relative to the current file, like Rust's own
+<code>#[path]</code>, <code>include_str!</code>, etc. At this time, however, it's unknown how we'd
+actually do this for relative files. As a result all paths will be required to
+start with <code>/</code>. When <code>proc_macro</code> has a stable API (or we otherwise figure
+out how) we can start allowing <code>./</code> and <code>../</code>-prefixed paths.</p>
+</li>
+</ul>
+<p>This will hopefully roughly match what programmers expect as well as preexisting
+conventions in browsers and bundlers.</p>
+<p>The <code>inline_js</code> attribute isn't really intended to be used for general-purpose
+development, but rather a way for procedural macros which can't currently today
+rely on the presence of <code>$OUT_DIR</code> to generate JS to import.</p>
+<a class="header" href="#format-of-imported-js" id="format-of-imported-js"><h3>Format of imported JS</h3></a>
+<p>All imported JS is required to written with ES module syntax. Initially the JS
+must be hand-written and cannot be postprocessed. For example the JS cannot be
+written with TypeScript, nor can it be compiled by Babel or similar.</p>
+<p>As an example, a library may contain:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+// src/lib.rs
+#[wasm_bindgen(module = &quot;/js/foo.js&quot;)]
+extern &quot;C&quot; {
+    fn call_js();
+}
+#}</code></pre></pre>
+<p>accompanied with:</p>
+<pre><code class="language-js">// js/foo.js
+
+export function call_js() {
+    // ...
+}
+</code></pre>
+<p>Note that <code>js/foo.js</code> uses ES module syntax to export the function <code>call_js</code>.
+When <code>call_js</code> is called from Rust it will call the <code>call_js</code> function in
+<code>foo.js</code>.</p>
+<a class="header" href="#propagation-through-dependencies" id="propagation-through-dependencies"><h3>Propagation Through Dependencies</h3></a>
+<p>The purpose of the <code>file</code> attribute is to work seamlessly with dependencies.
+When building a project with <code>#[wasm_bindgen]</code> you shouldn't be required to know
+whether your dependencies are using local JS snippets or not!</p>
+<p>The <code>#[wasm_bindgen]</code> macro, at compile time, will read the contents of the file
+provided, if any. This file will be serialized into the wasm-bindgen custom
+sections in a wasm-bindgen specific format. The final wasm artifact produced by
+rustc will contain all referenced JS file contents in its custom sections.</p>
+<p>The <code>wasm-bindgen</code> CLI tool will extract all this JS and write it out to the
+filesystem. The wasm file (or the wasm-bindgen-generated shim JS file) emitted
+will import all the emitted JS files with relative imports.</p>
+<a class="header" href="#updating-wasm-bindgen-output-modes" id="updating-wasm-bindgen-output-modes"><h3>Updating <code>wasm-bindgen</code> output modes</h3></a>
+<p>The <code>wasm-bindgen</code> has a few modes of output generation today. These output
+modes are largely centered around modules vs no modules and how modules are
+defined. This RFC proposes that we move away from this moreso towards
+<em>environments</em>, such as node.js-compatible vs browser-compatible code (which
+involves more than only module format). This means that in cases where an
+environment supports multiple module systems, or the module system is optional
+(browsers support es modules and also no modules) <code>wasm-bindgen</code> will choose
+what module system it thinks is best as long as it is compatible with that
+environment.</p>
+<p>The current output modes of <code>wasm-bindgen</code> are:</p>
+<ul>
+<li>
+<p><strong>Default</strong> - by default <code>wasm-bindgen</code> emits output that assumes the wasm
+module itself is an ES module. This will naturally work with custom JS
+snippets that are themselves ES modules, as they'll just be more modules in
+the graph all found in the local output directory. This output mode is
+currently only consumable by bundlers like Webpack, the default output cannot
+be loaded in either a web browser or Node.js.</p>
+</li>
+<li>
+<p><strong><code>--no-modules</code></strong> - the <code>--no-modules</code> flag to <code>wasm-bindgen</code> is incompatible
+with ES modules because it's intended to be included via a <code>&lt;script&gt;</code> tag
+which is not a module. This mode, like today, will fail to work if upstream
+crates contain local JS snippets.</p>
+</li>
+<li>
+<p><strong><code>--nodejs</code></strong> - this flag to <code>wasm-bindgen</code> indicates that the output should
+be tailored for Node.js, notably using CommonJS module conventions. In this
+mode <code>wasm-bindgen</code> will eventually use a JS parser in Rust to rewrite ES
+syntax of locally imported JS modules into CommonJS syntax.</p>
+</li>
+<li>
+<p><strong><code>--browser</code></strong> - currently this flag is the same as the default output mode
+except that the output is tailored slightly for a browser environment (such as
+assuming that <code>TextEncoder</code> is ambiently available).</p>
+<p>This RFC proposes
+repurposing this flag (breaking it) to instead generate an ES module natively
+loadable inside the web browser, but otherwise having a similar interface to
+<code>--no-modules</code> today, detailed below.</p>
+</li>
+</ul>
+<p>This RFC proposes rethinking these output modes as follows:</p>
+<table><thead><tr><th> Target Environment      </th><th> CLI Flag    </th><th> Module Format </th><th> User Experience                          </th><th> How are Local JS Snippets Loaded?                                                            </th></tr></thead><tbody>
+<tr><td> Node.js without bundler </td><td> <code>--nodejs</code>  </td><td> Common.js     </td><td> <code>require()</code> the main JS glue file        </td><td> Main JS glue file <code>require()</code>s crates' local JS snippets.                                    </td></tr>
+<tr><td> Web without bundler     </td><td> <code>--browser</code> </td><td> ES Modules    </td><td> <code>&lt;script&gt;</code> pointing to main JS glue file, using <code>type=module</code> </td><td> <code>import</code> statements cause additional network requests for crates' local snippets.            </td></tr>
+<tr><td> Web with bundler        </td><td> none        </td><td> ES Modules    </td><td> <code>&lt;script&gt;</code> pointing to main JS glue file </td><td> Bundler links crates' local snippets into main JS glue file. No additional network requests except for the <code>wasm</code> module itself. </td></tr>
+</tbody></table>
+<p>It is notable that browser with and without bundler is almost the same as far
+as <code>wasm-bindgen</code> is concerned: the only difference is that if we assume a
+bundler, we can rely on the bundler polyfilling wasm-as-ES-module for us.
+Note the <code>--browser</code> here is relatively radically different today and as such
+would be a breaking change. It's thought that the usage of <code>--browser</code> is small
+enough that we can get away with this, but feedback is always welcome on this
+point!</p>
+<p>The <code>--no-modules</code> flag doesn't really fit any more as the <code>--browser</code> use case
+is intended to subsume that. Note that the this RFC proposes only having the
+bundler-oriented and browser-oriented modes supporting local JS snippets for
+now, while paving a way forward to eventually support local JS snippets in
+Node.js. The <code>--no-modules</code> could eventually also be supported in the same
+manner as Node.js is (once we're parsing the JS file and rewriting the exports),
+but it's proposed here to generally move away from <code>--no-modules</code> towards
+<code>--browser</code>.</p>
+<p>The <code>--browser</code> output is currently considered to export an initialization
+function which, after called and the returned promise is resolved (like
+<code>--no-modules</code> today) will cause all exports to work when called. Before the
+promise resolves all exports will throw an error when called.</p>
+<a class="header" href="#js-files-depending-on-other-js-files" id="js-files-depending-on-other-js-files"><h3>JS files depending on other JS files</h3></a>
+<p>One tricky point about this RFC is when a local JS snippet depends on other JS
+files. For example your JS might look like:</p>
+<pre><code class="language-js">// js/foo.js
+
+import { foo } from '@some/npm-package';
+import { bar } from './bar.js'
+
+// ...
+</code></pre>
+<p>As designed above, these imports would not work. It's intended that we
+explicitly say this is an initial limitation of this design. We won't support
+imports between JS snippets just yet, but we should eventually be able to do so.</p>
+<p>In the long run to support <code>--nodejs</code> we'll need some level of ES module parser
+for JS. Once we can parse the imports themselves it would be relatively
+straightforward for <code>#[wasm_bindgen]</code>, during expansion, to load transitively
+included files. For example in the file above we'd include <code>./bar.js</code> into the
+wasm custom section. In this future world we'd just rewrite <code>./bar.js</code> (if
+necessary) when the final output artifact is emitted. Additionally with NPM
+package support in <code>wasm-pack</code> and <code>wasm-bindgen</code> (a future goal) we could
+validate entries in <code>package.json</code> are present for imports found.</p>
+<a class="header" href="#accessing-wasm-memorytable" id="accessing-wasm-memorytable"><h3>Accessing wasm Memory/Table</h3></a>
+<p>JS snippets interacting with the wasm module may commonly need to work with the
+<code>WebAssembly.Memory</code> and <code>WebAssembly.Table</code> instances associated with the wasm
+module. This RFC proposes using the wasm itself to pass along these objects,
+like so:</p>
+<pre><pre class="playpen"><code class="language-rust">
+# #![allow(unused_variables)]
+#fn main() {
+// lib.rs
+
+#[wasm_bindgen(module = &quot;/js/local-snippet.js&quot;)]
+extern {
+    fn take_u8_slice(memory: &amp;JsValue, ptr: u32, len: u32);
+}
+
+#[wasm_bindgen]
+pub fn call_local_snippet() {
+    let vec = vec![0,1,2,3,4];
+    let mem = wasm_bindgen::memory();
+    take_u8_slice(&amp;mem, vec.as_ptr() as usize as u32, vec.len() as u32);
+}
+#}</code></pre></pre>
+<pre><code class="language-js">// js/local-snippet.js
+
+export function take_u8_slice(memory, ptr, len) {
+    let slice = new UInt8Array(memory.arrayBuffer, ptr, len);
+    // ...
+}
+</code></pre>
+<p>Here the <code>wasm_bindgen::memory()</code> existing intrinsic is used to pass along the
+memory object to the imported JS snippet. To mirror this we'll add
+<code>wasm_bindgen::function_table()</code> as well to the <code>wasm-bindgen</code> crate as an
+intrinsic to access the function table and return it as a <code>JsValue</code>.</p>
+<p>Eventually we may want a more explicit way to import the memory/table, but for
+now this should be sufficient for expressiveness.</p>
+<a class="header" href="#drawbacks" id="drawbacks"><h1>Drawbacks</h1></a>
+<ul>
+<li>
+<p>The initial RFC is fairly conservative. It doesn't work with <code>--nodejs</code> out of
+the gate nor <code>--no-modules</code>. Additionally it doesn't support JS snippets
+importing other JS initially. Note that all of these are intended to be
+supported in the future, it's just thought that it may take more design than
+we need at the get-go for now.</p>
+</li>
+<li>
+<p>JS snippets must be written in vanilla ES module JS syntax. Common
+preprocessors like TypeScript can't be used. It's unclear how such
+preprocessed JS would be imported. It's hoped that JS snippets are small
+enough that this isn't too much of a problem. Larger JS snippets can always be
+extracted to an NPM package and postprocessed there. Note that it's always
+possible for authors to manually run the TypeScript compiler by hand for these
+use cases, though.</p>
+</li>
+<li>
+<p>The relatively popular <code>--no-modules</code> flag is proposed to be deprecated in
+favor of a <code>--browser</code> flag, which itself will have a breaking change relative
+to today. It's thought though that <code>--browser</code> is only very rarely used so is
+safe to break, and it's also thought that we'll want to avoid breaking
+<code>--no-modules</code> as-is today.</p>
+</li>
+<li>
+<p>Local JS snippets are required to be written in ES module syntax. This may be
+a somewhat opinionated stance, but it's intended to make it easier to add
+future features to <code>wasm-bindgen</code> while continuing to work with JS. The ES
+module system, however, is the only known official standard throughout the
+ecosystem, so it's hoped that this is a clear choice for writing local JS
+snippets.</p>
+</li>
+</ul>
+<a class="header" href="#rationale-and-alternatives" id="rationale-and-alternatives"><h1>Rationale and Alternatives</h1></a>
+<p>The primary alternative to this system is a macro like <code>js!</code> from stdweb. This
+allows written small snippets of JS code directly in Rust code, and then
+<code>wasm-bindgen</code> would have the knowledge to generate appropriate shims. This RFC
+proposes recognizing <code>module</code> paths instead of this approach as it's thought to
+be a more general approach. Additionally it's intended that the <code>js!</code> macro can
+be built on the <code>module</code> directive including local file paths. The
+<code>wasm-bindgen</code> crate may grow a <code>js!</code>-like macro one day, but it's thought that
+it's best to start with a more conservative approach.</p>
+<p>One alternative for ES modules is to simply concatenate all JS together. This
+way we wouldn't have to parse anything but we'd instead just throw everything
+into one file. The downside of this approach, however, is that it can easily
+lead to namespacing conflicts and it also forces everyone to agree on module
+formats and runs the risk of forcing the module format of the final product.</p>
+<p>Another alternative to emitting small files at wasm-bindgen time is to instead
+unpack all files at <em>runtime</em> by leaving them in custom sections of the wasm
+executable. This in turn, however, may violate some CSP settings (particularly
+strict ones).</p>
+<a class="header" href="#unresolved-questions" id="unresolved-questions"><h1>Unresolved Questions</h1></a>
+<ul>
+<li>
+<p>Is it necessary to support <code>--nodejs</code> initially?</p>
+</li>
+<li>
+<p>Is it necessary to support local JS imports in local JS snippets initially?</p>
+</li>
+<li>
+<p>Are there known parsers of JS ES modules today? Are we forced to include a
+full JS parser or can we have a minimal one which only deals with ES syntax?</p>
+</li>
+<li>
+<p>How would we handle other assets like CSS, HTML, or images that want to be
+referenced by the final wasm file?</p>
+</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="005-structural-and-deref.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="007-2019-roadmap.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a href="005-structural-and-deref.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a href="007-2019-roadmap.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
