@@ -114,7 +114,7 @@ impl Parent {
         let ptr = unsafe { __wbindgen_instantiate(Parent::ID, args.into()) }
             as *WasmRefCell<Parent>;
 
-        return (*ptr).borrow_mut();
+        return (unsafe { *ptr }).borrow_mut();
 
         pub extern "C" fn __wasm_bindgen_generated_Parent_new(area: u32, _callback : u32) {
             let _ret = {
@@ -162,7 +162,7 @@ impl Child {
         let ptr = unsafe { __wbindgen_instantiate(Child::ID, args.into()) }
             as *WasmRefCell<Child>;
 
-        return (*ptr).borrow_mut();
+        return (unsafe { *ptr }).borrow_mut();
 
         pub extern "C" fn __wasm_bindgen_generated_Child_new(foo: u32, _callback : u32) {
             let _ret = {
@@ -275,6 +275,10 @@ However, this approach no longer works once the exported type specifies a protot
 Shims for exported derived types (i.e. those that specify a `[#wasm_bindgen(prototype)]` attribute) must therefore *always* be constructed with the [`new`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new) operator.  Since this might have side effects outside of the instance itself (indeed, potentially outside the user's own control: e.g. consider a JavaScript-native parent type whose constructor registers the object in some global registry), it should occur at most *once* per WASM object: that is, the fully constructed shim must survive until it is never required in JavaScript again—it is not acceptible to construct a second shim for the same object.
 
 It is conceivable that this could be accomplished in such a way that shim construction occurs, as in the status quo, only when a WASM object is sent over the FFI and requires wrapping—however, ensuring that the super-constructor is invoked with appropriate arguments (which might be some function of the object's state) and then maintaining the shim object for the long-term (where would it be "owned"?) would be complex.  Instead, it is proposed to do away entirely with the notion of "wrapping" instances of exported derived types and instead to require that their instantiation always occurs via the shim constructor and therefore always returns the shim object.
+
+### Why have `__wbindgen_wasm_pointer_set` ?
+
+The `__wbindgen_wasm_pointer_set` function appears to be almost superfluous, since the exported functions could simply return that value for the JavaScript `constuctor()` to assign to `this[WASM_PTR]`; however, were this the case, any user code that attempts to use the insantiated object (returned from the `instantiate!` macro) before returning could fail due to the pointer on the shim not having yet been properly instantiated.
 
 # Unresolved Questions
 [unresolved]: #unresolved-questions
