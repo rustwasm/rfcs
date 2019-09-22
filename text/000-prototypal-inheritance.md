@@ -272,7 +272,7 @@ If a Rust-native method is invoked from JavaScript, the pointer that is sent to 
 
 * Breaking changes / new API.  Objects of exported types can *only* be constructed using their exported constructor function.  Methods that take ownership of `self` can no longer be called (indeed, ownership of exported types is no longer possible).  Injected field into exported types breaks destructuring patterns (do we recommend use of the `..` "et cetera" pattern, or explicit use of the named/unnamed field?).  Exported types can no longer implement `Copy`.
 
-* Objects live on both Rust and JavaScript heaps for entire lifetime of every instance of an exported type, increasing overall memory consumption.
+* Objects live on both Rust and JavaScript heaps for entire lifetime of every instance of an exported type, increasing overall memory consumption.  Absent weakrefs, objects must be manually/explicitly freed or else memory leaks will ensue.
 
 * Object instantiation via JavaScript adds runtime overhead, which may be entirely uneccessary if the type's prototype chain involves only Rust-exported types and the instance is never actually required in JavaScript.
 
