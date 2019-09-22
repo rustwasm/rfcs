@@ -39,6 +39,20 @@ In respect of the latter group, various related issues have been identified in t
 # Detailed Explanation
 [detailed-explanation]: #detailed-explanation
 
+### Overview
+
+At present, values of exported Rust types are owned and moved around by the user like any other value.  If passed "by value" to JavaScript, they are moved into a boxed `WasmRefCell` the address of which is opaquely sent over the ABI; that address is held in the `ptr` property of an ephemeral shim object, such property being returned over the ABI (and cleared) if/when the value is passed "by value" back to Rust.
+
+This RFC proposes a fundamental change from that status-quo.  Values of exported Rust types will now remain permanently in a boxed `WasmRefCell` and cannot be owned or moved around by the user: this enables the JavaScript shim to exist (and properly function) for the object's entire lifetime, which may be required by virtue of side-effects from calling the object's super-constructors (e.g. if the object is registered with some form of global registry, as is the case with Web Components).
+
+Consequently, users in Rust can only ever have a `Ref` or `RefMut` that derefs to their object.  Ownership of the object is effectively controlled by the long-lived JavaScript shim, being transferred back to Rust only for the value to be dropped when it (and the shim) are no longer required.
+
+Furthermore, this RFC proposes that exported Rust types are themselves modified to "own" the Rust values for each object on their prototype chain through the injection of an additional field.  This provides users with native access to inherited methods and properties (irrespective of whether the prototype is native to Rust or JavaScript).
+
+A little additional bookkeeping is required in order for methods invoked on the JavaScript shim objects to have the correct receiver in Rust.
+
+### Details
+
 1. Exported type `T` **MAY** be annotated with an additional input to its `#[wasm_bindgen]` outer attribute: namely `prototype=path::to::Parent`, where `Parent` is either an imported or another exported wasm-bindgen type.
 
 2. A field is injected into the definition of `T`; it is either named `__proto__` or appended to the existing unnamed field list, as appropriate (unit types are converted to having a single field named `__proto__`).  This injected field is either of type `Parent` (if the `prototype` input was specified above), or else of type `JsValue` (otherwise).  Users never need access this field directly; instead `T` implements both `Deref<Target=Parent>` (or `Target=JsValue`, as appropriate) and `DerefMut` that return references to it.
