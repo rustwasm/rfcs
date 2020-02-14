@@ -12,7 +12,7 @@ Dramatically improve the ergonomics of error handling by adding a new
 # Motivation
 [motivation]: #motivation
 
-Right now almost all APIs in the `wasm-bindgen` ecosystem return
+Right now almost all APIs in the wasm-bindgen ecosystem return
 `Result<T, JsValue>`. This is true even in the cases where the API cannot error.
 
 This causes a large amount of friction when using the APIs, because it is
@@ -24,7 +24,7 @@ also been noticed in the JavaScript community, as shown in this 2014 article:
 
 https://www.joyent.com/node-js/production/design/errors
 
-But the current system with `wasm-bindgen` conflates those two together, with
+But the current system with wasm-bindgen conflates those two together, with
 programmer errors being handled via `Result`.
 
 The current system also has a small performance cost, since every function/method
@@ -38,8 +38,8 @@ even after interface types are implemented in the browsers.
 And all of the above costs are unavoidable: even if you *know* that it will never
 error, you must still pay the cost in JS glue, file size, and runtime performance.
 
-This means `wasm-bindgen` is no longer truly zero-cost. And unfortunately
-this problem is pervasive throughout the entire `wasm-bindgen` ecosystem,
+This means wasm-bindgen is not truly zero-cost. And unfortunately
+this problem is pervasive throughout the entire wasm-bindgen ecosystem,
 so even though the costs may be small for a single function, it adds up with
 hundreds or thousands of functions.
 
@@ -52,11 +52,16 @@ The reason is because if you return `Result<T, JsValue>` then you can use the
 system we can encourage users to create meaningful custom errors, rather
 than `Result<T, JsValue>`.
 
+Also, in the past we had made decisions to adopt a more JS-centric API
+(such as using `Deref` rather than traits). This proposal is in line with
+that, because it is idiomatic in JS to only use `try`/`catch` when needed,
+rather than on every function call.
+
 
 # Stakeholders
 [stakeholders]: #stakeholders
 
-This affects basically the entire `wasm-bindgen` ecosystem, since it is a
+This affects basically the entire wasm-bindgen ecosystem, since it is a
 breaking change for the `js-sys` and `web-sys` crates.
 
 I'm not sure what approach is appropriate for gaining feedback.
