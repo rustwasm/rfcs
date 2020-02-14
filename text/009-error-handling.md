@@ -32,7 +32,7 @@ call must use `try`/`catch` to convert the error into `Result`. And this also
 bloats up the generated JS glue file, because the `try`/`catch` cannot really
 be deduplicated.
 
-Lastly, the current system means we must always use JS glue code,
+The current system also means we must always use JS glue code,
 even after interface types are implemented in the browsers.
 
 And all of the above costs are unavoidable: even if you *know* that it will never
@@ -44,7 +44,7 @@ so even though the costs may be small for a single function, it adds up with
 hundreds or thousands of functions.
 
 As a more meta note, it is idiomatic in Rust to return custom error types,
-such as `Result<T, MyCustomError>`. However the current system heavily
+such as `Result<T, MyCustomError>`. However, the current system heavily
 encourages users to *not* do that and instead just return `Result<T, JsValue>`.
 
 The reason is because if you return `Result<T, JsValue>` then you can use the
@@ -158,7 +158,7 @@ However, it fixes all of the issues described in the motivation:
 
 * With the current system, if the author did not use the `catch`
    attribute then you cannot catch the error. But with `try_catch` you
-   can! Thus this is more flexible.
+   can! Thus it is more flexible.
 
 
 # Drawbacks
@@ -186,7 +186,7 @@ However, it fixes all of the issues described in the motivation:
 
    Also, the current system of always returning `JsValue` is really terrible
    for error handling. It is far better to create custom errors, which is
-   something that gloo can do.
+   discouraged by the current system.
 
 
 # Rationale and Alternatives
