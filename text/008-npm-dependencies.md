@@ -72,7 +72,7 @@ extern "C" {
 > import { function_in_foo_package } from "foo";
 > ```
 
-The exiting `module` key in the `#[wasm_bindgen]` attribute can be used to
+The existing `module` key in the `#[wasm_bindgen]` attribute can be used to
 indicate which ES module the import is coming from. This affects the `module`
 key in the final output wasm binary, and corresponds to the name of the package
 in `package.json`. This is intended to match how bundler conventions already
